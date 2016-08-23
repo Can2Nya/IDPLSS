@@ -1,0 +1,46 @@
+@import (reference) '../config/config.less';
+
+.contain{
+	.container;
+	&:after{
+		clear: both;
+		content: '';
+		display: table;
+	}
+}
+/*上下外间距*/
+.margin{
+	margin: 1.5em 0;
+}
+/*左右内边距*/
+.padding{
+	padding: 0 1.5em;
+}
+/*水平居中*/
+.divCenter{
+	margin-left: auto;
+	margin-right: auto;
+}
+/*双栏布局*/
+.float{
+	float: left;
+}
+.left{
+	width: 25%;
+	padding-right: 15px;
+	.float;
+}
+.right{
+	width: 75%;
+	.float;
+}
+/*排列块间隔*/
+.marginBlock{
+	margin:0 0 20px 0;
+}
+
+/*居中＋上下边距*/
+.marginCenter{
+	.margin;
+	.divCenter;
+}

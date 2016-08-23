@@ -1,0 +1,32 @@
+@import (reference) '../../config/config.less';
+
+.footer{
+	height: 200px;
+	background-color: @lightpurple2;
+	& > div {
+		.container;
+		padding-top: 20px;
+		.row{
+			span{
+				margin-top: 70%;
+			}
+		}
+
+	}
+	span{
+		display: block;
+		color: @lightpurple;
+		font-size: 15px;
+		&:hover{
+			color: lighten(@lightpurple, 10%);
+		}
+	}
+	.center{
+		text-align: center;
+		background-image: url("@{IDPLSS-src-line}");
+		background-repeat: no-repeat;
+		span{
+			padding-top:10px;
+		}
+	}
+}
