@@ -37,6 +37,7 @@ $ npm run build -- --no-compress
 ├── /src/                # 应用源码
 │ ├── /components/       # React components
 │ ├── /entries/          # 应用入口
+│ ├── /pages/			 # 页面内容
 │ ├── /layouts/          # 布局信息
 │ ├── /reducers/         # reducers
 │ ├── /routes/           # 路由信息
