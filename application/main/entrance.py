@@ -6,6 +6,7 @@ from application.main import main
 from application.models import User, Role
 from application import db
 from application.utils.mail import send_email
+from application.utils.responses import make_response
 
 
 @main.route('/api/user/register', methods=['POST'])
@@ -32,6 +33,6 @@ def register():
     db.session.commit()
     token = u.generate_confirm_token()
     send_email(u.email, '激活你的账号', 'confirm_info/confirm', User=u, token=token)
-    return jsonify({"status": 'register successful'})
+    return make_response('register successful')
     # TODO(Ddragon):完善用户注册成功时候的返回信息
 
