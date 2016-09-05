@@ -1,7 +1,7 @@
 # coding: utf-8
 from functools import wraps
 from flask import request, jsonify, g
-from application.models import Permission, User
+from app.models import Permission, User
 from errors import not_found, forbidden
 from manage import app
 

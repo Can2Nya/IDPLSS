@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask.ext.script import Manager, Shell
-from application import create_app, db
-from application.models import User, Role, Follow
+from app import create_app, db
+from app.models import User, Role, Follow
 
 app = create_app()
 manager = Manager(app)

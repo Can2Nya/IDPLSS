@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import jsonify, request
-from application.main import main
+from app.main import main
 
 
 def not_found():

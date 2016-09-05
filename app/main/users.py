@@ -1,11 +1,11 @@
 # coding: utf-8
 from flask import jsonify, request
-from application.main import main
-from application.models import User, Follow, Role, Permission
-from application.main.authentication import auth
-from application.main.decorators import permission_required
-from application.utils.responses import make_response
-from application.main.errors import bad_request
+from app.main import main
+from app.models import User, Follow, Role, Permission
+from app.main.authentication import auth
+from app.main.decorators import permission_required
+from app.utils.responses import make_response
+from app.main.errors import bad_request
 
 
 @main.route('/api/user/info/<int:uid>')
