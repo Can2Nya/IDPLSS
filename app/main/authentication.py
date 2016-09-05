@@ -2,9 +2,9 @@
 from flask.ext.httpauth import HTTPBasicAuth
 from flask import jsonify, request, g, current_app, abort, flash
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
-from application.models import db, User, Permission, AnonymousUser, Serializer
-from application.main.errors import forbidden, unauthorized, bad_request
-from application.main import main
+from app.models import db, User, Permission, AnonymousUser, Serializer
+from app.main.errors import forbidden, unauthorized, bad_request
+from app.main import main
 from manage import app
 auth = HTTPBasicAuth()
 

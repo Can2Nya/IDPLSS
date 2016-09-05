@@ -1,10 +1,10 @@
 # coding: utf-8
 from flask import jsonify, request, current_app, url_for
-from application.main import main
-from application.main.authentication import auth
-from application.utils.responses import make_response
-from application.main.decorators import permission_required
-from application.models import db, User, Follow, Post, Role
+from app.main import main
+from app.main.authentication import auth
+from app.utils.responses import make_response
+from app.main.decorators import permission_required
+from app.models import db, User, Follow, Post, Role
 
 
 @main.route('/posts')

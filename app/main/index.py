@@ -1,10 +1,10 @@
 # coding: utf-8
 from flask import jsonify, request, render_template
-from application.main import main
-from application.main.authentication import auth
-from application.main.decorators import permission_required, admin_required
-from application.models import Permission
-from application.utils.responses import make_response
+from app.main import main
+from app.main.authentication import auth
+from app.main.decorators import permission_required, admin_required
+from app.models import Permission
+from app.utils.responses import make_response
 
 
 @main.route('/index', methods=['GET'])

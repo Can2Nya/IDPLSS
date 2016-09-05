@@ -2,11 +2,11 @@
 from flask import jsonify, request
 from authentication import auth
 from errors import unauthorized, bad_request
-from application.main import main
-from application.models import User, Role
-from application import db
-from application.utils.mail import send_email
-from application.utils.responses import make_response
+from app.main import main
+from app.models import User, Role
+from app import db
+from app.utils.mail import send_email
+from app.utils.responses import make_response
 
 
 @main.route('/api/user/register', methods=['POST'])
