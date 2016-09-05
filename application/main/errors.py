@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import jsonify
+from flask import jsonify, request
 from application.main import main
 
 
@@ -32,3 +32,10 @@ def method_not_allowed(message):
     response.status_code = 405
     return response
 
+
+@main.app_errorhandler(404)
+def info_not_found(e):
+    if request.accept_mimetypes.accept_json:
+        response = jsonify({'error': 'post data error ,query info does not exist'})
+        response.status_code = 404
+        return response

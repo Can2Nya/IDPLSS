@@ -32,8 +32,8 @@ class Follow(db.Model):
     followed_id:被关注者id
     """
     __tablename__ = 'follows'
-    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    followed_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
@@ -107,10 +107,11 @@ class User(db.Model):
     confirmed = db.Column(db.Boolean, default=False)
     name = db.Column(db.String(32))
     about_me = db.Column(db.String(128))
-    followers = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref('follower',
+    followings = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref('follower',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
-    followings = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref('followed',
+    followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref('followed',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -122,6 +123,23 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.user_name
+
+    def to_json(self):
+        json_user = {
+            'user_id': self.id,
+            'user_name': self.user_name,
+            'name': self.name,
+            'user_email': self.email,
+            'user_type': self.user_type,
+            'user_avatar': self.avatar,
+            'user_about_me': self.about_me,
+            'user_member_since': self.member_since,
+            'user_last_seen': self.last_seen,
+            'user_followers': self.followers.count(),
+            'user_followings': self.followings.count(),
+            'user_confirmed': self.confirmed
+        }
+        return json_user
 
     @property
     def pass_word(self):
@@ -191,6 +209,35 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+            db.session.commit()
+
+    def unfollow(self, user):
+        print self.user_name
+        print user.user_name
+        f = self.followings.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+            db.session.commit()
+
+    def is_following(self, user):
+        """
+        判断当前用户是否关注了user, 如果用户已经关注,返回True,没有关注返回false
+        :param user:
+        :return:boolean
+        """
+        return self.followings.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        """
+        判断当前用户是否被user关注  如果是用户的粉丝,返回True,如果不是,返回False
+        :param user:
+        :return: boolean
+        """
+        return self.followers.filter_by(follower_id=user.id).first() is not None
 
 
 class AnonymousUser(object):
@@ -204,3 +251,58 @@ class AnonymousUser(object):
     @staticmethod
     def is_admin():
         return False
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    post_title = db.Column(db.String(64))
+    category = db.Column(db.Integer, default=0)
+    # TODO(ddragon): 添加问题的分类
+    post_body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    images = db.Column(db.String(512))
+    show = db.Column(db.Boolean, default=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+
+    def __repr__(self):
+        return '< Post_title %r>' % self.post_title
+
+    def to_json(self):
+        json_post = {
+            'post_id': self.id,
+            'post_title': self.post_title,
+            'post_category': self.category,
+            'post_body': self.post_body,
+            'timestamp': self.timestamp,
+            'images': self.images,
+            'show': self.show,
+            'author_id': self.author_id,
+            'comments_count': self.comments.count()
+        }
+        return json_post
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(128))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    show = db.Column(db.Boolean, default=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def __repr__(self):
+        return '<Comment_id %r>' % self.id
+
+    def to_json(self):
+        json_comment = {
+            'comment_id': self.id,
+            'body': self.body,
+            'author_id': self.author_id,
+            'timestamp': self.timestamp,
+            'show': self.show,
+            'post_id': self.post_id
+        }
+        return json_comment
