@@ -2,23 +2,40 @@ import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col, Badge } from 'antd';
+import classnames from 'classnames';
 
 import styles from './Menu.less';
 
-const Menu = ({ menu, linkto, title,location }) => {
+const Menu = ({ menu, dispatch, location }) => {
+	const { list } = menu;
+	const handleToggleSelect = (id) =>{
+		dispatch({
+			type: 'menu/isSelect',
+			payload: id,
+		})
+		/**let selectkey;
+		if(location.hash) selectkey = location.hash.replace(/\D/g,'');
+		console.log(selectkey)
+		return (selectkey.charAt(0) === id)? true: false;**/
+	};
+
 	const renderMenu = () =>{
-		const { list } = menu;
 		return(
 			<div>
-			{list.map((menu, index) =>{
+			{list.map((line, index) =>{
+				const menuCls = classnames({
+					[styles.active]: line.isSelect,
+					[styles.yellow]: true,
+					
+				});
 				/**let menuCls = () =>{
 					if (index % 2 == 0) return styles.yellow;
 					else return styles.purple;
 				};**/
-				return <div key={ menu.id } >
-						<Link to={{ pathname:`${location.pathname}`, hash:`#!/${menu.id}`}} activeClassName={styles.active}>
-						<div className={styles.yellow}>
-						<span className={styles.subTitle}>{ menu.title }</span>
+				return <div key={ line.id } >
+						<Link to={{ pathname:`${location.pathname}`, hash:`#!/${line.id}`}} >
+						<div className={menuCls} onClick={handleToggleSelect.bind(this, line.id)}>
+						<span className={styles.subTitle}>{ line.title }</span>
 						</div>
 						</Link>
 						{/**<div className={styles.float}>
@@ -31,20 +48,38 @@ const Menu = ({ menu, linkto, title,location }) => {
 	};
 	return (
 		<div>
-			<div className={styles.title}>{ title }</div>
+			{/*<div className={styles.title}>{ title }</div>*/}
 			{renderMenu()}
 		</div>
 	);
 }
 
 Menu.propTypes = {  
-	title: PropTypes.any.isRequired,
-	linkto: PropTypes.any.isRequired
+	/*title: PropTypes.string.isRequired,*/
 };
 
-function mapStateToProps({ menu }){
+function menuFilter(menu, hash) {
+	if(hash){
+		var newSelectkey = hash.replace(/\D/g,'');
+		newSelectkey = parseInt(newSelectkey.charAt(0));
+		const newList = menu.list.map(line =>{
+			if( newSelectkey == line.id ) {
+				return { ...line, isSelect: true }
+			}
+			else {
+				return { ...line, isSelect: false }
+			}
+			return true;
+		});
+		return { ...menu, list: newList, selectkey: newSelectkey };
+	}
+	return menu;
+	
+}
+
+function mapStateToProps({ menu },{ location }){
 	return {
-		menu: menu
+		menu: menuFilter(menu,location.hash),
 	};
 };
 

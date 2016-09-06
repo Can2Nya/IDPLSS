@@ -5,24 +5,25 @@ import Layout from '../layouts/Layout/Layout';
 
 import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
-import VideoCovers from '../components/Widget/VideoCover/VideoCovers';
+import VideoCover from '../components/Widget/VideoCover/VideoCover';
+import TestCover from '../components/Widget/TestCover/TestCover';
+import TextCover from '../components/Widget/TextCover/TextCover';
 
 import styles from './commont.less';
 
-const Classes = ({ location, menu, breadcrumb, cover }) => {
-	console.log(location);
+const Category = ({ location }) => {
 	return (
-
 		<Layout location={location}>
 			<div className={styles.contain}>
 		<Row>
 		<Col span={8} lg={6}>
-			{ menu }
+		<Title type='small' title='课程分类' noline={true} />
+		<Menu location={location}  />
 		</Col>
 
 		<Col span={16} lg={18}>
 		<div className={styles.margin}>
-			{/**<Breadcrumb>
+			<Breadcrumb>
 						<Breadcrumb.Item>
 						<Icon type="home" />
 						</Breadcrumb.Item>
@@ -30,11 +31,14 @@ const Classes = ({ location, menu, breadcrumb, cover }) => {
 						全部课程
 						</Breadcrumb.Item>
 			
-						</Breadcrumb>**/}
-			{ breadcrumb }
+						</Breadcrumb>
 		</div>
 			<Row>
-			{ cover }
+			<TestCover type='big' />
+			<TestCover type='small' />
+			<VideoCover type='big' />
+			<TextCover wordtype='word' type='big' />
+			<TextCover wordtype='word' type='small' />
 			</Row>
 		</Col>
 		</Row>
@@ -43,8 +47,8 @@ const Classes = ({ location, menu, breadcrumb, cover }) => {
 	);
 };
 
-Classes.PropTypes = {
+Category.PropTypes = {
 
 };
 
-export default Classes;
+export default Category;

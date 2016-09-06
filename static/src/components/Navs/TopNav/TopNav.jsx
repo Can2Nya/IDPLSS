@@ -40,18 +40,26 @@ const TopNav = ({ config }) => {
 			</div>
 			<div className={styles.right}
 			>
-			<div className={styles.one}>
-				<Search />
-			</div>
-			<div className={styles.two}>
-				<Massage />
-			</div>
-			<div className={styles.three}>
-				<User />
+			<div className={styles.flex}>
+				<div className={styles.col}>
+					<Search />
+				</div>
+				<div className={styles.col}  style={{marginLeft:'30px'}}>
+					<Massage />
+				</div>
+				<div className={styles.col}>
+					<User />
+				</div>
 			</div>
 			</div>
 			
 			</div>
+
+			{/*<Row align="middle">
+			<Col span={4}><Col>
+			<Col span={6}><Col>
+			<Col span={6}><Col>
+			</Row>*/}
 		</div>
 	);
 }

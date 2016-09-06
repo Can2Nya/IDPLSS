@@ -7,11 +7,17 @@ import VideoCover from './VideoCover';
 
 import styles from './VideoCovers.less';
 
-const VideoCovers = () => {
+const VideoCovers = ({ videos, dispatch, mode }) => {
+	const { list } = videos;
+	const handleToggleMode = (newMode) =>{
+		dispatch({
+			
+		});
+	}
 	const renderVideoCover = () =>{
-		const sum = [{},{},{},{},{}];
 		return (
-			sum.map(videocover =><Col lg={6} span={8} className={styles.marginBlock}>
+			list.map(video =>
+				<Col lg={6} span={8} className={styles.marginBlock} key={video.id}>
 				<div >
 				<VideoCover type="small" />
 				</div>
@@ -29,10 +35,22 @@ VideoCovers.propTypes = {
 	
 };
 
-/**function mapStateToProp({layout},{location}){
-  return {
-    layout: filter(layout,location.pathname)
-  };
-}**/
+function filter(videos,selectkey){
+	console.log(selectkey)
+	if (selectkey) {
 
-export default VideoCovers;
+		const newList = videos.list.filter(video =>{
+			if(video.tab === selectkey) return true;
+		});
+		return { ...videos, list:newList };
+	};
+	return videos;
+}
+
+function mapStateToProp({ videos, menu }){
+  return {
+    videos: filter(videos,menu.selectkey),
+  };
+}
+
+export default connect(mapStateToProp)(VideoCovers);

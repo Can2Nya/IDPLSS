@@ -4,7 +4,12 @@ import App from '../components/App';
 import Index from '../pages/Index'
 import VideoClasses from '../pages/Classes/VideoClasses'
 import TextClasses from '../pages/Classes/TextClasses'
-import Classes from '../pages/Classes';
+import Category from '../pages/Category';
+
+import Detail from '../pages/Detail';
+//import List from '../pages/Detail/List';
+
+import User from '../pages/User';
 import NotFound from '../pages/NotFound';
 
 const Routes = ({ history }) =>
@@ -12,14 +17,21 @@ const Routes = ({ history }) =>
     <Route path="/index" component={Index}>
     	<Redirect from="/" to="/index" />
     </Route>
-    <Route path="/category/" component={Classes}>
-      <Route path="video/" components={VideoClasses}>
+    <Route path="/category/" component={Category}>
+      <Route path="video/" >
       </Route>
-      <Route path="text" components={TextClasses} />
+      <Route path="text/"  />
+      <Route path="test/"  />
+    </Route>
+    <Route path="/detail/" component={Detail}>
+    </Route>
+    <Route path="/user/" component={User}>
     </Route>
     {/*<Route path="/actived" component={App} />*/}
     {/*<Route path="/completed" component={App} />*/}
+    <Route path="/demo" component={App}/>
     <Route path="*" component={NotFound}/>
+
   </Router>;
 
 Routes.propTypes = {

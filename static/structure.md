@@ -57,7 +57,7 @@ state
 │ ├──健:值
 
 location.state不宜做日常传值［因为只有点击才会改变state，大概？］
-可以用来做些交互
+可以用来验证是否点击23333
 
 # 组件prop
 
@@ -67,3 +67,11 @@ prop	|   描述  		  |	  类型	| 默认值|
 :.......|.................|.........|......:
 title   | 需要显示的标题名称 | string  |   x  |
 type    | 标题大小		  | string  | x('big'or'small')|
+
+## Menu 分类栏
+
+prop	|   描述  		  |	  类型	| 默认值|
+:.......|.................|.........|......:
+title   | 需要显示的标题名称 | string  |   x  |
+selectkey    | 已选择的菜单		  | int  | x|
+location    | router location 传一个进来就对啦 | obj  | x |

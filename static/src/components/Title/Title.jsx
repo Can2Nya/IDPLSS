@@ -6,10 +6,18 @@ import config from '../../config/config';
 
 import styles from './Title.less';
 
-const Title = ({ title, type }) => {
+const Title = ({ title, type, noline }) => {
 	const titleCls = () =>{
-		if (type == 'small') {return styles.small}
-		if (type == 'big') {return styles.big}
+		/*var style = {}
+		if (noline) style[[styles.noline]] = true;
+		if (type == 'small') style[[styles.small]] = true;
+		if (type == 'big') style[[styles.big]] = true;*/
+		
+
+		return classNames({
+			[styles.noline]:noline,
+			[styles[type]]:true,
+		});
 	};
 	const renderTitle = () =>{
 		if (type == 'big') {

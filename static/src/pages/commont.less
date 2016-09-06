@@ -44,3 +44,58 @@
 	.margin;
 	.divCenter;
 }
+
+
+/*用户User*/
+.user{
+	.userbg{
+	background-image: url('@{QINIU-URL}/images/bg.png');
+	height: 180px;
+	margin-top: 65px;
+	}
+	.tabpannel{
+		width: 60%;
+		.position{
+			position: relative;
+			top: -50px;
+		}
+		div[class~='ant-tabs']{
+			overflow: visible;
+		}
+		div[class='ant-tabs-content']{
+			box-shadow: 0 0 10px @gray;
+		}
+		div[class~='ant-tabs-nav-wrap']{
+			background-color: rgba(0, 0, 0, 0.5)
+		}
+		div[class~='ant-tabs-nav-container']{
+			zoom: 1.4;
+		}
+		div[class~='ant-tabs-ink-bar']{
+			background-color: @yellow;
+		}
+		div[class~='ant-tabs-tab-inner']{
+			color: @white;
+		}
+		div[role='tab']{
+			margin: 0 20px;
+		}
+		div[role='tablist']{
+			margin-bottom: 0;
+		}
+	}
+}
+
+/*详细Detail*/
+.detail{
+	.tabpannel{
+		div[class*='ant-tabs-tab-inner']
+		{
+			color: @purple !important;
+			
+		}
+		div[class*='ant-tabs-ink-bar']{
+			background-color: @purple !important;
+		}
+	}
+}

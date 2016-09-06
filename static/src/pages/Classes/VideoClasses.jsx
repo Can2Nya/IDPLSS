@@ -11,13 +11,22 @@ import styles from '../commont.less';
 
 class VideoMenu extends React.Component{
 	render(){
-		return <Menu linkto="video/" title="课程分类" location={location} />;
+		return <Menu title="课程分类" location={location} />;
 	}
 }
 
 class VideoBreadcrumb extends React.Component{
 	render(){
-		return <Breadcrumb><Breadcrumb.Item><Icon type="home" /></Breadcrumb.Item><Breadcrumb.Item>全部课程</Breadcrumb.Item></Breadcrumb>;
+		return <Breadcrumb>
+		<Breadcrumb.Item>
+		<Link to="/">
+		<Icon type="home" />
+		</Link>
+		</Breadcrumb.Item>
+		<Link to='/video/'>
+		<Breadcrumb.Item>全部课程</Breadcrumb.Item>
+		</Link>
+		</Breadcrumb>;
 	}
 }
 
@@ -28,9 +37,9 @@ class VideoCover extends React.Component{
 }
 
 const VideoClasses = {
-	menu: VideoMenu,
+	/*menu: VideoMenu,*/
 	breadcrumb: VideoBreadcrumb,
-	cover: VideoCover
+	/*cover: VideoCover*/
 };
 
 /**VideoClasses.PropTypes = {
