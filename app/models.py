@@ -3,6 +3,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from datetime import datetime
+from app.utils.model_tools import set_model_attr
 from app import db
 
 
@@ -39,6 +40,15 @@ class Follow(db.Model):
     def __repr__(self):
         return '< follower_id %r>' % self.followed_id
 
+    def followers_to_json(self):
+        json_follow = {
+        }
+        return json_follow
+
+    def following_to_json(self):
+        json_following = {
+        }
+        return json_following
 
 class Role(db.Model):
     """
@@ -112,6 +122,7 @@ class User(db.Model):
     followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref('followed',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    comments = db.relationship('PostComment', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -140,6 +151,13 @@ class User(db.Model):
             'user_confirmed': self.confirmed
         }
         return json_user
+
+    @staticmethod
+    def from_json(user, json_user):
+        user.name = set_model_attr(json_user, 'name')
+        user.about_me = set_model_attr(json_user, 'about_me')
+        user.avatar = set_model_attr(json_user, 'avatar')
+        return user
 
     @property
     def pass_word(self):
@@ -264,7 +282,7 @@ class Post(db.Model):
     images = db.Column(db.String(512))
     show = db.Column(db.Boolean, default=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    comments = db.relationship('PostComment', backref='post', lazy='dynamic')
 
     def __repr__(self):
         return '< Post_title %r>' % self.post_title
@@ -284,8 +302,8 @@ class Post(db.Model):
         return json_post
 
 
-class Comment(db.Model):
-    __tablename__ = 'comments'
+class PostComment(db.Model):
+    __tablename__ = 'post_comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -306,3 +324,69 @@ class Comment(db.Model):
             'post_id': self.post_id
         }
         return json_comment
+
+
+class CourseVideo(db.Model):
+    __tablename__ = 'videos'
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(128))
+    description = db.Column(db.Text)
+    source_url = db.Column(db.String(256))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<CourseVideo name %r>' % self.file_name
+
+
+class VideoComment(db.Model):
+    __tablename__ = 'video_comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(128))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    show = db.Column(db.Boolean, default=False)
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.id'))
+
+    def __repr__(self):
+        return '<VideoComment_id %r>' % self.id
+
+    def to_json(self):
+        json_comment = {
+            'comment_id': self.id,
+            'body': self.body,
+            'author_id': self.author_id,
+            'timestamp': self.timestamp,
+            'show': self.show,
+            'post_id': self.post_id
+        }
+        return json_comment
+
+
+class TextResource(db.Model):
+    __tablename__ = 'text_resources'
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(128))
+    description = db.Column(db.Text)
+    source_url = db.Column(db.String(256))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __reper__(self):
+        return '<TextResource file_name %r>' % self.file_name
+
+
+class TextResourceComment(db.Model):
+    __tablename__ = 'resource_comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(128))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    show = db.Column(db.Boolean, default=False)
+    text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resources.id'))
+
+    def __repr__(self):
+        return '<TextResourceComment id %r>' % self.id
+
+
+

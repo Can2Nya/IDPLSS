@@ -3,6 +3,12 @@ from flask import jsonify, request
 from app.main import main
 
 
+def update_status(message):
+    response = jsonify({'status': message})
+    response.status_code = 201
+    return response
+
+
 def not_found():
     response = jsonify({'error': 'not found'})
     response.status_code = 404
@@ -39,3 +45,4 @@ def info_not_found(e):
         response = jsonify({'error': 'post data error ,query info does not exist'})
         response.status_code = 404
         return response
+
