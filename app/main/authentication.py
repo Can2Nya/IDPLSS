@@ -3,9 +3,9 @@ from flask.ext.httpauth import HTTPBasicAuth
 from flask import jsonify, request, g, current_app, abort, flash
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from app.models import db, User, Permission, AnonymousUser, Serializer
-from app.main.errors import forbidden, unauthorized, bad_request
+from app.main.responses import forbidden, unauthorized, bad_request
 from app.main import main
-from manage import app
+from app.main.decorators import get_current_user
 auth = HTTPBasicAuth()
 
 
@@ -17,10 +17,8 @@ def verify_password(username_or_email_or_token, password):
     :param password:
     :return:boolean
     """
-    if not username_or_email_or_token:
-        pass
-        # TODO(Ddragon):需要对游客模式进行处理
-    if not password:
+    if password == '':
+        print ''
         user = User.verify_auth_token(username_or_email_or_token)
         return user is not None
     user = User.query.filter_by(user_name=username_or_email_or_token).first()
@@ -57,17 +55,17 @@ def is_confirmed():
 
 
 @main.route('/api/user/token', methods=['GET'])
+@get_current_user
+@auth.login_required
 def get_token():
     """
     用来获取用户临时的token,使用token来进行账号信息验证
     :return:token
     """
-    info = request.json
-    user_id = info['user_id']
-    user = User.query.get_or_404(user_id)
+    user = g.current_user
+    print user.user_name
     return jsonify({'token': user.generate_auth_token(
-        expiration=3600), 'expiration': 3600, 'user_id': user.id,
-        'user_avatar': user.avatar})
+        expiration=3600), 'expiration': 3600})
 
 
 @main.route('/api/user/confirm/<token>')
@@ -85,11 +83,11 @@ def confirm(token):
         user.confirmed = True
         db.session.add(user)
         db.session.commit()
-        app.logger.debug('user %s confirm successful' % user.user_name)
         return jsonify({'status': 'confirm successful'})
 
 
 @main.route('/api/user/qiniu-token', methods=['GET'])
+@auth.login_required
 def get_qiniu_token():
     """
     用来获取七牛云存储的上传token

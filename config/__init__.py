@@ -22,6 +22,8 @@ class Config(object):
     MAIL_USE_TLS = MAIL['MAIL_USE_TLS']
     MAIL_USERNAME = MAIL['MAIL_USERNAME']
     MAIL_PASSWORD = MAIL['MAIL_PASSWORD']
+    QINIU_ACCESS_KEY = QINIU['ACCESS_KEY']
+    QINIU_SECRET_KEY = QINIU['SECRET_KEY']
 
     @staticmethod
     def init_app(app):

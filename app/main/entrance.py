@@ -1,12 +1,12 @@
 # coding: utf-8
 from flask import jsonify, request
 from authentication import auth
-from errors import unauthorized, bad_request
+from responses import unauthorized, bad_request
 from app.main import main
 from app.models import User, Role
 from app import db
 from app.utils.mail import send_email
-from app.utils.responses import make_response
+from app.utils.responses import self_response
 
 
 @main.route('/api/user/register', methods=['POST'])
@@ -33,6 +33,6 @@ def register():
     db.session.commit()
     token = u.generate_confirm_token()
     send_email(u.email, '激活你的账号', 'confirm_info/confirm', User=u, token=token)
-    return make_response('register successful')
+    return self_response('register successful')
     # TODO(Ddragon):完善用户注册成功时候的返回信息
 

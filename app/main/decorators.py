@@ -1,9 +1,9 @@
 # coding: utf-8
 from functools import wraps
-from flask import request, jsonify, g
+from flask import request, jsonify, g, make_response, abort
 from app.models import Permission, User
-from errors import not_found, forbidden
-from manage import app
+from responses import not_found, forbidden
+from app.main.responses import info_not_found
 
 
 def permission_required(permissions):
@@ -35,3 +35,51 @@ def admin_required(f):
     :return:permission_required(administer)
     """
     return permission_required(Permission.ADMINISTER)(f)
+
+
+def allow_cross_domain(f):
+    """
+    用来允许跨域访问的装饰器
+    :param f:
+    :return:
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        request_info = make_response(f(*args, **kwargs))
+        request_info.headers['Access-Control_Allow-Origin'] = '*'
+        request_info.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE'
+        allow_headers = "Referer, Accept, Origin, User_Agent"
+        request_info.headers['Access-Control-Allow-Headers'] = allow_headers
+        return request_info
+    return decorated_function
+
+
+def get_current_user(f):
+    """
+    用来获取当前用户的装饰器,支持三种方式验证,token验证,账号名密码登录验证,邮箱和密码登录验证
+    :param f:
+    :return:
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth = request.authorization
+        if not auth:
+            return info_not_found
+        current_user = User.verify_auth_token(auth.username)   # verify token user
+        if current_user is None:
+            current_user = User.query.filter_by(user_name=auth.username).first()
+            auth_ok = False
+            if current_user is not None:
+                auth_ok = current_user.verify_password(auth.password)
+            else:
+                current_user = User.query.filter_by(email=auth.username).first()
+                if current_user is not None:
+                    auth_ok = current_user.verify_password(auth.password)
+            if not auth_ok:
+                return info_not_found
+        g.current_user = current_user
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+
