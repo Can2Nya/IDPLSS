@@ -2,8 +2,6 @@
 from functools import wraps
 from flask import request, jsonify, g, make_response, abort
 from app.models import Permission, User
-from responses import not_found, forbidden
-from app.main.responses import info_not_found
 
 
 def permission_required(permissions):
@@ -13,13 +11,15 @@ def permission_required(permissions):
     :param permissions:
     :return:decorator function
     """
+    from app.main.responses import not_found, forbidden
+
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             user_name = request.authorization.username
             user = User.query.filter_by(user_name=user_name).first()
             if user is None:
-                return not_found("user don't exist")
+                return not_found("user does not exist in database")
             print user.role.permissions
             if not user.can(permissions) or user.confirmed is False:
                 return forbidden("don't have permission or dose not confirm")
@@ -60,11 +60,13 @@ def get_current_user(f):
     :param f:
     :return:
     """
+    from app.main.responses import not_found, info_not_found
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth = request.authorization
         if not auth:
-            return info_not_found
+            return not_found('info not found')
         current_user = User.verify_auth_token(auth.username)   # verify token user
         if current_user is None:
             current_user = User.query.filter_by(user_name=auth.username).first()
@@ -80,6 +82,7 @@ def get_current_user(f):
         g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function
+
 
 
 

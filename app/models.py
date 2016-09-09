@@ -1,9 +1,9 @@
 # coding: utf-8
-from flask import current_app
+from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from datetime import datetime
-from app.utils.model_tools import set_model_attr
+from app.utils.model_tools import set_model_attr, user_info_transform
 from app import db
 
 
@@ -42,13 +42,24 @@ class Follow(db.Model):
 
     def followers_to_json(self):
         json_follow = {
+            "name": user_info_transform(self.follower_id, 'name'),
+            "user_url": url_for('main.show_user', uid=self.follower_id, _external=True),
+            "user_id": self.follower_id,
+            "user_avatar": user_info_transform(self.follower_id, 'avatar'),
+            "about_me": user_info_transform(self.follower_id, 'about_me')
         }
         return json_follow
 
     def following_to_json(self):
         json_following = {
+            "name": user_info_transform(self.followed_id, 'name'),
+            "user_url": url_for('main.show_user', uid=self.followed_id, _external=True),
+            "user_id": self.followed_id,
+            "user_avatar": user_info_transform(self.followed_id, 'avatar'),
+            "about_me": user_info_transform(self.followed_id, 'about_me')
         }
         return json_following
+
 
 class Role(db.Model):
     """

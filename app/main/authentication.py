@@ -5,7 +5,7 @@ from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from app.models import db, User, Permission, AnonymousUser, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
 from app.main import main
-from app.main.decorators import get_current_user
+from app.main.decorators import get_current_user, allow_cross_domain
 auth = HTTPBasicAuth()
 
 
@@ -30,6 +30,7 @@ def verify_password(username_or_email_or_token, password):
 
 
 @auth.error_handler
+@allow_cross_domain
 def auth_error():
     """
     捕获未授权验证的错误

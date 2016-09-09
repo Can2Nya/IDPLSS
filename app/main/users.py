@@ -3,7 +3,7 @@ from flask import jsonify, request, g
 from app.main import main
 from app.models import db, User, Follow, Role, Permission
 from app.main.authentication import auth
-from app.main.decorators import permission_required, get_current_user
+from app.main.decorators import permission_required, get_current_user, allow_cross_domain
 from app.utils.responses import self_response
 from app.main.responses import bad_request, update_status
 
@@ -11,6 +11,7 @@ from app.main.responses import bad_request, update_status
 @main.route('/api/user/info', methods=['GET', 'PUT'])
 @auth.login_required
 @get_current_user
+@allow_cross_domain
 def user_info():
     if request.method == 'GET':
         user = g.current_user
@@ -27,9 +28,18 @@ def user_info():
         return self_response('incorrect method')
 
 
+@main.route('/api/user/zone/<int:uid>')
+@auth.login_required
+@allow_cross_domain
+def show_user(uid):
+    user = User.query.get_or_404(uid)
+    return jsonify(user.to_json())
+
+
 @main.route('/api/user/is_following', methods=['POST'])
 @get_current_user
 @auth.login_required
+@allow_cross_domain
 def is_following():
     """
     判断用户是否已经关注另一个用户
@@ -50,6 +60,7 @@ def is_following():
 @main.route('/api/user/is_followed_by', methods=['POST'])
 @get_current_user
 @auth.login_required
+@allow_cross_domain
 def is_followed_by():
     """
     判断一个用户是否为另一个用户的粉丝
@@ -70,6 +81,7 @@ def is_followed_by():
 @auth.login_required
 @get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
+@allow_cross_domain
 def follow():
     info = request.json
     follow_id = info['follow_id']
@@ -85,6 +97,7 @@ def follow():
 @auth.login_required
 @get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
+@allow_cross_domain
 def unfollow():
     info = request.json
     unfollow_id = info['unfollow_id']
@@ -96,22 +109,22 @@ def unfollow():
     return self_response('unfollow successfully')
 
 
-@main.route('/api/user/followers')
+@main.route('/api/user/followers/<int:uid>')
 @auth.login_required
-@get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
-def followers():
-    user = g.current_user
+@allow_cross_domain
+def followers(uid):
+    user = User.query.get_or_404(uid)
     user_followers = user.followers.all()
     return jsonify({"followers": [follower.followers_to_json() for follower in user_followers]})
 
 
-@main.route('/api/user/following')
+@main.route('/api/user/following/<int:uid>')
 @auth.login_required
-@get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
-def following():
-    user = g.current_user
+@allow_cross_domain
+def following(uid):
+    user = User.query.get_or_404(uid)
     user_following = user.followings.all()
     return jsonify({"following": [followed.following_to_json() for followed in user_following]})
 
@@ -119,6 +132,7 @@ def following():
 @main.route('/api/user/posts')
 @auth.login_required
 @get_current_user
+@allow_cross_domain
 def user_posts():
     user = g.current_user
     user_posts = user.posts.all()
@@ -126,6 +140,7 @@ def user_posts():
 
 @main.route('/api/user/comments')
 @auth.login_required
+@allow_cross_domain
 def user_comments():
     user = g.current_user
     user_comments = user.comments.all()
