@@ -9,7 +9,7 @@ from app.utils.mail import send_email
 from app.utils.responses import self_response
 
 
-@main.route('/api/user/register', methods=['POST'])
+@main.route('/api/user/register', methods=['POST', 'OPTIONS'])
 def register():
     """
     功能:用户注册,注册成功发送激活邮件

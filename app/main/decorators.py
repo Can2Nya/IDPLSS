@@ -1,6 +1,6 @@
 # coding: utf-8
 from functools import wraps
-from flask import request, jsonify, g, make_response, abort
+from flask import request, jsonify, g, make_response, abort, Response
 from app.models import Permission, User
 
 
@@ -46,10 +46,12 @@ def allow_cross_domain(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         request_info = make_response(f(*args, **kwargs))
-        request_info.headers['Access-Control_Allow-Origin'] = '*'
-        request_info.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE'
-        allow_headers = "Referer, Accept, Origin, User_Agent"
+        request_info.headers['Access-Control-Allow-Origin'] = '*'
+        request_info.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+        allow_headers = "X-Requested-With, Content-Type, Accept"
+        max_age = 1728000
         request_info.headers['Access-Control-Allow-Headers'] = allow_headers
+        request_info.headers['Access-Control-Max-Age'] = max_age
         return request_info
     return decorated_function
 

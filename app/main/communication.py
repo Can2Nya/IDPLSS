@@ -7,7 +7,7 @@ from app.main.decorators import permission_required
 from app.models import db, User, Follow, Post, Role
 
 
-@main.route('/posts')
+@main.route('/posts', )
 def posts():
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
