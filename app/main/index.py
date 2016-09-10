@@ -8,7 +8,7 @@ from app.utils.responses import self_response
 from app.main.responses import test_response
 
 
-@main.route('/index', methods=['GET'])
+@main.route('/index', methods=['GET', 'OPTIONS'])
 @allow_cross_domain
 def index():
     """
@@ -19,13 +19,13 @@ def index():
     return test_response('index page info')
 
 
-@main.route('/api/test')
+@main.route('/api/test', methods=['GET', 'OPTIONS'])
 @allow_cross_domain
 def test():
     return test_response('test page info')
 
 
-@main.route('/api/need-login')
+@main.route('/api/need-login', methods=['GET', 'OPTIONS'])
 @auth.login_required
 @allow_cross_domain
 def need_login():

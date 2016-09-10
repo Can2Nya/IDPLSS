@@ -8,7 +8,7 @@ from app.utils.responses import self_response
 from app.main.responses import bad_request, update_status
 
 
-@main.route('/api/user/info', methods=['GET', 'PUT'])
+@main.route('/api/user/info', methods=['GET', 'PUT', 'OPTIONS'])
 @auth.login_required
 @get_current_user
 @allow_cross_domain
@@ -28,7 +28,7 @@ def user_info():
         return self_response('incorrect method')
 
 
-@main.route('/api/user/zone/<int:uid>')
+@main.route('/api/user/zone/<int:uid>', methods=['GET', 'OPTIONS'])
 @auth.login_required
 @allow_cross_domain
 def show_user(uid):
@@ -36,7 +36,7 @@ def show_user(uid):
     return jsonify(user.to_json())
 
 
-@main.route('/api/user/is_following', methods=['POST'])
+@main.route('/api/user/is_following', methods=['POST', 'OPTIONS'])
 @get_current_user
 @auth.login_required
 @allow_cross_domain
@@ -57,7 +57,7 @@ def is_following():
     # TODO(Dddragon): 判断关注与被关注逻辑是不是有问题
 
 
-@main.route('/api/user/is_followed_by', methods=['POST'])
+@main.route('/api/user/is_followed_by', methods=['POST', 'OPTIONS'])
 @get_current_user
 @auth.login_required
 @allow_cross_domain
@@ -77,7 +77,7 @@ def is_followed_by():
         return self_response(False)
 
 
-@main.route('/api/user/follow', methods=['POST'])
+@main.route('/api/user/follow', methods=['POST', 'OPTIONS'])
 @auth.login_required
 @get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
@@ -93,7 +93,7 @@ def follow():
     return self_response('follow successfully')
 
 
-@main.route('/api/user/unfollow', methods=['POST'])
+@main.route('/api/user/unfollow', methods=['POST', 'OPTIONS'])
 @auth.login_required
 @get_current_user
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
@@ -109,7 +109,7 @@ def unfollow():
     return self_response('unfollow successfully')
 
 
-@main.route('/api/user/followers/<int:uid>')
+@main.route('/api/user/followers/<int:uid>', methods=['POST', 'OPTIONS'])
 @auth.login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 @allow_cross_domain
@@ -119,7 +119,7 @@ def followers(uid):
     return jsonify({"followers": [follower.followers_to_json() for follower in user_followers]})
 
 
-@main.route('/api/user/following/<int:uid>')
+@main.route('/api/user/following/<int:uid>', methods=['GET', 'OPTIONS'])
 @auth.login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 @allow_cross_domain

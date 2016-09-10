@@ -40,7 +40,7 @@ def auth_error():
     # TODO(Ddragon):修改unauthorized的错误描述
 
 
-@main.route('/api/user/is-confirm', methods=['POST'])
+@main.route('/api/user/is-confirm', methods=['POST', 'OPTIONS'])
 def is_confirmed():
     """
     检测注册用户是否已经通过token激活,激活才能正常使用服务
@@ -55,7 +55,7 @@ def is_confirmed():
         return jsonify({'status': user.confirmed})
 
 
-@main.route('/api/user/token', methods=['GET'])
+@main.route('/api/user/token', methods=['GET', 'OPTIONS'])
 @get_current_user
 @auth.login_required
 def get_token():
@@ -69,7 +69,7 @@ def get_token():
         expiration=3600), 'expiration': 3600})
 
 
-@main.route('/api/user/confirm/<token>')
+@main.route('/api/user/confirm/<token>', methods=['GET', 'OPTIONS'])
 def confirm(token):
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
@@ -87,7 +87,7 @@ def confirm(token):
         return jsonify({'status': 'confirm successful'})
 
 
-@main.route('/api/user/qiniu-token', methods=['GET'])
+@main.route('/api/user/qiniu-token', methods=['GET', 'OPTIONS'])
 @auth.login_required
 def get_qiniu_token():
     """
