@@ -5,7 +5,8 @@ const errorMessages = (res) => `${res.status} ${res.statusText}`;
 
 function check401(res) {
   if (res.status === 401) {
-    location.href = '/401';
+    //location.href = '/401';
+    return Promise.reject(errorMessages(res));
   }
   return res;
 }
@@ -22,8 +23,8 @@ function jsonParse(res) {
 }
 
 function errorMessageParse(res) {
-  const { success, message } = res.jsonResult;
-  if (!success) {
+  const { error, message } = res.jsonResult;
+  if (error) {
     return Promise.reject(message);
   }
   return res;
@@ -35,12 +36,12 @@ function xFetch(url, options) {
     ...opts.headers,
     authorization: cookie.get('authorization') || '',
   };
-
+  console.log(opts)
   return fetch(url, opts)
-    .then(check401)
-    .then(check404)
     .then(jsonParse)
-    .then(errorMessageParse);
+    .then(errorMessageParse)
+    .then(check401)
+    .then(check404);
 }
 
 export default xFetch;

@@ -1,25 +1,35 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
+import cookie from 'js-cookie';
+import base64 from 'base-64';
+
 import { Popover, Modal, Form, Input } from 'antd';
+import QueueAnim from 'rc-queue-anim';//动画效果
 
 import styles from './User.less';
 
 let User = ({ user, dispatch, textStyle, form }) => {
-	const { list, modalState, isSubmit } = user;
+	const { list, modalState, loginFormisSubmit } = user;
 	
 	const { getFieldProps } = form;
 	const handleModelToggle = () =>{
 		dispatch({
-			type: 'user/modal/toggle',
+			type: 'user/login/modal/toggle',
 			modalState: modalState,
 		})
 	}
-	const handleLoginSubmit = ()=>{
-		console.log(form.getFieldsValue());
+	const handleLogin = ()=>{
+		const data = form.getFieldsValue();
+		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
 		dispatch({
-			type: 'user/modal/submit',
-			isSubmit: isSubmit,
+			type: 'user/login',
+		})
+	}
+	const handleLogout = ()=>{
+		cookie.remove('authorization')
+		dispatch({
+			type: 'user/logout',
 		})
 	}
 	const renderUser = () =>{
@@ -36,27 +46,39 @@ let User = ({ user, dispatch, textStyle, form }) => {
 				<div className={styles.item}>name</div>
 				<div className={styles.item}>个人中心</div>
 				<div className={styles.item}>设置</div>
-				<div className={styles.item} style={{'border':0}}>退出</div>
+				<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 				</div>
 			);
 		}
 
 		if(list.length <= 0) return(
 			<div className={styles.text}>
-			<span className={styles.item} style={textStyle}>注册</span>
+			<Link to='/register/'><span className={styles.item} style={textStyle}>注册</span></Link>
 			<span className={styles.item} style={textStyle} onClick={handleModelToggle.bind(this)} >登录</span>
 
-			<Modal title='登录' visible={modalState} confirmLoading={isSubmit} 
+			<Modal title='登录' visible={modalState} confirmLoading={loginFormisSubmit} 
 				   onCancel={handleModelToggle.bind(this)}
-				   onOk={handleLoginSubmit.bind(this)}>
+				   onOk={handleLogin.bind(this)}>
 
 				<Form horizontal>
-					<Form.Item label="用户名">
-						<Input {...getFieldProps('username',{})} type='text' />
-					</Form.Item>
-					<Form.Item label="密码">
-						<Input {...getFieldProps('password',{})} type='password' />
-					</Form.Item>
+					<QueueAnim 
+					animConfig={[
+		            { opacity: [1, 0], translateY: [0, 50] },
+		            { opacity: [1, 0], translateY: [50, 0] }
+		          ]}
+		          	delay={100}
+		          >
+
+					{modalState?[
+						<Form.Item label="用户名" key='1' >
+							<Input {...getFieldProps('username',{})} type='text' />
+						</Form.Item>,//这个逗号非常重要！！！
+						<Form.Item label="密码" key='2' >
+							<Input {...getFieldProps('password',{})} type='password' />
+						</Form.Item>,
+					] : null}
+
+					</QueueAnim>
 				</Form>
 			</Modal>
 			</div>

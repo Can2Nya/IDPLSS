@@ -1,14 +1,11 @@
 import React, { PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link, Redirect } from 'react-router';
+
 import App from '../components/App';
 import Index from '../pages/Index'
-import VideoClasses from '../pages/Classes/VideoClasses'
-import TextClasses from '../pages/Classes/TextClasses'
 import Category from '../pages/Category';
-
 import Detail from '../pages/Detail';
-//import List from '../pages/Detail/List';
-
+import Register from '../pages/Register';
 import User from '../pages/User';
 import NotFound from '../pages/NotFound';
 
@@ -26,6 +23,8 @@ const Routes = ({ history }) =>
     <Route path="/detail/" component={Detail}>
     </Route>
     <Route path="/user/" component={User}>
+    </Route>
+    <Route path="/register/" component={Register}>
     </Route>
     {/*<Route path="/actived" component={App} />*/}
     {/*<Route path="/completed" component={App} />*/}

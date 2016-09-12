@@ -29,7 +29,7 @@ export default function* () {
   yield fork(watchTodosGet);
 
   // Load todos.
-  yield put({
-    type: 'todos/get',
-  });
+  //yield put({
+    //type: 'todos/get',
+  //});
 }

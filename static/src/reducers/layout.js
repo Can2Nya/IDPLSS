@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions';
+/*import { handleActions } from 'redux-actions';
 import { combineReducer } from 'redux';
 
 const layout = handleActions({
@@ -33,4 +33,4 @@ const layout = handleActions({
 	layoutId: 0,
 });
 
-export default layout;
+export default layout;*/
