@@ -107,6 +107,27 @@ class Role(db.Model):
         return '<Role %r>' % self.role_name
 
 
+collectionPosts = db.Table('collectionPosts',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('post_id', db.Integer, db.ForeignKey('posts.id')),
+    db.Column('timestamp', db.DateTime, default=datetime.utcnow)
+    )
+
+
+collectionVideos = db.Table('collectionVideo',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('video_id', db.Integer, db.ForeignKey('videos.id')),
+    db.Column('timestamp', db.DateTime, default=datetime.utcnow)
+    )
+
+
+collectionTextResource = db.Table('collectionTextResource',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('text_resource_id', db.Integer, db.ForeignKey('text_resources.id')),
+    db.Column('timestamp', db.DateTime, default=datetime.utcnow)
+    )
+
+
 class User(db.Model):
     """
     用户信息表
@@ -133,7 +154,17 @@ class User(db.Model):
     followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref('followed',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    comments = db.relationship('PostComment', backref='author', lazy='dynamic')
+    post_comments = db.relationship('PostComment', backref='author', lazy='dynamic')
+    course_video = db.relationship('CourseVideo', backref='author', lazy='dynamic')
+    video_comments = db.relationship('VideoComment', backref='author', lazy='dynamic')
+    text_resource = db.relationship('TextResource', backref='author', lazy='dynamic')
+    text_resource_comments = db.relationship('TextResourceComment', backref='author', lazy='dynamic')
+    collection_posts = db.relationship('Post', secondary=collectionPosts,
+                                       backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
+    collection_videos = db.relationship('CourseVideo', secondary=collectionVideos,
+                                        backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
+    collection_text_resource = db.relationship('TextResource', secondary=collectionTextResource,
+                                               backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -268,6 +299,12 @@ class User(db.Model):
         """
         return self.followers.filter_by(follower_id=user.id).first() is not None
 
+    def collect(self, post):
+        pass
+
+    def uncollect(self, post):
+        pass
+
 
 class AnonymousUser(object):
     def __init__(self):
@@ -285,10 +322,10 @@ class AnonymousUser(object):
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
-    post_title = db.Column(db.String(64))
+    title = db.Column(db.String(64))
     category = db.Column(db.Integer, default=0)
     # TODO(ddragon): 添加问题的分类
-    post_body = db.Column(db.Text)
+    body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     images = db.Column(db.String(512))
     show = db.Column(db.Boolean, default=True)
@@ -300,10 +337,10 @@ class Post(db.Model):
 
     def to_json(self):
         json_post = {
-            'post_id': self.id,
-            'post_title': self.post_title,
-            'post_category': self.category,
-            'post_body': self.post_body,
+            'id': self.id,
+            'title': self.title,
+            'category': self.category,
+            'body': self.body,
             'timestamp': self.timestamp,
             'images': self.images,
             'show': self.show,
@@ -311,6 +348,15 @@ class Post(db.Model):
             'comments_count': self.comments.count()
         }
         return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        category = json_post.get('category')
+        author_id = json_post.get('author_id')
+        title = json_post.get('title')
+        images = json_post.get('images')
+        return Post(title=title, body=body, author_id=author_id, images=images, category=category)
 
 
 class PostComment(db.Model):
@@ -336,18 +382,44 @@ class PostComment(db.Model):
         }
         return json_comment
 
+    @staticmethod
+    def from_json(json_post_comment):
+        body = json_post_comment.get('body')
+        author_id = json_post_comment.get('author_id')
+        post_id = json_post_comment.get('post_id')
+        return PostComment(body=body, author_id=author_id, post_id=post_id)
+
 
 class CourseVideo(db.Model):
     __tablename__ = 'videos'
     id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(128))
+    course_name = db.Column(db.String(128))
     description = db.Column(db.Text)
     source_url = db.Column(db.String(256))
+    show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('VideoComment', backref='videos', lazy='dynamic')
 
     def __repr__(self):
         return '<CourseVideo name %r>' % self.file_name
+
+    def to_json(self):
+        json_course_video = {
+            'id': self.id,
+            'course_name': self.course_name,
+            'description': self.description,
+            'source_url': self.source_url,
+            'show': self.show,
+            'timestamp': self.timestamp,
+            'author_id': self.author_id,
+        }
+        return json_course_video
+
+    @staticmethod
+    def from_json(json_course_video):
+
+        return CourseVideo()
 
 
 class VideoComment(db.Model):
@@ -356,7 +428,7 @@ class VideoComment(db.Model):
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    show = db.Column(db.Boolean, default=False)
+    show = db.Column(db.Boolean, default=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.id'))
 
     def __repr__(self):
@@ -373,18 +445,42 @@ class VideoComment(db.Model):
         }
         return json_comment
 
+    @staticmethod
+    def from_json(json_video_comment):
+
+        return VideoComment()
+
 
 class TextResource(db.Model):
     __tablename__ = 'text_resources'
     id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(128))
+    resource_name = db.Column(db.String(128))
     description = db.Column(db.Text)
     source_url = db.Column(db.String(256))
+    show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('TextResourceComment', backref='text_resources', lazy='dynamic')
 
     def __reper__(self):
         return '<TextResource file_name %r>' % self.file_name
+
+    def to_json(self):
+        json_text_resource = {
+            "id": self.id,
+            "resource_name": self.resource_name,
+            "description": self.description,
+            "source_url": self.source_url,
+            "show": self.show,
+            "timestamp": self.timestamp,
+            "author_id": self.author_id,
+        }
+        return json_text_resource
+
+    @staticmethod
+    def from_json(json_text_resource):
+
+        return TextResource
 
 
 class TextResourceComment(db.Model):
@@ -393,11 +489,27 @@ class TextResourceComment(db.Model):
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    show = db.Column(db.Boolean, default=False)
+    show = db.Column(db.Boolean, default=True)
     text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resources.id'))
 
     def __repr__(self):
         return '<TextResourceComment id %r>' % self.id
+
+    def to_json(self):
+        json_text_resource_comment = {
+            "id": self.id,
+            "body": self.body,
+            "author_id": self.author_id,
+            "timestamp": self.timestamp,
+            "show": self.show,
+            "text_resource_id": self.text_resource_id
+        }
+        return json_text_resource_comment
+
+    @staticmethod
+    def from_json(json_resource_comment):
+
+        return TextResourceComment()
 
 
 

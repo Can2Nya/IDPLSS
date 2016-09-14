@@ -62,13 +62,13 @@ def get_current_user(f):
     :param f:
     :return:
     """
-    from app.main.responses import not_found, info_not_found
+    from app.main.responses import not_found
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth = request.authorization
         if not auth:
-            return not_found('info not found')
+            return not_found()
         current_user = User.verify_auth_token(auth.username)   # verify token user
         if current_user is None:
             current_user = User.query.filter_by(user_name=auth.username).first()
@@ -80,7 +80,7 @@ def get_current_user(f):
                 if current_user is not None:
                     auth_ok = current_user.verify_password(auth.password)
             if not auth_ok:
-                return info_not_found
+                return not_found()
         g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function

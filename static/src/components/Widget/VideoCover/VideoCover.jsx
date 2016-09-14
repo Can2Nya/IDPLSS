@@ -7,8 +7,11 @@ import styles from './VideoCover.less';
 
 const VideoCover = ({ type }) => {
 	const coverCls = () =>{
-		if(type == 'small') return styles.small;
-		if(type == 'big') return styles.big;
+		/*if(type == 'small') return styles.small;
+		if(type == 'big') return styles.big;*/
+		return classNames({
+			[styles[type]]:true,
+		})
 	};
 	return (
 		<div className={coverCls()}>

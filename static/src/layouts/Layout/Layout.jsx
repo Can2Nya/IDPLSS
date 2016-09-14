@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
+
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Row } from 'antd';
 import config from '../../config/config.js';
@@ -12,18 +12,38 @@ import TopNav from '../../components/Navs/TopNav/TopNav';
 import Footer from '../../components/Footer/Footer';
 
 
-const Layout = ({ layout, dispatch, children }) => {
-  
-  const handleLayout = () => {
-    dispatch({
-      type: 'layout/replace',
-    });
-  };
+const Layout = ({ children, location }) => {
+
+  const layout = [{
+      id: 1,
+      pathname: ['/','index'],
+    },
+    {
+      id: 2,
+      pathname: ['category','detail','search','bbs','register']
+    },
+    {
+      id: 3,
+      pathname: ['play','user']
+    },]
+
+  const layoutId = () =>{
+      let newLayoutid;
+      layout.map(layoutList => {
+        layoutList.pathname.map(layoutPath => {
+            if(location.pathname.search(layoutPath) != -1 && location.pathname.search(layoutPath) != 0) {
+              newLayoutid = layoutList.id;
+              console.log('change layout'+newLayoutid+layoutPath);
+            }
+          }
+        );
+      });
+      return newLayoutid;
+    }
 
   const renderLayout = () => {
-    const { layoutId } = layout;
 
-    switch(layoutId){
+    switch(layoutId()){
       case 1: return(
         <div className={styles.contain}>
           <Banner config={config} />
@@ -68,25 +88,5 @@ Layout.propTypes = {
   //children: PropTypes.element.isRequired,
 };
 
-function filter(layout,pathname){
-  let newLayoutid;
-  layout.list.map(layoutList => {
-    layoutList.pathname.map(layoutPath => {
-        if(pathname.search(layoutPath) != -1 && pathname.search(layoutPath) != 0) {
-          newLayoutid = layoutList.id;
-          console.log('change layout'+newLayoutid+layoutPath);
-        }
-      }
-    );
-  });
-  
-  return { ...layout, layoutId: newLayoutid };
-}
 
-function mapStateToProp({layout},{location}){
-  return {
-    layout: filter(layout,location.pathname)
-  };
-}
-
-export default connect(mapStateToProp)(Layout);
+export default Layout;

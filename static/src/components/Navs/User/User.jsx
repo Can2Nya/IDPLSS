@@ -1,17 +1,95 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Popover } from 'antd';
+import { connect } from 'react-redux';
+import cookie from 'js-cookie';
+import base64 from 'base-64';
+
+import { Popover, Modal, Form, Input } from 'antd';
+import QueueAnim from 'rc-queue-anim';//动画效果
 
 import styles from './User.less';
 
-const User = () => {
-	return (
-				<Popover 
-								 placement="bottomRight"
-				>
-					<div className={styles.userImg}></div>
-				</Popover>
-		);
+let User = ({ user, dispatch, textStyle, form }) => {
+	const { list, modalState, loginFormisSubmit } = user;
+	
+	const { getFieldProps } = form;
+	const handleModelToggle = () =>{
+		dispatch({
+			type: 'user/login/modal/toggle',
+			modalState: modalState,
+		})
+	}
+	const handleLogin = ()=>{
+		const data = form.getFieldsValue();
+		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
+		dispatch({
+			type: 'user/login',
+		})
+	}
+	const handleLogout = ()=>{
+		cookie.remove('authorization')
+		dispatch({
+			type: 'user/logout',
+		})
+	}
+	const renderUser = () =>{
+		const renderList =() =>{
+			return(
+				<div className={styles.list}>
+					{/**list.map((item,index) => {
+						if(index == list.length-1) var one={'border':0};
+						return(
+						<div className={styles.item} key={index} style={one}>
+						{item}
+						</div>)
+					})*/}
+				<div className={styles.item}>name</div>
+				<div className={styles.item}>个人中心</div>
+				<div className={styles.item}>设置</div>
+				<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
+				</div>
+			);
+		}
+
+		if(list.length <= 0) return(
+			<div className={styles.text}>
+			<Link to='/register/'><span className={styles.item} style={textStyle}>注册</span></Link>
+			<span className={styles.item} style={textStyle} onClick={handleModelToggle.bind(this)} >登录</span>
+
+			<Modal title='登录' visible={modalState} confirmLoading={loginFormisSubmit} 
+				   onCancel={handleModelToggle.bind(this)}
+				   onOk={handleLogin.bind(this)}>
+
+				<Form horizontal>
+					<QueueAnim 
+					animConfig={[
+		            { opacity: [1, 0], translateY: [0, 50] },
+		            { opacity: [1, 0], translateY: [50, 0] }
+		          ]}
+		          	delay={100}
+		          >
+
+					{modalState?[
+						<Form.Item label="用户名" key='1' >
+							<Input {...getFieldProps('username',{})} type='text' />
+						</Form.Item>,//这个逗号非常重要！！！
+						<Form.Item label="密码" key='2' >
+							<Input {...getFieldProps('password',{})} type='password' />
+						</Form.Item>,
+					] : null}
+
+					</QueueAnim>
+				</Form>
+			</Modal>
+			</div>
+			);
+		return (
+			<Popover placement="bottomRight" content={renderList()} overlayStyle={{padding:0}}>
+				<div className={styles.userImg}></div>
+			</Popover>
+			);
+	}
+	return renderUser();
 }
 
 User.propTypes = {  
@@ -22,4 +100,14 @@ User.propTypes = {
   ]),*/
 };
 
-export default User;
+User = Form.create()(User);//创建表单方法
+
+function mapStateToProps({ user }){
+	return {
+		user: user,
+	};
+};
+
+
+
+export default connect(mapStateToProps)(User);

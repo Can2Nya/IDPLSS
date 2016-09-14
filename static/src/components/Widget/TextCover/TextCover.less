@@ -1,33 +1,64 @@
 @import (reference) '../../../config/config.less';
 
-.block{
-	width: 200px;
-	height: 219px;
-	padding: 15px;
+
+.big{
+	.word{
+		background-image: url("@{QINIU-URL}/images/widget/word.png");
+		.block;
+	}
+	.ppt{
+		background-image: url("@{QINIU-URL}/images/widget/ppt.png");
+		.block;
+	}
+	.pdf{
+		background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.block{
+		width: 200px;
+		height: 219px;
+		padding: 15px;
+		background-repeat: no-repeat;
+	}
+	.title{
+		font-size: 20px;
+		color: @white;
+	}
+	.subtitle{
+		font-size: 14px;
+		color: @gray;
+		text-overflow:ellipsis;
+		white-space:nowrap;
+		overflow:hidden;
+	}
+	.position{
+		margin-top: 60%;
+	}
 }
-.title{
-	font-size: 20px;
-	color: @white;
-}
-.subtitle{
-	font-size: 14px;
-	color: @gray;
-	text-overflow:ellipsis;
-	white-space:nowrap;
-	overflow:hidden;
-}
-.position{
-	margin-top: 60%;
-}
-.word{
-	background-image: url("@{QINIU-URL}/images/widget/word.png");
-	.block;
-}
-.ppt{
-	background-image: url("@{QINIU-URL}/images/widget/ppt.png");
-	.block;
-}
-.pdf{
-	background-image: url("@{QINIU-URL}/images/widget/pdf.png");
-	.block;
+
+.small{
+	.word{
+		background-image: url("@{QINIU-URL}/images/widget/s/word.png");
+		.block;
+	}
+	.ppt{
+		background-image: url("@{QINIU-URL}/images/widget/s/ppt.png");
+		.block;
+	}
+	.pdf{
+		background-image: url("@{QINIU-URL}/images/widget/s/pdf.png");
+		.block;
+	}
+	.block{
+		width: 100%;
+		padding-left: 25px;
+		background-repeat: no-repeat;
+	}
+	.title{
+		font-size: 18px;
+		color: @gray;
+		text-overflow:ellipsis;
+		white-space:nowrap;
+		overflow:hidden;
+	}
 }

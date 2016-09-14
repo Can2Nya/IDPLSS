@@ -1,7 +1,7 @@
 # coding: utf-8
-from flask import jsonify, request, g
+from flask import jsonify, request, g, make_response
 from app.main import main
-from app.models import db, User, Follow, Role, Permission
+from app.models import db, User, Follow, Role, Permission, Post, PostComment, CourseVideo, VideoComment, TextResource, TextResourceComment
 from app.main.authentication import auth
 from app.main.decorators import permission_required, get_current_user, allow_cross_domain
 from app.utils.responses import self_response
@@ -18,7 +18,7 @@ def user_info():
         if user is None:
             return self_response('user does not exist')
         else:
-            return jsonify(user.to_json())
+            return make_response(jsonify(user.to_json()))
     elif request.method == 'PUT':
         user = User.from_json(g.current_user, request.json)
         db.session.add(user)
@@ -129,19 +129,61 @@ def following(uid):
     return jsonify({"following": [followed.following_to_json() for followed in user_following]})
 
 
-@main.route('/api/user/posts')
+@main.route('/api/user/posts', methods=['GET', 'OPTIONS'])
 @auth.login_required
 @get_current_user
 @allow_cross_domain
 def user_posts():
     user = g.current_user
-    user_posts = user.posts.all()
+    posts = user.posts.all()
+    return jsonify({"posts": [post.to_json() for post in posts]})
 
 
-@main.route('/api/user/comments')
+@main.route('/api/user/posts-comments', methods=['GET', 'OPTIONS'])
 @auth.login_required
 @allow_cross_domain
-def user_comments():
+@get_current_user
+def posts_comments():
     user = g.current_user
-    user_comments = user.comments.all()
+    post_comments = user.post_comments.all()
+    return jsonify({"post_comments", [comment.to_json() for comment in post_comments]})
 
+
+@main.route('/api/user/course-video', methods=['GET', 'OPTIONS'])
+@auth.login_required
+@get_current_user
+@allow_cross_domain
+def course_video():
+    user = g.current_user
+    all_video = user.course_video.all()
+    return jsonify({"course_video": [video.to_json() for video in all_video]})
+
+
+@main.route('/api/user/video-comments', methods=['GET', 'OPTIONS'])
+@auth.login_required
+@allow_cross_domain
+@get_current_user
+def video_comments():
+    user = g.current_user
+    comments = user.video_comments.all()
+    return jsonify({"video_comments", [comment.to_json() for comment in comments]})
+
+
+@main.route('/api/user/text-resources', methods=['GET', 'OPTIONS'])
+@auth.login_required
+@allow_cross_domain
+@get_current_user
+def text_resources():
+    user = g.current_user
+    resources = user.text_resource.all()
+    return jsonify({'text_resources', [text_resource.to_json() for text_resource in resources]})
+
+
+@main.route('/api/user/text-resource-comments', methods=['GET', 'OPTIONS'])
+@auth.login_required
+@allow_cross_domain
+@get_current_user
+def text_resource_comments():
+    user = g.current_user
+    resource_comments = user.text_resource_comments.all()
+    return jsonify({"text_resource_comments", [comment.to_json() for comment in resource_comments]})
