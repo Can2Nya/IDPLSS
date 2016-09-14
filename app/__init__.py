@@ -3,12 +3,14 @@ from flask import Flask
 from flask.ext.moment import Moment
 from flask.ext.mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from config import configs, ENV
 
 
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+cors = CORS()
 
 
 def create_app():
@@ -19,6 +21,7 @@ def create_app():
     app = Flask(__name__, static_folder="../static/dist")
     app.config.from_object(configs[ENV])
     configs[ENV].init_app(app)
+    cors.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)

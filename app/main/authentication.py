@@ -2,7 +2,7 @@
 from flask.ext.httpauth import HTTPBasicAuth
 from flask import jsonify, request, g, current_app, abort, flash
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
-from app.models import db, User, Permission, AnonymousUser, Serializer
+from app.models import db, User, Permission, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
 from app.main import main
 from app.main.decorators import get_current_user, allow_cross_domain
