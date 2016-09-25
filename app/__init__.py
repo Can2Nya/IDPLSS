@@ -1,8 +1,8 @@
 # coding: utf-8
 from flask import Flask
-from flask.ext.moment import Moment
-from flask.ext.mail import Mail
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_moment import Moment
+from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import configs, ENV
 

@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 from flask import jsonify, request, g, current_app, abort, flash
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from app.models import db, User, Permission, Serializer
