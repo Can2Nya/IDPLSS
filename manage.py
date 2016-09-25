@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask.ext.script import Manager, Shell
+from flask_script import Manager, Shell
 from app import create_app, db
 from app.models import User, Role, Follow, Post, PostComment, CourseVideo, VideoComment, TextResource, TextResourceComment
 

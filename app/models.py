@@ -299,11 +299,53 @@ class User(db.Model):
         """
         return self.followers.filter_by(follower_id=user.id).first() is not None
 
-    def collect(self, post):
-        pass
+    def collect_post(self, post):
+        if not self.is_collecting_post(post):
+            self.collection_posts.append(post)
+            db.session.commit()
 
-    def uncollect(self, post):
-        pass
+    def uncollect_post(self, post):
+        if self.is_collecting_post(post):
+            self.collection_posts.remove(post)
+            db.session.commit()
+
+    def is_collecting_post(self, post):
+        if post in self.collection_posts.all():
+            return True
+        else:
+            return False
+
+    def is_collecting_video(self, video):
+        if video in self.collection_videos.all():
+            return True
+        else:
+            return False
+
+    def collect_video(self, video):
+        if not self.is_collecting_video(video):
+            self.collection_videos.append(video)
+            db.session.commit()
+
+    def uncollect_video(self, video):
+        if self.is_collecting_video(video):
+            self.collection_videos.remove(video)
+            db.session.commit()
+
+    def is_collecting_text_resouurce(self, text_resource):
+        if text_resource in self.collection_text_resource.all():
+            return True
+        else:
+            return False
+
+    def collect_text_resouce(self, text_resource):
+        if not self.is_collecting_text_resouurce(text_resource):
+            self.collection_text_resource.append(text_resource)
+            db.session.commit()
+
+    def uncollect_text_resource(self, text_resource):
+        if self.is_collecting_text_resouurce((text_resource)):
+            self.collection_text_resource.remove(text_resource)
+            db.session.commit()
 
 
 class AnonymousUser(object):
@@ -323,8 +365,7 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
-    category = db.Column(db.Integer, default=0)
-    # TODO(ddragon): 添加问题的分类
+    post_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     images = db.Column(db.String(512))
@@ -333,13 +374,13 @@ class Post(db.Model):
     comments = db.relationship('PostComment', backref='post', lazy='dynamic')
 
     def __repr__(self):
-        return '< Post_title %r>' % self.post_title
+        return '< Post_title %r>' % self.title
 
     def to_json(self):
         json_post = {
             'id': self.id,
             'title': self.title,
-            'category': self.category,
+            'post_category': self.post_category,
             'body': self.body,
             'timestamp': self.timestamp,
             'images': self.images,
@@ -352,11 +393,11 @@ class Post(db.Model):
     @staticmethod
     def from_json(json_post):
         body = json_post.get('body')
-        category = json_post.get('category')
+        post_category = json_post.get('post_category')
         author_id = json_post.get('author_id')
         title = json_post.get('title')
         images = json_post.get('images')
-        return Post(title=title, body=body, author_id=author_id, images=images, category=category)
+        return Post(title=title, body=body, author_id=author_id, images=images, post_category=post_category)
 
 
 class PostComment(db.Model):
@@ -395,6 +436,7 @@ class CourseVideo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(128))
     description = db.Column(db.Text)
+    video_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     source_url = db.Column(db.String(256))
     show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
@@ -411,6 +453,7 @@ class CourseVideo(db.Model):
             'description': self.description,
             'source_url': self.source_url,
             'show': self.show,
+            'video_category': self.video_category,
             'timestamp': self.timestamp,
             'author_id': self.author_id,
         }
@@ -418,8 +461,13 @@ class CourseVideo(db.Model):
 
     @staticmethod
     def from_json(json_course_video):
-
-        return CourseVideo()
+        course_name = json_course_video.get('course_name')
+        description = json_course_video.get('description')
+        source_url = json_course_video.get('source_url')
+        author_id = json_course_video.get('author_id')
+        video_category = json_course_video.get('video_category')
+        return CourseVideo(course_name=course_name, description=description, source_url=source_url,
+                           author_id=author_id, video_category=video_category)
 
 
 class VideoComment(db.Model):
@@ -441,14 +489,16 @@ class VideoComment(db.Model):
             'author_id': self.author_id,
             'timestamp': self.timestamp,
             'show': self.show,
-            'post_id': self.post_id
+            'video_id': self.video_id
         }
         return json_comment
 
     @staticmethod
     def from_json(json_video_comment):
-
-        return VideoComment()
+        body = json_video_comment.get('body')
+        author_id = json_video_comment.get('author_id')
+        video_id = json_video_comment.get('video_id')
+        return VideoComment(body=body, author_id=author_id, video_id=video_id)
 
 
 class TextResource(db.Model):
@@ -456,6 +506,8 @@ class TextResource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     resource_name = db.Column(db.String(128))
     description = db.Column(db.Text)
+    resource_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
+    resource_type = db.Column(db.Integer, default=0)  # word类型1  excel类型2  pdf类型3  其它0
     source_url = db.Column(db.String(256))
     show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
@@ -472,15 +524,23 @@ class TextResource(db.Model):
             "description": self.description,
             "source_url": self.source_url,
             "show": self.show,
+            "resource_type":self.resource_type,
             "timestamp": self.timestamp,
             "author_id": self.author_id,
+            "resource_category": self.resource_category
         }
         return json_text_resource
 
     @staticmethod
     def from_json(json_text_resource):
-
-        return TextResource
+        resource_name = json_text_resource.get('resource_name')
+        description = json_text_resource.get('description')
+        source_url = json_text_resource.get('source_url')
+        author_id = json_text_resource.get('author_id')
+        resource_type = json_text_resource.get('resource_type')
+        resource_category = json_text_resource.get('resource_category')
+        return TextResource(resource_name=resource_name, description=description, source_url=source_url,
+                            author_id=author_id, resource_type=resource_type, resource_category=resource_category)
 
 
 class TextResourceComment(db.Model):
@@ -508,8 +568,10 @@ class TextResourceComment(db.Model):
 
     @staticmethod
     def from_json(json_resource_comment):
-
-        return TextResourceComment()
+        body = json_resource_comment.get('body')
+        author_id = json_resource_comment.get('author_id')
+        text_resource_id = json_resource_comment.get('text_resource_id')
+        return TextResourceComment(body=body, author_id=author_id, text_resource_id=text_resource_id)
 
 
 
