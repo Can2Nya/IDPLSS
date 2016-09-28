@@ -1,6 +1,9 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
+
+import { data } from '../services/user.js';//向user传送的数据
+
 import { Steps, Row, Col, Radio, Input, Form } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 
@@ -12,9 +15,10 @@ import Button from '../components/Button/Button';
 import styles from './commont.less';
 
 let Register = ({ dispatch, location, form, user }) => {
+
 	const { stepState, isAllowStepChange, registerFormisSubmit } = user;
 	const { getFieldProps, validateFields, getFieldValue } = form;
-
+	
 	const handleStepUp = () =>{
 		if(isAllowStepChange){
 		dispatch({
@@ -42,10 +46,13 @@ let Register = ({ dispatch, location, form, user }) => {
 			if(!!errors){
 				return;
 			}
-			dispatch({
-				type:'user/register',
-			})
 		});
+		
+		data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
+
+		dispatch({
+			type:'user/register',
+		})
 		
 	}
 	/*表单*/
@@ -76,7 +83,7 @@ let Register = ({ dispatch, location, form, user }) => {
 		}],
 	});
 
-	const passwdProps = getFieldProps('password', {
+	const passwdProps = getFieldProps('user_password', {
 		rules: [{ 
 			required: true, 
 			whitespace: true, 
@@ -98,7 +105,7 @@ let Register = ({ dispatch, location, form, user }) => {
 				message: '请再次输入密码',
 			 }, {
 				validator: function(rule, value, callback){
-					if(value && value !== getFieldValue('password') ){
+					if(value && value !== getFieldValue('user_password') ){
 						callback('两次输入的密码不一致')
 					}
 					else callback();

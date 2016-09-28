@@ -5,15 +5,15 @@ const errorMessages = (res) => `${res.status} ${res.statusText}`;
 
 function check401(res) {
   if (res.status === 401) {
-    //location.href = '/401';
-    return Promise.reject(errorMessages(res));
+	//location.href = '/401';
+	return Promise.reject(errorMessages(res));
   }
   return res;
 }
 
 function check404(res) {
   if (res.status === 404) {
-    return Promise.reject(errorMessages(res));
+	return Promise.reject(errorMessages(res));
   }
   return res;
 }
@@ -25,7 +25,7 @@ function jsonParse(res) {
 function errorMessageParse(res) {
   const { error, message } = res.jsonResult;
   if (error) {
-    return Promise.reject(message);
+	return Promise.reject(message);
   }
   return res;
 }
@@ -33,15 +33,17 @@ function errorMessageParse(res) {
 function xFetch(url, options) {
   const opts = { ...options };
   opts.headers = {
-    ...opts.headers,
-    authorization: cookie.get('authorization') || '',
+	...opts.headers,
+	Accept: 'application/json',
+	'Content-Type': 'application/json',
+	authorization: cookie.get('authorization') || '',
   };
-  console.log(opts)
+  
   return fetch(url, opts)
-    .then(jsonParse)
-    .then(errorMessageParse)
-    .then(check401)
-    .then(check404);
+	.then(jsonParse)
+	.then(errorMessageParse)
+	.then(check401)
+	.then(check404);
 }
 
 export default xFetch;

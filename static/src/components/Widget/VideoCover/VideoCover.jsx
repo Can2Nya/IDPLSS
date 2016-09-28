@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import styles from './VideoCover.less';
 
-const VideoCover = ({ type }) => {
+const VideoCover = ({ type, data }) => {
 	const coverCls = () =>{
 		/*if(type == 'small') return styles.small;
 		if(type == 'big') return styles.big;*/
@@ -21,8 +21,8 @@ const VideoCover = ({ type }) => {
 					<span>1111</span>
 				</div>
 			</div>
-			<div className={styles.title}>课程名称</div>
-			<div className={styles.user}>教师名称</div>
+			<div className={styles.title}>{ /*data.course_name*/ }</div>
+			<div className={styles.user}>{ /*data.author_id*/ }</div>
 		</div>
 	);
 };

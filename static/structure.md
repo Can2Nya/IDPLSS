@@ -36,15 +36,17 @@ id为layout的action.payload
 /search/video/<:searchText> ＃搜索「暫定」
 ...
 
-/bbs/ #「換名字系列」
+/forum/ #「換名字系列」
 ...
 ---
 ### id:3
 
 /play/video/<:id> #播放視頻「以此推類」
 ...
-/user/student/<:id>/<後面可能會追加參數> #用戶「學生
+/user/student/<:id>/<後面可能會追加參數> #用戶「學生 #还是不用这样好惹
 /user/teacher/<:id>/<後面可能會追加參數>  #用戶「教師
+
+/user/:id/
 
 
 ```

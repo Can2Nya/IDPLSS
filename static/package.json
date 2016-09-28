@@ -15,6 +15,7 @@
     "history": "^2.0.1",
     "isomorphic-fetch": "^2.2.1",
     "js-cookie": "^2.1.1",
+    "path-to-regexp": "^1.5.3",
     "rc-queue-anim": "^0.12.4",
     "rc-tween-one": "^0.8.5",
     "react": "^15.0.2",
@@ -24,7 +25,8 @@
     "react-router-redux": "^4.0.1",
     "redux": "^3.5.2",
     "redux-actions": "0.9.x",
-    "redux-saga": "^0.10.4"
+    "redux-saga": "^0.10.4",
+    "redux-sequence-action": "^0.2.0"
   },
   "devDependencies": {
     "atool-test-mocha": "^0.1.4",
@@ -43,7 +45,8 @@
     "expect": "^1.20.1",
     "glob": "^7.0.3",
     "pre-commit": "1.x",
-    "redbox-react": "^1.2.2"
+    "redbox-react": "^1.2.2",
+    "video.js": "^5.11.6"
   },
   "pre-commit": [
     "lint"

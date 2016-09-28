@@ -9,7 +9,7 @@ const user = handleActions({
 	  	return { ...state, list: action.payload, loginFormisSubmit: false, modalState: false, };
 	},
 	['user/login/failed'](state, action) {
-	  	return { ...state, list: [] };
+	  	return { ...state, list: [], loginFormisSubmit: false };
 	},
 	['user/login/modal/toggle'](state, action) {
 		return { ...state, modalState: !action.modalState, loginFormisSubmit: false };
@@ -52,7 +52,7 @@ const user = handleActions({
 	modalState: false,//modal是否被激活
 	stepState: 0,//注册步骤状态
 	isAllowStepChange: false,//可以允许改变步骤
-	loginFormisSubmit: false,//login表单是否被提交
+	loginFormisSubmit: false,//login表单是否被提交【这名字咱要改惹
 	registerFormisSubmit: false,//register表单是否被提交
 });
 

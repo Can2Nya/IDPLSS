@@ -6,7 +6,8 @@ import classnames from 'classnames';
 
 import styles from './Menu.less';
 
-const Menu = ({ menu, dispatch, location }) => {
+const Menu = ({ menu, isSelect, changeCategory }) => {
+	/*
 	const { list } = menu;
 	const handleToggleSelect = (id) =>{
 		dispatch({
@@ -16,15 +17,15 @@ const Menu = ({ menu, dispatch, location }) => {
 		/**let selectkey;
 		if(location.hash) selectkey = location.hash.replace(/\D/g,'');
 		console.log(selectkey)
-		return (selectkey.charAt(0) === id)? true: false;**/
-	};
+		return (selectkey.charAt(0) === id)? true: false;
+	};*/
 
 	const renderMenu = () =>{
 		return(
 			<div>
-			{list.map((line, index) =>{
+			{menu.map((title, index) =>{
 				const menuCls = classnames({
-					[styles.active]: line.isSelect,
+					[styles.active]: isSelect === index,
 					[styles.yellow]: true,
 					
 				});
@@ -32,12 +33,15 @@ const Menu = ({ menu, dispatch, location }) => {
 					if (index % 2 == 0) return styles.yellow;
 					else return styles.purple;
 				};**/
-				return <div key={ line.id } >
-						<Link to={{ pathname:`${location.pathname}`, hash:`#!/${line.id}`}} >
-						<div className={menuCls} onClick={handleToggleSelect.bind(this, line.id)}>
-						<span className={styles.subTitle}>{ line.title }</span>
+				return <div key={ index } >
+						
+						<div className={menuCls} onClick={changeCategory.bind(this,index)}>
+						<a>
+						{/*<Link to={{ pathname:`${location.pathname}`, hash:`#!/${index}`}} >*/}
+						<span className={styles.subTitle}>{ title }</span>
+						</a>
 						</div>
-						</Link>
+						
 						{/**<div className={styles.float}>
 						<Badge count={ menu.sum } />
 						</div>**/}
@@ -58,7 +62,7 @@ Menu.propTypes = {
 	/*title: PropTypes.string.isRequired,*/
 };
 
-function menuFilter(menu, hash) {
+/*function menuFilter(menu, hash) {
 	if(hash){
 		var newSelectkey = hash.replace(/\D/g,'');
 		newSelectkey = parseInt(newSelectkey.charAt(0));
@@ -83,4 +87,6 @@ function mapStateToProps({ menu },{ location }){
 	};
 };
 
-export default connect(mapStateToProps)(Menu);
+export default connect(mapStateToProps)(Menu);*/
+
+export default Menu;

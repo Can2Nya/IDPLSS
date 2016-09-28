@@ -9,12 +9,8 @@ import List from '../components/List/List';
 import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 import Preview from '../components/Preview/Preview';
-import DetailPannel from '../components/DetailPannel/DetailPannel';
 
-
-import VideoCover from '../components/Widget/VideoCover/VideoCover';
-import TestCover from '../components/Widget/TestCover/TestCover';
-import TextCover from '../components/Widget/TextCover/TextCover';
+import DetailPannel from '../layouts/DetailPannel/DetailPannel';
 
 import styles from './commont.less';
 

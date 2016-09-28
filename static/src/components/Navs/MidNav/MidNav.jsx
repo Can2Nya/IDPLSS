@@ -29,7 +29,7 @@ const MidNav = () => {
 							<Button><Link to={{ pathname:`/category/test/`}}>在线测试</Link></Button>
 							</Col>
 							<Col span={3}>
-							<Button><Link to="/bbs/">学习交流</Link></Button>
+							<Button><Link to={{ pathname:`/category/forum/`}}>学习交流</Link></Button>
 							</Col>
 							<Col span={6}
 							>

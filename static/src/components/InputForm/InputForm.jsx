@@ -6,17 +6,6 @@ import classNames from 'classnames';
 import styles from './InputForm.less';
 
 const InputForm = () => {
-	/*const InputFormCls = () =>{
-		/*var style = {};
-		if(type == 'video') style[[styles.video]] = true;
-		if(type == 'word') style[[styles.word]] = true;
-		if(type == 'ppt') style[[styles.ppt]] = true;
-		if(type == 'pdf') style[[styles.pdf]] = true;
-
-		return classNames({
-			[styles[type]]:true
-		});
-	};*/
 	return (
 		<div className={styles.inputform}>
 		<Row>
