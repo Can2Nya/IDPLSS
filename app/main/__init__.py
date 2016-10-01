@@ -4,6 +4,5 @@ from flask import Blueprint
 
 main = Blueprint('main', __name__)
 
-
-from app.main import index, decorators, authentication, responses, users, communication, entrance, courses_video,\
+from app.main import index, decorators, authentication, responses, users, communication, entrance, courses,\
     text_resource

@@ -1,4 +1,6 @@
 # coding :utf-8
+from datetime import datetime
+from dateutil import tz
 
 
 def set_model_attr(info, attr):
@@ -21,4 +23,21 @@ def user_info_transform(uid, attr):
     else:
         pass
 
+
+def id_change_user(uid):
+    from app.models import User
+    user = User.query.get_or_404(uid)
+    if user is not None:
+        return user
+    else:
+        return None
+
+
+def time_transform(utc_time):
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz('CST')
+    utc = utc_time
+    utc = utc.replace(tzinfo=from_zone)
+    local = utc.astimezone(to_zone)
+    return datetime.strftime(local, "%Y-%m-%d %H:%M:%S")
 

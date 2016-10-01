@@ -1,6 +1,7 @@
 # coding: utf-8
 from flask import jsonify, request, current_app, url_for, g
 from app.main import main
+from app.main.responses import not_found
 from app.main.authentication import auth
 from app.utils.responses import self_response
 from app.main.decorators import permission_required, get_current_user
@@ -63,7 +64,10 @@ def posts_category(cate_id):
 def post_detail(pid):
     if request.method == 'GET':
         post = Post.query.get_or_404(pid)
-        return jsonify(post.to_json())
+        if post.show is not False:
+            return jsonify(post.to_json())
+        else:
+            return not_found()
     if request.method == 'DELETE':
         post = Post.query.get_or_404(pid)
         post.show = False

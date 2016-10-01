@@ -3,7 +3,7 @@ from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from datetime import datetime
-from app.utils.model_tools import set_model_attr, user_info_transform
+from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform
 from app import db
 
 
@@ -114,9 +114,9 @@ collectionPosts = db.Table('collectionPosts',
     )
 
 
-collectionVideos = db.Table('collectionVideo',
+collectionCourses = db.Table('collectionCourses',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('video_id', db.Integer, db.ForeignKey('videos.id')),
+    db.Column('course_id', db.Integer, db.ForeignKey('courses.id')),
     db.Column('timestamp', db.DateTime, default=datetime.utcnow)
     )
 
@@ -155,13 +155,14 @@ class User(db.Model):
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     post_comments = db.relationship('PostComment', backref='author', lazy='dynamic')
-    course_video = db.relationship('CourseVideo', backref='author', lazy='dynamic')
-    video_comments = db.relationship('VideoComment', backref='author', lazy='dynamic')
-    text_resource = db.relationship('TextResource', backref='author', lazy='dynamic')
+    courses = db.relationship('Course', backref='author', lazy='dynamic')
+    courses_video = db.relationship('VideoList', backref='uploader', lazy='dynamic')
+    course_comments = db.relationship('CourseComment', backref='author', lazy='dynamic')
+    text_resource = db.relationship('TextResource', backref='uploader', lazy='dynamic')
     text_resource_comments = db.relationship('TextResourceComment', backref='author', lazy='dynamic')
     collection_posts = db.relationship('Post', secondary=collectionPosts,
                                        backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
-    collection_videos = db.relationship('CourseVideo', secondary=collectionVideos,
+    collection_courses = db.relationship('Course', secondary=collectionCourses,
                                         backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
     collection_text_resource = db.relationship('TextResource', secondary=collectionTextResource,
                                                backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
@@ -186,8 +187,8 @@ class User(db.Model):
             'user_type': self.user_type,
             'user_avatar': self.avatar,
             'user_about_me': self.about_me,
-            'user_member_since': self.member_since,
-            'user_last_seen': self.last_seen,
+            'user_member_since': time_transform(self.member_since),
+            'user_last_seen': time_transform(self.last_seen),
             'user_followers': self.followers.count(),
             'user_followings': self.followings.count(),
             'user_confirmed': self.confirmed
@@ -315,20 +316,20 @@ class User(db.Model):
         else:
             return False
 
-    def is_collecting_video(self, video):
-        if video in self.collection_videos.all():
+    def is_collecting_course(self, course):
+        if course in self.collection_courses.all():
             return True
         else:
             return False
 
-    def collect_video(self, video):
-        if not self.is_collecting_video(video):
-            self.collection_videos.append(video)
+    def collect_course(self, course):
+        if not self.is_collecting_course(course):
+            self.collection_courses.append(course)
             db.session.commit()
 
-    def uncollect_video(self, video):
-        if self.is_collecting_video(video):
-            self.collection_videos.remove(video)
+    def uncollect_course(self, course):
+        if self.is_collecting_course(course):
+            self.collection_courses.remove(course)
             db.session.commit()
 
     def is_collecting_text_resouurce(self, text_resource):
@@ -382,10 +383,13 @@ class Post(db.Model):
             'title': self.title,
             'post_category': self.post_category,
             'body': self.body,
-            'timestamp': self.timestamp,
+            'timestamp': time_transform(self.timestamp),
             'images': self.images,
             'show': self.show,
             'author_id': self.author_id,
+            'author_user_name': id_change_user(self.author_id).user_name,
+            'author_name': id_change_user(self.author_id).name,
+            'author_avatar': id_change_user(self.author_id).avatar,
             'comments_count': self.comments.count()
         }
         return json_post
@@ -417,7 +421,10 @@ class PostComment(db.Model):
             'comment_id': self.id,
             'body': self.body,
             'author_id': self.author_id,
-            'timestamp': self.timestamp,
+            'author_user_name': id_change_user(self.author_id).user_name,
+            'author_name': id_change_user(self.author_id).name,
+            'author_avatar': id_change_user(self.author_id).avatar,
+            'timestamp': time_transform(self.timestamp),
             'show': self.show,
             'post_id': self.post_id
         }
@@ -431,74 +438,130 @@ class PostComment(db.Model):
         return PostComment(body=body, author_id=author_id, post_id=post_id)
 
 
-class CourseVideo(db.Model):
-    __tablename__ = 'videos'
+class Course(db.Model):
+    __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(128))
     description = db.Column(db.Text)
-    video_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
-    source_url = db.Column(db.String(256))
-    show = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    course_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
+    images = db.Column(db.String(256))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('VideoComment', backref='videos', lazy='dynamic')
+    show = db.Column(db.Boolean, default=True)
+    course_all_video = db.relationship('VideoList', backref='course', lazy='dynamic')
+    course_comments = db.relationship('CourseComment', backref='course', lazy='dynamic')
 
     def __repr__(self):
-        return '<CourseVideo name %r>' % self.file_name
+        return '<course_name is %r>' % self.course_name
 
     def to_json(self):
-        json_course_video = {
+        json_course = {
             'id': self.id,
             'course_name': self.course_name,
             'description': self.description,
-            'source_url': self.source_url,
+            'course_category': self.course_category,
+            'images': self.images,
             'show': self.show,
-            'video_category': self.video_category,
-            'timestamp': self.timestamp,
+            'timestamp': time_transform(self.timestamp),
             'author_id': self.author_id,
+            'author_user_name': id_change_user(self.author_id).user_name,
+            'author_name': id_change_user(self.author_id).name,
+            'author_avatar': id_change_user(self.author_id).avatar,
+            'video_count': self.course_all_video.count(),
+            'comments_count': self.course_comments.count()
         }
-        return json_course_video
+        return json_course
 
     @staticmethod
-    def from_json(json_course_video):
-        course_name = json_course_video.get('course_name')
-        description = json_course_video.get('description')
-        source_url = json_course_video.get('source_url')
-        author_id = json_course_video.get('author_id')
-        video_category = json_course_video.get('video_category')
-        return CourseVideo(course_name=course_name, description=description, source_url=source_url,
-                           author_id=author_id, video_category=video_category)
+    def from_json(json_course):
+        course_name = json_course.get('course_name')
+        description = json_course.get('description')
+        category = json_course.get('category')
+        images = json_course.get('images')
+        author_id = json_course.get('author_id')
+        return Course(course_name=course_name, description=description, course_category=category,
+                       images=images, author_id=author_id)
 
 
-class VideoComment(db.Model):
-    __tablename__ = 'video_comments'
+class VideoList(db.Model):
+    __tablename__ = 'video_list'
+    id = db.Column(db.Integer, primary_key=True)
+    video_name = db.Column(db.String(128))
+    video_description = db.Column(db.Text)
+    source_url = db.Column(db.String(256))
+    show = db.Column(db.Boolean, default=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    time_line = db.Column(db.String(128))
+    # TODO:保留一个timeline 如前端能返回视频的时间则用
+    video_order = db.Column(db.Integer)  # 视频的顺序
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+
+    def __repr__(self):
+        return '<course_video_name is %r>' % self.video_name
+
+    def to_json(self):
+        json_video = {
+            'id': self.id,
+            'video_name': self.video_name,
+            'video_description': self.video_description,
+            'source_url': self.source_url,
+            'show': self.show,
+            'timestamp': time_transform(self.timestamp),
+            'time_line': self.time_line,
+            'author_id': self.author_id,
+            'video_order': self.video_order,
+            'author_user_name': id_change_user(self.author_id).user_name,
+            'author_name': id_change_user(self.author_id).name,
+            'author_avatar': id_change_user(self.author_id).avatar,
+            'course_id': self.course_id
+        }
+        return json_video
+
+    @staticmethod
+    def from_json(json_video):
+        video_name = json_video.get('video_name')
+        video_description = json_video.get('video_description')
+        source_url = json_video.get('source_url')
+        author_id = json_video.get('author_id')
+        video_order = json_video.get('video_order')
+        course_id = json_video.get('course_id')
+        return VideoList(video_name=video_name, video_description=video_description, source_url=source_url,
+                         author_id=author_id, course_id=course_id, video_order=video_order)
+
+
+class CourseComment(db.Model):
+    __tablename__ = 'course_comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     show = db.Column(db.Boolean, default=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
 
     def __repr__(self):
-        return '<VideoComment_id %r>' % self.id
+        return 'CourseComment_id %r>' % self.id
 
     def to_json(self):
         json_comment = {
-            'comment_id': self.id,
+            'id': self.id,
             'body': self.body,
             'author_id': self.author_id,
-            'timestamp': self.timestamp,
+            'author_user_name': id_change_user(self.author_id).user_name,
+            'author_avatar': id_change_user(self.author_id).avatar,
+            'author_name': id_change_user(self.author_id).name,
+            'timestamp': time_transform(self.timestamp),
             'show': self.show,
-            'video_id': self.video_id
+            'course_id': self.course_id
         }
         return json_comment
 
     @staticmethod
-    def from_json(json_video_comment):
-        body = json_video_comment.get('body')
-        author_id = json_video_comment.get('author_id')
-        video_id = json_video_comment.get('video_id')
-        return VideoComment(body=body, author_id=author_id, video_id=video_id)
+    def from_json(json_course_comment):
+        body = json_course_comment.get('body')
+        author_id = json_course_comment.get('author_id')
+        course_id = json_course_comment.get('course_id')
+        return CourseComment(body=body, author_id=author_id, course_id=course_id)
 
 
 class TextResource(db.Model):
@@ -507,7 +570,7 @@ class TextResource(db.Model):
     resource_name = db.Column(db.String(128))
     description = db.Column(db.Text)
     resource_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
-    resource_type = db.Column(db.Integer, default=0)  # word类型1  excel类型2  pdf类型3  其它0
+    resource_type = db.Column(db.Integer, default=0)  # word类型1  excel类型2  pdf类型3  ppt类型4 其它0
     source_url = db.Column(db.String(256))
     show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
@@ -525,8 +588,11 @@ class TextResource(db.Model):
             "source_url": self.source_url,
             "show": self.show,
             "resource_type":self.resource_type,
-            "timestamp": self.timestamp,
+            "timestamp": time_transform(self.timestamp),
             "author_id": self.author_id,
+            "author_user_name": id_change_user(self.author_id).user_name,
+            "author_name": id_change_user(self.author_id).name,
+            "author_avatar": id_change_user(self.author_id).avatar,
             "resource_category": self.resource_category
         }
         return json_text_resource
@@ -560,7 +626,10 @@ class TextResourceComment(db.Model):
             "id": self.id,
             "body": self.body,
             "author_id": self.author_id,
-            "timestamp": self.timestamp,
+            "author_user_name": id_change_user(self.author_id).user_name,
+            "author_name": id_change_user(self.author_id).name,
+            "author_avatar": id_change_user(self.author_id).avatar,
+            "timestamp": time_transform(self.timestamp),
             "show": self.show,
             "text_resource_id": self.text_resource_id
         }

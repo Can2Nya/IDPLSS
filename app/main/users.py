@@ -1,8 +1,8 @@
 # coding: utf-8
 from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
-from app.models import db, User, Follow, Role, Permission, Post, PostComment, CourseVideo, VideoComment,\
-    TextResource, TextResourceComment, collectionPosts
+from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
+    TextResource, TextResourceComment
 from app.main.authentication import auth
 from app.main.decorators import permission_required, get_current_user
 from app.utils.responses import self_response
@@ -239,43 +239,42 @@ def user_posts_comments():
     })
 
 
-@main.route('/api/user/course-video', methods=['GET'])
+@main.route('/api/user/courses', methods=['GET'])
 @auth.login_required
 @get_current_user
-def user_course_video():
+def user_courses():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = CourseVideo.query.filter_by(author_id=user.id).order_by(CourseVideo.timestamp.desc()).paginate(
+    pagination = Course.query.filter_by(author_id=user.id).order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
-    all_videos = pagination.items
+    all_courses = pagination.items
     count = 0
-    for video in all_videos:
-        if video.show is not False:
+    for course in all_courses:
+        if course.show is not False:
             count = count+1
     url_prev = None
     if pagination.has_prev:
-        url_prev = url_for('main.user_course_video', page=page-1, _external=True)
+        url_prev = url_for('main.user_courses', page=page-1, _external=True)
     url_next = None
     if pagination.has_next:
-        url_next = url_for('main.user_course_video', page=page+1, _external=True)
+        url_next = url_for('main.user_courses', page=page+1, _external=True)
     return jsonify({
-        'courses_video': [video.to_json() for video in all_videos if video.show is not False],
+        'courses': [course.to_json() for course in all_courses if course.show is not False],
         'prev': url_prev,
-
         'next': url_next,
         'count': count
     })
 
 
-@main.route('/api/user/video-comments', methods=['GET'])
+@main.route('/api/user/course-comments', methods=['GET'])
 @auth.login_required
 @get_current_user
-def user_video_comments():
+def user_course_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = VideoComment.query.filter_by(author_id=user.id).order_by(VideoComment.timestamp.desc()).paginate(
+    pagination = CourseComment.query.filter_by(author_id=user.id).order_by(CourseComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
@@ -286,44 +285,44 @@ def user_video_comments():
             count = count+1
     url_prev = None
     if pagination.has_prev:
-        url_prev = url_for('main.user_video_comments', page=page-1, _external=True)
+        url_prev = url_for('main.user_course_comments', page=page-1, _external=True)
     url_next = None
     if pagination.has_next:
-        url_next = url_for('main.user_video_comments', page=page+1, _external=True)
+        url_next = url_for('main.user_course_comments', page=page+1, _external=True)
     return jsonify({
-        'video_comments': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'course_comments': [comment.to_json() for comment in all_comments if comment.show is not False],
         'prev': url_prev,
         'next': url_next,
         'count': count
     })
 
 
-@main.route('/api/user/collection-video', methods=['GET'])
+@main.route('/api/user/collection-courses', methods=['GET'])
 @auth.login_required
 @get_current_user
-def user_collection_video():
+def user_collection_courses():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    all_video = user.collection_videos
+    all_courses = user.collection_courses
     count = 0
-    sum = 0
-    for video in all_video:
-        if video.show is not False:
-            sum = sum +1
+    sum_course = 0
+    for course in all_courses:
+        if course.show is not False:
+            sum_course = sum_course +1
         count = count + 1
-    new_list = QueryPagination(all_video, page, count)
-    slice_video = new_list.query_pagination()
+    new_list = QueryPagination(all_courses, page, count)
+    slice_courses = new_list.query_pagination()
     next_url = None
     if new_list.has_next_page():
-        next_url = url_for('main.user_collection_video', page=page+1, _external=True)
+        next_url = url_for('main.user_collection_courses', page=page+1, _external=True)
     prev_url = None
     if new_list.has_prev_page():
-        prev_url = url_for('main.user_collection_video', page=page-1, _external=True)
+        prev_url = url_for('main.user_collection_courses', page=page-1, _external=True)
     return jsonify({
-        "collection_video": [video.to_json() for video in slice_video if video.show is not False],
+        "collection_courses": [course.to_json() for course in slice_courses if course.show is not False],
         "next": next_url,
         "prev": prev_url,
-        "count": sum
+        "count": sum_course
     })
 
 

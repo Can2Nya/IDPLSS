@@ -90,7 +90,10 @@ def text_resources_category_type(cate_id, tid):
 def text_resource_detail(rid):
     text_resource = TextResource.query.get_or_404(rid)
     if request.method == 'GET':
-        return jsonify(text_resource.to_json())
+        if text_resource.show is not False:
+            return jsonify(text_resource.to_json())
+        else:
+            return not_found()
     elif request.method == 'DELETE':
         text_resource.show = False
         db.session.add(text_resource)
