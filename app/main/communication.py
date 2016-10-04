@@ -6,20 +6,17 @@ from app.main.authentication import auth
 from app.utils.responses import self_response
 from app.main.decorators import permission_required, get_current_user
 from app.models import db, User, Follow, Post, Role, PostComment, Permission
+from app.utils.model_tools import calc_count
 
 
 @main.route('/api/posts', methods=['GET'])
 def posts():
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.filter_by(show=True).order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_posts = pagination.items
-    count=0
-    for post in all_posts:
-        if post.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.posts', page=page-1, _external=True)
@@ -27,25 +24,21 @@ def posts():
     if pagination.has_next:
         url_next = url_for('main.posts', page=page+1, _external=True)
     return jsonify({
-        'posts': [post.to_json() for post in all_posts if post.show is not False],
+        'posts': [post.to_json() for post in all_posts],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
 @main.route('/api/posts/category/<int:cate_id>', methods=['GET'])
 def posts_category(cate_id):
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.filter_by(post_category=cate_id).order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.filter_by(post_category=cate_id, show=True).order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_posts = pagination.items
-    count = 0
-    for post in all_posts:
-        if post.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.posts_category', page=page-1, cate_id=cate_id, _external=True)
@@ -53,10 +46,10 @@ def posts_category(cate_id):
     if pagination.has_next:
         url_next = url_for('main.posts_category', page=page+1, cate_id=cate_id, _external=True)
     return jsonify({
-        'posts': [post.to_json() for post in all_posts if post.show is not False],
+        'posts': [post.to_json() for post in all_posts],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -91,15 +84,11 @@ def new_post():
 @main.route('/api/posts/<int:pid>/comments', methods=['GET'])
 def post_comments(pid):
     page = request.args.get('page', 1, type=int)
-    pagination = PostComment.query.filter_by(post_id=pid).order_by(PostComment.timestamp.desc()).paginate(
+    pagination = PostComment.query.filter_by(post_id=pid, show=True).order_by(PostComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.post_comments', pid=pid, page=page-1, _external=True)
@@ -107,10 +96,10 @@ def post_comments(pid):
     if pagination.has_next:
         url_next = url_for('main.post_comments', pid=pid, page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'posts': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 

@@ -3,6 +3,7 @@ from flask import g, request, url_for, current_app, jsonify
 from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses
 from app.main.responses import forbidden, not_found
 from app.utils.responses import self_response
+from app.utils.model_tools import calc_count
 from app.main.decorators import get_current_user, permission_required, admin_required
 from app.main import main
 from app.main.authentication import auth
@@ -11,41 +12,49 @@ from app.main.authentication import auth
 @main.route('/api/courses', methods=['GET'])
 def courses():
     page = request.args.get('page', 1, type=int)
-    pagination = Course.query.order_by(Course.timestamp.desc()).paginate(
+    pagination = Course.query.filter_by(show=True).order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_courses = pagination.items
-    count = 0
-    for course in all_courses:
-        if course.show is not False:
-            count = count+1
     prev_url = None
     if pagination.has_prev:
         prev_url = url_for('main.courses', page=page-1, _external=True)
     next_url = None
     if pagination.has_next:
         next_url = url_for('main.courses', page=page+1, _external=True)
-    return jsonify({'courses': [course.to_json() for course in all_courses if course.show is not False],
+    return jsonify({'courses': [course.to_json() for course in all_courses],
                     'prev': prev_url,
                     'next': next_url,
-                    'count': count
-
+                    'count': pagination.total
                     })
+
+
+@main.route('/api/courses/detail/<int:cid>', methods=['GET', 'DELETE'])
+def course_operation(cid):
+    course = Course.query.get_or_404(cid)
+    if request.method == 'GET':
+        if course.show is not False:
+            return jsonify(course.to_json())
+        else:
+            return not_found()
+    elif request.method == 'DELETE':
+        course.show = False
+        db.session.add(course)
+        db.session.commit()
+        return self_response('delete course successfully')
+    else:
+        return self_response('invalid operation')
 
 
 @main.route('/api/courses/category/<int:cate_id>', methods=['GET'])
 def courses_category(cate_id):
     page = request.args.get('page', 1, type=int)
-    pagination = Course.query.filter_by(course_category=cate_id).order_by(Course.timestamp.desc()).paginate(
+    pagination = Course.query.filter_by(show=True, course_category=cate_id).order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_courses = pagination.items
-    count = 0
-    for course in all_courses:
-        if course.show is not False:
-            count = count+1
     prev_url = None
     if pagination.has_prev:
         prev_url = url_for('main.courses_category', page=page-1, cate_id=cate_id,  _external=True)
@@ -55,7 +64,7 @@ def courses_category(cate_id):
     return jsonify({'courses': [course.to_json() for course in all_courses],
                     'prev': prev_url,
                     'next': next_url,
-                    'count': count
+                    'count': pagination.total
 
                     })
 
@@ -63,15 +72,11 @@ def courses_category(cate_id):
 @main.route('/api/courses/<int:cid>/video-list', methods=['GET'])
 def courses_video_list(cid):
     page = request.args.get('page', 1, type=int)
-    pagination = VideoList.query.filter_by(course_id=cid).order_by(VideoList.video_order).paginate(
+    pagination = VideoList.query.filter_by(course_id=cid, show=True).order_by(VideoList.video_order).paginate(
         page, per_page=current_app.config['IDPLSS_COMMENTS_PER_PAGE'],
         error_out=False
     )
     all_video = pagination.items
-    count = 0
-    for video in all_video:
-        if video.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.courses_video_list', cid=cid, page=page-1, _external=True)
@@ -79,10 +84,10 @@ def courses_video_list(cid):
     if pagination.has_next:
         url_next = url_for('main.courses_video_list', cid=cid, page=page+1, _external=True)
     return jsonify({
-        'video_list': [video.to_json() for video in all_video if video.show is not False],
+        'video_list': [video.to_json() for video in all_video],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -131,15 +136,11 @@ def upload_video(cid):
 @main.route('/api/courses/<int:cid>/comments', methods=['GET'])
 def courses_comments(cid):
     page = request.args.get('page', 1, type=int)
-    pagination = CourseComment.query.filter_by(course_id=cid).order_by(CourseComment.timestamp.desc()).paginate(
+    pagination = CourseComment.query.filter_by(course_id=cid, show=True).order_by(CourseComment.timestamp.desc()).paginate(
         page, per_page=current_app.config['IDPLSS_COMMENTS_PER_PAGE'],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.courses_comments', cid=cid, page=page-1, _external=True)
@@ -147,10 +148,10 @@ def courses_comments(cid):
     if pagination.has_next:
         url_next = url_for('main.courses_comments', cid=cid, page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'posts': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 

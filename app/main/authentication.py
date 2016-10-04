@@ -5,7 +5,7 @@ from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from app.models import db, User, Permission, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
 from app.main import main
-from app.main.decorators import get_current_user, allow_cross_domain
+from app.main.decorators import get_current_user
 auth = HTTPBasicAuth()
 
 
@@ -18,7 +18,6 @@ def verify_password(username_or_email_or_token, password):
     :return:boolean
     """
     if password == '':
-        print ''
         user = User.verify_auth_token(username_or_email_or_token)
         return user is not None
     user = User.query.filter_by(user_name=username_or_email_or_token).first()
@@ -30,7 +29,6 @@ def verify_password(username_or_email_or_token, password):
 
 
 @auth.error_handler
-@allow_cross_domain
 def auth_error():
     """
     捕获未授权验证的错误
@@ -40,7 +38,7 @@ def auth_error():
     # TODO(Ddragon):修改unauthorized的错误描述
 
 
-@main.route('/api/user/is-confirm', methods=['POST', 'OPTIONS'])
+@main.route('/api/user/is-confirm', methods=['POST'])
 def is_confirmed():
     """
     检测注册用户是否已经通过token激活,激活才能正常使用服务
@@ -55,7 +53,7 @@ def is_confirmed():
         return jsonify({'status': user.confirmed})
 
 
-@main.route('/api/user/token', methods=['GET', 'OPTIONS'])
+@main.route('/api/user/token', methods=['GET'])
 @get_current_user
 @auth.login_required
 def get_token():
@@ -69,7 +67,7 @@ def get_token():
         expiration=3600), 'expiration': 3600})
 
 
-@main.route('/api/user/confirm/<token>', methods=['GET', 'OPTIONS'])
+@main.route('/api/user/confirm/<token>', methods=['GET'])
 def confirm(token):
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
@@ -87,7 +85,7 @@ def confirm(token):
         return jsonify({'status': 'confirm successful'})
 
 
-@main.route('/api/user/qiniu-token', methods=['GET', 'OPTIONS'])
+@main.route('/api/user/qiniu-token', methods=['GET'])
 @auth.login_required
 def get_qiniu_token():
     """

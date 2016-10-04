@@ -2,11 +2,11 @@
 from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
 from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
-    TextResource, TextResourceComment
+    TextResource, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord
 from app.main.authentication import auth
 from app.main.decorators import permission_required, get_current_user
 from app.utils.responses import self_response
-from app.main.responses import bad_request, update_status
+from app.main.responses import bad_request, update_status, not_found
 from app.utils.mail import send_email
 from app.utils.pagination import QueryPagination
 
@@ -39,18 +39,75 @@ def register():
     # TODO(Ddragon):完善用户注册成功时候的返回信息
 
 
-@main.route('/api/user/info', methods=['GET', 'PUT'])
+@main.route('/api/user/resend-confirm-email', methods=['POST'])
+def resend_email():
+    """
+    用户未在激活token有效期进行账号激活操作,失效后再次激活时需要重新获得激活token
+    :return:
+    """
+    info = request.json
+    user_email = info['user_email']
+    user = User.query.filter_by(email=user_email).first()
+    if user is None:
+        return not_found()
+    else:
+        token = user.generate_confirm_token()
+        send_email(user.email, '激活你的账号', 'confirm_info/confirm', User=user, token=token)
+        return self_response('resend confirm email successfully')
+
+
+@main.route('/api/user/find-password', methods=['POST'])
+def find_password():
+    """
+    当用户忘记密码时, 通过验证邮箱所有权进而帮助用户重设密码
+    :return:
+    """
+    info = request.json
+    user_email = info['user_email']
+    user = User.query.filter_by(email=user_email).first()
+    if user is None:
+        return not_found()
+    else:
+        token = user.generate_confirm_token()
+        send_email(user.email, '找回你的密码', 'find_password/password', User=user, token=token)
+        return self_response('send email successfully')
+
+
+@main.route('/api/user/reset-password/<token>', methods=['POST'])
+def reset_password(token):
+    """
+    重新设置账户密码
+    :return:
+    """
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except:
+        return bad_request('token invalid')
+    user_id = data['confirm']
+    user = User.query.get_or_404(user_id)
+    info = request.json
+    new_password = info['user_password']
+    if user is None:
+        return bad_request('invalid token')
+    else:
+        user.pass_word = new_password
+        db.session.add(user)
+        db.session.commit()
+        return self_response('reset password successfully')
+
+
+@main.route('/api/user/<int:id>/info', methods=['GET', 'PUT'])
 @auth.login_required
-@get_current_user
 def user_info():
+    user = User.query.get_or_404(id)
     if request.method == 'GET':
-        user = g.current_user
         if user is None:
             return self_response('user does not exist')
         else:
             return make_response(jsonify(user.to_json()))
     elif request.method == 'PUT':
-        user = User.from_json(g.current_user, request.json)
+        user = User.from_json(user, request.json)
         db.session.add(user)
         db.session.commit()
         return update_status('update user information successfully')
@@ -82,7 +139,6 @@ def is_following():
         return self_response(True)
     else:
         return self_response(False)
-    # TODO(Dddragon): 判断关注与被关注逻辑是不是有问题
 
 
 @main.route('/api/user/is_followed_by', methods=['POST'])
@@ -158,15 +214,11 @@ def following(uid):
 def user_posts():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.filter_by(author_id=user.id).order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.filter_by(author_id=user.id, show=True).order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_posts = pagination.items
-    count = 0
-    for post in all_posts:
-        if post.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_posts', page=page-1, _external=True)
@@ -174,10 +226,10 @@ def user_posts():
     if pagination.has_next:
         url_next = url_for('main.user_posts', page=page+1, _external=True)
     return jsonify({
-        'posts': [post.to_json() for post in all_posts if post.show is not False],
+        'posts': [post.to_json() for post in all_posts],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -189,11 +241,11 @@ def user_collection_posts():
     page = request.args.get('page', 1, type=int)
     posts = user.collection_posts
     count = 0
-    sum = 0
+    all_sum = 0
     for post in posts:
         if post.show is not False:
-            sum = sum+1
-        count = count + 1
+            all_sum += 1
+        count += 1
     new_list = QueryPagination(posts, page, count)
     slice_posts = new_list.query_pagination()
     next_url = None
@@ -206,7 +258,7 @@ def user_collection_posts():
         "collection_posts": [post.to_json() for post in slice_posts if post.show is not False],
         "next": next_url,
         "prev": prev_url,
-        "count": sum
+        "count": all_sum
     })
 
 
@@ -216,15 +268,11 @@ def user_collection_posts():
 def user_posts_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = PostComment.query.filter_by(author_id=user.id).order_by(PostComment.timestamp.desc()).paginate(
+    pagination = PostComment.query.filter_by(author_id=user.id, show=True).order_by(PostComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_posts_comments', page=page-1, _external=True)
@@ -232,10 +280,10 @@ def user_posts_comments():
     if pagination.has_next:
         url_next = url_for('main.user_posts_comments', page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'posts': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -245,15 +293,11 @@ def user_posts_comments():
 def user_courses():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = Course.query.filter_by(author_id=user.id).order_by(Course.timestamp.desc()).paginate(
+    pagination = Course.query.filter_by(author_id=user.id, show=True).order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_courses = pagination.items
-    count = 0
-    for course in all_courses:
-        if course.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_courses', page=page-1, _external=True)
@@ -261,10 +305,10 @@ def user_courses():
     if pagination.has_next:
         url_next = url_for('main.user_courses', page=page+1, _external=True)
     return jsonify({
-        'courses': [course.to_json() for course in all_courses if course.show is not False],
+        'courses': [course.to_json() for course in all_courses],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -274,15 +318,11 @@ def user_courses():
 def user_course_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = CourseComment.query.filter_by(author_id=user.id).order_by(CourseComment.timestamp.desc()).paginate(
+    pagination = CourseComment.query.filter_by(author_id=user.id, show=True).order_by(CourseComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_course_comments', page=page-1, _external=True)
@@ -290,10 +330,10 @@ def user_course_comments():
     if pagination.has_next:
         url_next = url_for('main.user_course_comments', page=page+1, _external=True)
     return jsonify({
-        'course_comments': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'course_comments': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -308,8 +348,8 @@ def user_collection_courses():
     sum_course = 0
     for course in all_courses:
         if course.show is not False:
-            sum_course = sum_course +1
-        count = count + 1
+            sum_course += 1
+        count += 1
     new_list = QueryPagination(all_courses, page, count)
     slice_courses = new_list.query_pagination()
     next_url = None
@@ -332,15 +372,11 @@ def user_collection_courses():
 def user_text_resources():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(author_id=user.id).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(author_id=user.id, show=True).order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_text_resources = pagination.items
-    count = 0
-    for t_resource in all_text_resources:
-        if t_resource.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_text_resources', page=page-1, _external=True)
@@ -348,10 +384,10 @@ def user_text_resources():
     if pagination.has_next:
         url_next = url_for('main.user_text_resources', page=page+1, _external=True)
     return jsonify({
-        'text_resources': [t_resource.to_json() for t_resource in all_text_resources if t_resource.show is not False],
+        'text_resources': [t_resource.to_json() for t_resource in all_text_resources],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -361,15 +397,11 @@ def user_text_resources():
 def user_text_resource_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = TextResourceComment.query.filter_by(author_id=user.id).order_by(TextResourceComment.timestamp.desc()).paginate(
+    pagination = TextResourceComment.query.filter_by(author_id=user.id, show=True).order_by(TextResourceComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.user_text_resource_comments', page=page-1, _external=True)
@@ -377,10 +409,10 @@ def user_text_resource_comments():
     if pagination.has_next:
         url_next = url_for('main.user_text_resource_comments', page=page+1, _external=True)
     return jsonify({
-        'video_comments': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'video_comments': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
@@ -392,11 +424,11 @@ def user_collection_text_resources():
     page = request.args.get('page', 1, type=int)
     all_text_resources = user.collection_text_resource
     count = 0
-    sum = 0
+    sum_all = 0
     for t_resource in all_text_resources:
         if t_resource.show is not False:
-            sum = sum +1
-        count = count + 1
+            sum_all += 1
+        count += 1
     new_list = QueryPagination(all_text_resources, page, count)
     slice_t_resources = new_list.query_pagination()
     next_url = None
@@ -409,5 +441,55 @@ def user_collection_text_resources():
         "collection_text_resources": [t_resource.to_json() for t_resource in slice_t_resources if t_resource.show is not False],
         "next": next_url,
         "prev": prev_url,
-        "count": sum
+        "count": sum_all
+    })
+
+
+@main.route('/api/user/test-list', methods=['GET'])
+@auth.login_required
+@get_current_user
+def user_test_list():
+    user = g.current_user
+    page = request.args.get('page', 1, type=int)
+    pagination = TestList.query.filter_by(author_id=user.id, show=True).order_by(TestList.timestamp.desc()).paginate(
+        page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
+        error_out=False
+    )
+    all_tests = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.user_test_list', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.user_test_list', page=page+1, _external=True)
+    return jsonify({
+        'posts': [test.to_json() for test in all_tests],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
+    })
+
+
+@main.route('/api/user/test-record', methods=['GET'])
+@auth.login_required
+@get_current_user
+def user_test_record():
+    user = g.current_user
+    page = request.args.get('page', 1, type=int)
+    pagination = TestRecord.query.filter_by(answerer_id=user.id, show=True).order_by(TestRecord.timestamp.desc()).paginate(
+        page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
+        error_out=False
+    )
+    all_tests_record = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.user_test_record', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.user_test_record', page=page+1, _external=True)
+    return jsonify({
+        'posts': [record.to_json() for record in all_tests_record],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
     })

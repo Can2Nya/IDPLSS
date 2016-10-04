@@ -166,6 +166,18 @@ class User(db.Model):
                                         backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
     collection_text_resource = db.relationship('TextResource', secondary=collectionTextResource,
                                                backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
+    test_list = db.relationship('TestList', backref='author', lazy='dynamic')
+    test_problems = db.relationship('TestProblem', backref='author', lazy='dynamic')
+    test_record = db.relationship('TestRecord', backref='answer', lazy='dynamic')
+    answer_record = db.relationship('AnswerRecord', backref='answer', lazy='dynamic')
+
+    @staticmethod
+    def add_user():
+        user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True)
+        user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True)
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -191,6 +203,7 @@ class User(db.Model):
             'user_last_seen': time_transform(self.last_seen),
             'user_followers': self.followers.count(),
             'user_followings': self.followings.count(),
+            'user_role_id'
             'user_confirmed': self.confirmed
         }
         return json_user
@@ -642,5 +655,205 @@ class TextResourceComment(db.Model):
         text_resource_id = json_resource_comment.get('text_resource_id')
         return TextResourceComment(body=body, author_id=author_id, text_resource_id=text_resource_id)
 
+
+class TestList(db.Model):
+    """
+    测试表,用来保存测试试卷信息
+    """
+    __tablename__ = 'test_list'
+    id = db.Column(db.Integer, primary_key=True)
+    test_title = db.Column(db.String(128))
+    test_description = db.Column(db.Text)
+    show = db.Column(db.Boolean, default=True)
+    test_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
+    key_words = db.Column(db.String(128))  # 存储该试卷对应的知识点
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    image = db.Column(db.String(256))  # 存放该测试的封面图
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    problems = db.relationship('TestProblem', backref='testList', lazy='dynamic')
+
+    def __repr__(self):
+        return '< test_list titile is %r>' % self.test_title
+
+    def to_json(self):
+        json_test = {
+            "id": self.id,
+            "test_title": self.test_title,
+            "test_description": self.test_description,
+            "show": self.show,
+            "test_category": self.test_category,
+            "key_words": self.key_words,
+            "timestamp": time_transform(self.timestamp),
+            "image": self.image,
+            "author_id": self.author_id,
+            "author_user_name": id_change_user(self.author_id).user_name,
+            "author_name": id_change_user(self.author_id).name,
+            "author_avatar": id_change_user(self.author_id).avatar,
+            "problems_count": self.problems.count()
+        }
+        return json_test
+
+    @staticmethod
+    def from_json(json_info):
+        test_title = json_info.get('test_title')
+        test_description = json_info.get('test_description')
+        test_category = json_info.get('test_category')
+        key_words = json_info.get('key_words')
+        image = json_info.get('image')
+        author_id = json_info.get('author_id')
+        return TestList(test_title=test_title, test_description=test_description, test_category=test_category,
+                        key_words=key_words, image=image, author_id=author_id)
+
+
+class TestProblem(db.Model):
+    """
+    问题表,用来保存测试的每个问题
+    """
+    __tablename__ = 'test_problems'
+    id = db.Column(db.Integer, primary_key=True)
+    problem_description = db.Column(db.Text)  # 问题的描述
+    problem_order = db.Column(db.Integer)  # 题目的顺序
+    show = db.Column(db.Boolean, default=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    description_image = db.Column(db.String(256))   # 问题描述的图片,可选
+    problem_type = db.Column(db.Integer)  # 该题目的类型,选择题为0  主观题为1
+    choice_a = db.Column(db.String(128))
+    choice_b = db.Column(db.String(128))
+    choice_c = db.Column(db.String(128))
+    choice_d = db.Column(db.String(128))
+    right_answer = db.Column(db.Text)  # 问题答案
+    answer_explain = db.Column(db.Text)       # 答案解释
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    test_list_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))
+
+    def __repr__(self):
+        return '<probles id is %r>' % self.id
+
+    def to_json(self):
+        json_problem = {
+            "id": self.id,
+            "problem_description": self.problem_description,
+            "problem_order": self.problem_order,
+            "show": self.show,
+            "timestamp": time_transform(self.timestamp),
+            "description_image": self.description_image,
+            "problem_type": self.problem_type,
+            "choice_a": self.choice_a,
+            "choice_b": self.choice_b,
+            "choice_c": self.choice_c,
+            "choice_d": self.choice_d,
+            "right_answer": self.right_answer,
+            "answer_explain": self.answer_explain,
+            "author_id": self.id,
+            "test_id": self.test_list_id
+        }
+        return json_problem
+
+    @staticmethod
+    def from_json(json_info):
+        problem_description = json_info.get('problem_description')
+        problem_order = json_info.get('problem_order')
+        description_image = json_info.get('description_image')
+        problem_type = json_info.get('problem_type')
+        choice_a = json_info.get('choice_a')
+        choice_b = json_info.get('choice_b')
+        choice_c = json_info.get('choice_c')
+        choice_d = json_info.get('choice_d')
+        right_answer = json_info.get('right_answer')
+        answer_explain = json_info.get('answer_explain')
+        author_id = json_info.get('author_id')
+        test_list_id = json_info.get('test_id')
+        return TestProblem(problem_description=problem_description, problem_order=problem_order,
+                           description_image=description_image, problem_type=problem_type,
+                           choice_a=choice_a, choice_b=choice_b, choice_c=choice_c, choice_d=choice_d,
+                           right_answer=right_answer, answer_explain=answer_explain, author_id=author_id,
+                           test_list_id=test_list_id)
+
+
+class TestRecord(db.Model):
+    """
+    用户测试记录表,用来记录用户测试的记录
+    """
+    __tablename__ = 'test_record'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    show = db.Column(db.Boolean, default=True)
+    test_accuracy = db.Column(db.Float, default=0)
+    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 做题人id
+    test_list_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))  # 对应试卷的id
+    answers = db.relationship('AnswerRecord', backref='record', lazy='dynamic')
+
+    def __repr__(self):
+        return '<test record id is %r>' % self.id
+
+    def to_json(self):
+        json_test_record = {
+            "id": self.id,
+            "timestamp": time_transform(self.timestamp),
+            "show": self.show,
+            "test_accuracy": self.test_accuracy,
+            "answerer_id": self.answerer_id,
+            "answerer_user_name": id_change_user(self.answerer_id).user_name,
+            "answerer_name": id_change_user(self.answerer_id).name,
+            "answers_count": self.answers.count(),
+            "test_id": self.test_list_id
+        }
+        return json_test_record
+
+    @staticmethod
+    def from_json(json_info):
+        answerer_id = json_info.get('answerer_id')
+        test_list_id = json_info.get('test_id')
+        return TestRecord(answerer_id=answerer_id, test_list_id=test_list_id)
+
+
+class AnswerRecord(db.Model):
+    """
+    用户测试答案表,用来保存用户完成测试后的答案记录
+    """
+    __tablename__ = 'answer_record'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    show = db.Column(db.Boolean, default=True)
+    right_answer = db.Column(db.Text)
+    user_answer = db.Column(db.Text)
+    problem_type = db.Column(db.Integer)  # 该题目的类型,选择题为0  主观题为1
+    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    test_record_id = db.Column(db.Integer, db.ForeignKey('test_record.id'))
+    problem_id = db.Column(db.Integer, db.ForeignKey('test_problems.id'))
+    test_list_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))
+
+    def __repr__(self):
+        return '<answer record id is %r>' % self.id
+
+    def to_json(self):
+        json_ans_record = {
+            "id": self.id,
+            "timestamp": time_transform(self.timestamp),
+            "show": self.show,
+            "right_answer": self.right_answer,
+            "user_answer": self.user_answer,
+            "problem_type": self.problem_type,
+            "answerer_id": self.answerer_id,
+            "answerer_user_name": id_change_user(self.answerer_id),
+            "answerer_name": id_change_user(self.answerer_id),
+            "test_record_id": self.test_record_id,
+            "problem_id": self.problem_id,
+            "test_id": self.test_list_id
+        }
+        return json_ans_record
+
+    @staticmethod
+    def from_json(json_info):
+        right_answer = json_info.get('right_answer')
+        user_answer = json_info.get('user_answer')
+        problem_type = json_info.get('problem_type')
+        answerer_id = json_info.get('answerer_id')
+        test_record_id = json_info.get('test_record_id')
+        problem_id = json_info.get('problem_id')
+        test_list_id = json_info.get('test_id')
+        return AnswerRecord(right_answer=right_answer, user_answer=user_answer, problem_type=problem_type,
+                            answerer_id=answerer_id, test_record_id=test_record_id, problem_id=problem_id,
+                            test_list_id=test_list_id)
 
 
