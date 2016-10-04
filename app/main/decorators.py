@@ -7,7 +7,7 @@ from app.models import Permission, User
 def permission_required(permissions):
     """
     装饰器,用来检查用户是否有权限访问某个API
-    原理:通过flask request对象中封装的authorization来访问user_name
+    原理:通过flask request对象中封装的authorization来访问user_name,进而验证其权限
     :param permissions:
     :return:decorator function
     """
@@ -19,8 +19,12 @@ def permission_required(permissions):
             user_name = request.authorization.username
             user = User.query.filter_by(user_name=user_name).first()
             if user is None:
-                return not_found("user does not exist in database")
-            print user.role.permissions
+                user = User.query.filter_by(email=user_name).first()
+                if user is None:
+                    user = User.verify_auth_token(user_name)
+            # TODO(ddragon)支持邮箱登录
+            if user is None:
+                return not_found()
             if not user.can(permissions) or user.confirmed is False:
                 return forbidden("don't have permission or dose not confirm")
             return f(*args, **kwargs)

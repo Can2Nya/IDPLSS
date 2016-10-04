@@ -2,7 +2,7 @@
 from flask import current_app
 
 
-class QueryPagination():
+class QueryPagination(object):
     def __init__(self, result_list, current_page, length):
         self.result_list = result_list
         self.current_page = current_page

@@ -41,3 +41,7 @@ def time_transform(utc_time):
     local = utc.astimezone(to_zone)
     return datetime.strftime(local, "%Y-%m-%d %H:%M:%S")
 
+
+def calc_count(type):
+    return len(type.query.filter_by(show=True).all())
+

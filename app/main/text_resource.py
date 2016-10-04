@@ -6,83 +6,69 @@ from app.main.authentication import auth
 from app.main import main
 from app.main.responses import bad_request, not_found, forbidden
 from app.utils.responses import self_response
+from app.utils.model_tools import calc_count
 
 
 @main.route('/api/text-resources', methods=['GET'])
 def text_resources():
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(show=True).order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_text_resource = pagination.items
-    count = 0
-    for t_resource in all_text_resource:
-        if t_resource.show is not False:
-            count = count +1
     prev_url = None
     if pagination.has_prev:
         prev_url = url_for('main.text_resources', page=page-1, _external=True)
     next_url = None
     if pagination.has_next:
         next_url = url_for('main.text_resources', page=page+1, _external=True)
-    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource
-                                       if text_resource.show is not False],
+    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource],
                     'prev': prev_url,
                     'next': next_url,
-                    'count': count
+                    'count': pagination.total
                     })
 
 
 @main.route('/api/text-resources/category/<int:cate_id>', methods=['GET'])
 def text_resources_category(cate_id):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(resource_category=cate_id).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(resource_category=cate_id, show=True).order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_text_resource = pagination.items
-    count = 0
-    for t_resource in all_text_resource:
-        if t_resource.show is not False:
-            count = count+1
     prev_url = None
     if pagination.has_prev:
         prev_url = url_for('main.text_resources_category', page=page-1, cate_id=cate_id,  _external=True)
     next_url = None
     if pagination.has_next:
         next_url = url_for('main.text_resources_category', page=page+1, cate_id=cate_id,  _external=True)
-    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource
-                                       if text_resource.show is not False],
+    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource],
                     'prev': prev_url,
                     'next': next_url,
-                    'count': count
+                    'count': pagination.total
                     })
 
 
 @main.route('/api/text-resources/category/<int:cate_id>/type/<int:tid>', methods=['GET'])
 def text_resources_category_type(cate_id, tid):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(resource_category=cate_id, resource_type=tid).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(resource_category=cate_id, resource_type=tid, show=True).order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
     all_text_resource = pagination.items
-    count = 0
-    for t_resource in all_text_resource:
-        if t_resource.show is not False:
-            count = count+1
     prev_url = None
     if pagination.has_prev:
         prev_url = url_for('main.text_resources_category_type', page=page-1, cate_id=cate_id, tid=tid, _external=True)
     next_url = None
     if pagination.has_next:
         next_url = url_for('main.text_resources_category_type', page=page+1, cate_id=cate_id, tid=tid, _external=True)
-    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource
-                                       if text_resource.show is not False],
+    return jsonify({'text_resources': [text_resource.to_json() for text_resource in all_text_resource],
                     'prev': prev_url,
                     'next': next_url,
-                    'count': count
+                    'count': pagination.total
                     })
 
 
@@ -116,15 +102,11 @@ def new_text_resource():
 @main.route('/api/text-resources/<int:rid>/comments')
 def text_resource_comments(rid):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResourceComment.query.filter_by(text_resource_id=rid).order_by(TextResourceComment.timestamp.desc()).paginate(
+    pagination = TextResourceComment.query.filter_by(text_resource_id=rid, show=True).order_by(TextResourceComment.timestamp.desc()).paginate(
         page, per_page=current_app.config['IDPLSS_COMMENTS_PER_PAGE'],
         error_out=False
     )
     all_comments = pagination.items
-    count = 0
-    for comment in all_comments:
-        if comment.show is not False:
-            count = count+1
     url_prev = None
     if pagination.has_prev:
         url_prev = url_for('main.text_resource_comments', rid=rid, page=page-1, _external=True)
@@ -132,10 +114,10 @@ def text_resource_comments(rid):
     if pagination.has_next:
         url_next = url_for('main.text_resource_comments', rid=rid, page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in all_comments if comment.show is not False],
+        'posts': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
-        'count': count
+        'count': pagination.total
     })
 
 
