@@ -205,6 +205,28 @@ def collect_course_video(vid):
         return self_response('invalid operation')
 
 
+@main.route('/api/courses/search', methods=['POST'])
+def search_course():
+    search_info = request.json
+    key_word = search_info['key_words']
+    page = request.args.get('page', 1, type=int)
+    pagination = Course.query.filter(Course.course_name.like('%'+key_word+'%'), Course.show == True).paginate(
+        page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    all_courses = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.search_course', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.search_course', page=page+1, _external=True)
+    return jsonify({
+        'search_result': [course.to_json() for course in all_courses],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
+    })
 
 
 

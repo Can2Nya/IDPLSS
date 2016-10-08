@@ -154,6 +154,29 @@ def is_collecting(pid):
         return self_response("False")
 
 
+@main.route('/api/posts/search', methods=['POST'])
+def search_post():
+    search_info = request.json
+    key_word = search_info['key_words']
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.filter(Post.title.like('%'+key_word+'%'), Post.show == True).paginate(
+        page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    all_posts = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.search_post', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.search_post', page=page+1, _external=True)
+    return jsonify({
+        'search_result': [post.to_json() for post in all_posts],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
+    })
+
 
 
 

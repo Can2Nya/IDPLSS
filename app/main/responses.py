@@ -42,9 +42,16 @@ def method_not_allowed(message):
 @main.app_errorhandler(404)
 def info_not_found(e):
     if request.accept_mimetypes.accept_json:
-        response = jsonify({'error': 'post data error ,query info does not exist'})
+        response = jsonify({'error': 'post data error ,query info does not exist '})
         response.status_code = 404
         return response
+
+
+@main.app_errorhandler(500)
+def inter_server_error(e):
+    response = jsonify({'error': 'inter server error'})
+    response.status_code = 500
+    return response
 
 
 def test_response(message):
