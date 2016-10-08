@@ -93,7 +93,7 @@ def test_problems(tid):
     if pagination.has_next:
         url_next = url_for('main.test_problems', tid=tid, page=page+1, _external=True)
     return jsonify({
-        'video_list': [problem.to_json() for problem in all_problems],
+        'problem_list': [problem.to_json() for problem in all_problems],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -189,6 +189,29 @@ def over_test(tid):
             "accuracy": accuracy
         })
 
+
+@main.route('/api/test-list/search', methods=['POST'])
+def search_test_list():
+    search_info = request.json
+    key_word = search_info['key_words']
+    page = request.args.get('page', 1, type=int)
+    pagination = TestList.query.filter(TestList.test_title.like('%'+key_word+'%'), TestList.show == True).paginate(
+        page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    all_test = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.search_test_list', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.search_test_list', page=page+1, _external=True)
+    return jsonify({
+        'search_result': [test.to_json() for test in all_test],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
+    })
 
 
 

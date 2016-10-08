@@ -163,10 +163,34 @@ def collect_resource(rid):
     text_resource = TextResource.query.get_or_404(rid)
     user = g.current_user
     if request.method == 'GET':
-       user.collect_text_resouce(text_resource)
-       return self_response('collect text resource successfully')
+        user.collect_text_resouce(text_resource)
+        return self_response('collect text resource successfully')
     elif request.method == 'DELETE':
         user.uncollect_text_resource(text_resource)
         return self_response('unfavorite text resource successfully')
     else:
         return self_response('invalid operation')
+
+
+@main.route('/api/text-resources/search', methods=['POST'])
+def search_text_resource():
+    search_info = request.json
+    key_word = search_info['key_words']
+    page = request.args.get('page', 1, type=int)
+    pagination = TextResource.query.filter(TextResource.resource_name.like('%'+key_word+'%'), TextResource.show == True).paginate(
+        page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    all_resources = pagination.items
+    url_prev = None
+    if pagination.has_prev:
+        url_prev = url_for('main.search_text_resource', page=page-1, _external=True)
+    url_next = None
+    if pagination.has_next:
+        url_next = url_for('main.search_text_resource', page=page+1, _external=True)
+    return jsonify({
+        'search_result': [t_resource.to_json() for t_resource in all_resources],
+        'prev': url_prev,
+        'next': url_next,
+        'count': pagination.total
+    })

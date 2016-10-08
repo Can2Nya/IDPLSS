@@ -1,11 +1,12 @@
 # coding: utf-8
 from flask_httpauth import HTTPBasicAuth
-from flask import jsonify, request, g, current_app, abort, flash
+from flask import jsonify, request, g, current_app, abort, make_response
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from app.models import db, User, Permission, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
 from app.main import main
 from app.main.decorators import get_current_user
+from app.utils.responses import self_response
 auth = HTTPBasicAuth()
 
 
@@ -36,6 +37,7 @@ def auth_error():
     """
     return unauthorized('Invalid credentidls from auth error handler')
     # TODO(Ddragon):修改unauthorized的错误描述
+
 
 
 @main.route('/api/user/is-confirm', methods=['POST'])
@@ -102,4 +104,17 @@ def get_qiniu_token():
     return jsonify({'uptoken': mobile_upload_token})
 
 
-
+@main.route('/api/user/verify', methods=['POST'])
+def verify_user():
+    user_info = request.json
+    user_name_or_email = user_info['user_name_or_email']
+    u_password = user_info['user_password']
+    u = User.query.filter_by(user_name=user_name_or_email).first()
+    if u is None:
+        u = User.query.filter_by(email=user_name_or_email).first()
+        if u is None:
+            return bad_request('user_name or email incorrect')
+    if u.verify_password(u_password):
+        return self_response('verify successful')
+    else:
+        return bad_request('password incorrect')
