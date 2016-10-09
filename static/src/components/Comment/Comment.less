@@ -22,4 +22,30 @@
 	.context{
 		font-size: 12px;
 	}
+	.tool{
+		padding: 10px 0;
+		&:before{
+			clear: both;
+		}
+		&:after{
+			clear: both;
+			content: '.';
+			display: block;
+		}
+	}
+	.icon{
+		.iconfont;
+		font-size: 10px;
+		
+		float: right;
+		& span{
+			color: @gray;
+			padding: 0 10px;
+			.transition;
+			&:hover{
+				color: @purple
+			}
+		}
+
+	}
 }

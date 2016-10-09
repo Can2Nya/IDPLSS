@@ -2,7 +2,7 @@ import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
 import pathToRegexp from 'path-to-regexp';
-import { Breadcrumb, Row, Col, Icon, Pagination, Spin } from 'antd';
+import { Breadcrumb, Row, Col, Icon, Pagination, Spin, Select } from 'antd';
 import Layout from '../layouts/Layout/Layout';
 
 import Title from '../components/Title/Title';
@@ -21,7 +21,7 @@ import styles from './commont.less';
 
 const Category = ({ location, dispatch, context }) => {
 	const { stateName, category, categoryTitle, total, isSelectPagination, isSelectCategory, loading } = context;
-
+	//通用action
 	const handleRequst = () =>{
 		dispatch({
 			type: `${stateName}/get/categorySource`,
@@ -36,7 +36,7 @@ const Category = ({ location, dispatch, context }) => {
 		window.location.hash = `#!/${id}/1`;
 		//data['category']=id;
 		//data['pagination']=1;
-		handleRequst();
+		// handleRequst();
 	}
 	const handleChangePagination = (id) =>{
 		dispatch({
@@ -46,10 +46,11 @@ const Category = ({ location, dispatch, context }) => {
 		window.location.hash = `#!/${isSelectCategory}/`+id;
 		//data['category']=isSelectCategory;
 		//data['pagination']=id;
-		handleRequst();
+		// handleRequst();
 	}
-
-	const handleToggleForumModal = () =>{
+	//end----------------------------------------
+	//forum表单------------------------------------
+	const handleToggleForumModal = () =>{//表单modal显示
 		const { modalState } = context;
 		dispatch({
 			type: `forum/ToggleForumModal`,
@@ -57,12 +58,21 @@ const Category = ({ location, dispatch, context }) => {
 		})
 	}
 
-	const handleSubmitPost = () =>{
+	const handleSubmitPost = () =>{//post表单发送
 		dispatch({
 			type: `forum/SubmitPost`
 		})
 	}
-
+	//end----------------------------------------
+	//text---------------------------------------
+	const handleToggleTextType = (value) =>{
+		dispatch({
+			type: `text/changeType`,
+			isSelectType: value,
+		})
+		handleRequst();
+	}
+	//end----------------------------------------
 	const breadcrumbList = () =>{
 		if(isSelectCategory !== category.length){
 			return category[isSelectCategory]
@@ -74,30 +84,72 @@ const Category = ({ location, dispatch, context }) => {
 		if(context.categorySource.loading){
 			return <Spin />;
 		}
+		if(context.categorySource.list <=0 || !context.categorySource.list){
+			return;
+		}
 		switch(stateName){
-			case 'video': 
+			case 'video':
 			return context.categorySource.list.map((video,index) =>{
 				if(!video.show) return
 				return(
 					<Col span={8} lg={6} key={index}> 
 					<VideoCover data={video} type='small' />
 					</Col>
-				)
+				);
 			})
+			case 'text':
+				return context.categorySource.list.map((text,index) =>{
+					if(!text.show) return;
+					return(
+						<Col span={8} lg={6} key={index}> 
+						<TextCover wordtype={text.resource_type} type='big' data={text}/>
+						</Col>
+						)
+				});
+			case 'forum': 
+				return context.categorySource.list.map((forum,index) =>{
+					if(!text.show) return;
+					return(
+						<Col span={8} lg={6} key={index}> 
+						<PostCover commenttype='game' type='big' data={forum}/>
+						</Col>
+						)
+				})
 		}
 	}
 
 	const forumExetend = () =>{
 		if(stateName == 'forum') return (
+			<div className={styles.margin}>
 			<PostForm 
 			onClick={handleToggleForumModal.bind(this)}
 			onCancel={handleToggleForumModal.bind(this)} 
 			onOk={handleSubmitPost.bind(this)}
 			 confirmLoading={context.isPostForm}
 			  visible={context.modalState}
-			  />);
+			  />
+			 </div>
+			 );
 	}
-
+	const textExetend = () =>{
+		if(stateName == 'text') {
+			let isDisable = false ;
+			if (isSelectCategory == 0) isDisable = true;
+			return (
+			<div className={styles.margin}>
+			<span>筛选文档格式</span>
+			<Select style={{ width: 120 }} defaultValue="-1" onChange={handleToggleTextType} disabled={isDisable}>
+				<Select.Option value='-1'>全部格式</Select.Option>
+				<Select.Option value='0'>其他</Select.Option>
+				<Select.Option value='1'>word</Select.Option>
+				<Select.Option value='2'>excel</Select.Option>
+				<Select.Option value='3'>pdf</Select.Option>
+			</Select>
+			</div>
+			
+			);
+		}
+	}
 	return (
 		<Layout location={location} type={2}>
 			<div className={styles.contain}>
@@ -120,7 +172,7 @@ const Category = ({ location, dispatch, context }) => {
 						<Icon type="home" />
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
-						<Link to={{ pathname:`${location.pathname}`}}>全部课程</Link>
+						<Link to={{ pathname:`${location.pathname}`}}>{ categoryTitle }</Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
 						{ breadcrumbList() }
@@ -128,7 +180,7 @@ const Category = ({ location, dispatch, context }) => {
 			</Breadcrumb>
 			
 		</div>
-			
+		{ textExetend() }
 			<Row>
 			{/**<TestCover type='big' />
 			<TestCover type='small' />
@@ -150,7 +202,7 @@ const Category = ({ location, dispatch, context }) => {
 		</div>
 		</Col>
 		</Spin>
-		
+
 		</Row>
 		</div>
 		</Layout>

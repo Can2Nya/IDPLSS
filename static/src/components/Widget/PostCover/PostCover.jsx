@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import styles from './PostCover.less';
 
-const PostCover = ({ type, commenttype }) => {
+const PostCover = ({ type, commenttype, data }) => {
 	const coverCls = () =>{
 		/*if(type == 'small') return styles.small;
 		if(type == 'big') return styles.big;*/
@@ -22,24 +22,24 @@ const PostCover = ({ type, commenttype }) => {
 	}
 
 	const renderPostCover = () =>{
-		if (type == 'small') return <div className={styles.title}>帖子标题</div>
+		if (type == 'small') return <div className={styles.title}>{ data.title }</div>
 			;
 		if (type == 'big') return <Row type="flex" align="middle" gutter={16}>
 			<Col span={2}>
 				{ renderTypeIcon() }
 			</Col>
 			<Col span={20}>
-			<div className={styles.title}>帖子</div>
+			<div className={styles.title}>{ data.title }</div>
 			<div style={{ margin: '15px 0 0 0'}}>
 				<div className={styles.avatar}></div>
-				<span className={styles.username}>发帖人 at time</span>
+				<span className={styles.username}>{ data.name } at { data.timestamp }</span>
 			</div>
 			</Col>
 			<Col span={2} style={{ textAlign:'center' }}>
 			<div className={styles.icon}>
 			&#xe604;
 			</div>
-			<div className={styles.subtitle}>11</div>
+			<div className={styles.subtitle}>{ data.comments_count }</div>
 			
 			</Col>
 			</Row>

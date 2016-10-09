@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { data } from '../services/user.js';//向user传送的数据
 
-import { Steps, Row, Col, Radio, Input, Form } from 'antd';
+import { Steps, Row, Col, Radio, Input, Form, Icon } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 
 import Layout from '../layouts/Layout/Layout';
@@ -18,7 +18,7 @@ let Register = ({ dispatch, location, form, user }) => {
 
 	const { stepState, isAllowStepChange, registerFormisSubmit } = user;
 	const { getFieldProps, validateFields, getFieldValue } = form;
-	
+	// -----------------action----------------------
 	const handleStepUp = () =>{
 		if(isAllowStepChange){
 		dispatch({
@@ -34,28 +34,30 @@ let Register = ({ dispatch, location, form, user }) => {
 		})
 	}
 	const handleIsAllowStepChange = (event) =>{
+		let value;
+		if(event.target.value) value = event.target.value;
+		else value = event;
 		dispatch({
 			type:'user/register/allowStepChange',
-			isAllowStepChange: event.target.value,
+			isAllowStepChange: value,
 		})
 		
 	}
 	const handleRrgister = (event) =>{
 		event.preventDefault();
 		validateFields((errors, values) =>{
-			if(!!errors){
-				return;
+			if(errors){
+				return ;
 			}
-		});
-		
-		data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
+			data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
 
-		dispatch({
-			type:'user/register',
-		})
-		
+			dispatch({
+				type:'user/register',
+			})
+		});
 	}
-	/*表单*/
+	// ==========================end===========================
+	// -------------------------formrule-----------------------
 	const formItemLayout = {
 	   labelCol: { span: 4 },
 	   wrapperCol: { span: 14 },
@@ -63,7 +65,7 @@ let Register = ({ dispatch, location, form, user }) => {
 
 	const nameProps = getFieldProps('user_name', {
 		rules: [
-			{ required: true, min: 5, message: '用户名至少为 5 个字符' },
+			{ required: true, min: 2, max: 15, message: ['用户名至少为 2 个字符','用户名最多为 15 个字符'] },
 			//{ validator: this.userExists },
 		],
 	});
@@ -112,6 +114,26 @@ let Register = ({ dispatch, location, form, user }) => {
 				},
 			  }],
 			});
+	// ---------------------end------------------------------
+	// ======================render==========================
+	const renderConfirmResult = () =>{
+		if(user.success){
+			return(
+				<Col span={9}>
+						<Icon type="check-circle-o" className={styles.rightmsg} />
+						<div className={styles.msg}>账号验证成功</div>
+				</Col>
+				)
+		}
+		if(user.err){
+			return(
+				<Col span={9}>
+						<Icon type="cross-circle-o" className={styles.rightmsg} />
+						<div className={styles.msg}>非法操作</div>
+				</Col>
+				)
+		}
+	}
 
 	const renderSteps = (step) =>{
 		switch(step){
@@ -201,10 +223,10 @@ let Register = ({ dispatch, location, form, user }) => {
 				
 				<li key='3'>
 				<div style={{position: 'absolute',width: '100%'}}>
-				<Row type='flex' align={middle} justify={center}>
-					<Col span={5}>
-						<div style={{fontSize: "200px"}}>&#xe60d;</div>
-						<div>一封邮件已发送至您的邮箱<br />请点击邮箱中的链接进行验证</div>
+				<Row type='flex' align="middle" justify="center">
+					<Col span={9}>
+						<div className={styles.mail}>&#xe60d;</div>
+						<div className={styles.msg}>一封邮件已发送至您的邮箱<br />请点击邮箱中的链接进行验证</div>
 					</Col>
 				</Row>
 				</div>
@@ -216,8 +238,11 @@ let Register = ({ dispatch, location, form, user }) => {
 				<li key='4'>
 				<div style={{position: 'absolute',width: '100%'}}>
 				<div onClick={handleStepDown.bind(this)}>上一页
-					</div>
-					</div>
+				</div>
+				<Row type='flex' align="middle" justify="center">
+					{ renderConfirmResult() }
+				</Row>
+				</div>
 				</li>
 				
 				)

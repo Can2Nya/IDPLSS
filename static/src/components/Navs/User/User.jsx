@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import cookie from 'js-cookie';
 import base64 from 'base-64';
 
-import { data } from '../../../services/user.js';//向user传送的数据
+//import { data } from '../../../services/user.js';//向user传送的数据
 
 import { Popover, Modal, Form, Input } from 'antd';
 import QueueAnim from 'rc-queue-anim';//动画效果
@@ -27,6 +27,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
 		dispatch({
 			type: 'user/login',
+			userId: data.username
 		})
 	}
 	const handleLogout = ()=>{

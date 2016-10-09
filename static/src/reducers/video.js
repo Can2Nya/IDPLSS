@@ -4,14 +4,15 @@ import { combineReducer, subscriptions } from 'redux';
 import { data } from '../services/video.js';//向video传送的数据
 
 const video = handleActions({
-	['video/init'](state, action){
+	['video/init/categorySource'](state, action){
 		return{ ...state, loading: true }
 	},
-	['video/init/commplete'](state, action){
+	['video/init/commplete/categorySource'](state, action){
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false }
 	},
+	// -------------------------------------------------------
 	['video/get/categorySource'](state, action) {
-		data['category'] = state.isSelectCategory;
+		data['category'] = state.isSelectCategory -1;
 		data['pagination'] = state.isSelectPagination;
 		return { 
 		...state, 
@@ -21,7 +22,7 @@ const video = handleActions({
 	['video/get/success/categorySource'](state, action) {
 		return { 
 			...state,
-			categorySource: { ...state.categorySource, list: action.payload.courses_video, loading: false },
+			categorySource: { ...state.categorySource, list: action.payload.courses, loading: false },
 			total: action.payload.count,
 		}
 	},
@@ -31,7 +32,7 @@ const video = handleActions({
 		categorySource: { ...state.categorySource, loading: false, },
 		};
 	},
-
+	// -------------------------------------------------------
 	['video/get/recommend'](state, action) {
 		return { 
 		...state, 
@@ -41,7 +42,7 @@ const video = handleActions({
 	['video/get/success/recommend'](state, action) {
 		return { 
 			...state,
-			recommend: { ...state.recommend, list: action.payload.courses_video, loading: false },
+			recommend: { ...state.recommend, list: action.payload.courses, loading: false },
 			total: action.payload.count,
 		}
 	},
@@ -51,11 +52,66 @@ const video = handleActions({
 		recommend: { ...state.recommend, loading: false, },
 		};
 	},
+	// -----------课程详细列表--------------------------------------------
+	['video/init/detail'](state, action) {
+		data['fuc'] = action.fuc
+		data['coursesId'] = action.id
+		return { 
+		...state, 
+		isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
+		};
+	},
+	['video/get/detail'](state, action) {//获取有关联的列表
+		return { 
+		...state, 
+		isSelectContext: { ...state.isSelectContext, loading: true, },
+		};
+	},
+	['video/get/success/detail'](state, action) {
+		return { 
+			...state,
+			isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
+		}
+	},
+	['video/get/series'](state, action) {//获取有关联的列表
+		console.log('series')
+		return { 
+		...state, 
+		isSelectContext: { ...state.isSelectContext, loading: true, },
+		};
+	},
+	['video/get/success/series'](state, action) {
+		return { 
+			...state,
+			isSelectContext: { ...state.isSelectContext, list: action.payload.courses, loading: false },
+		}
+	},
+	['video/get/comment'](state, action) {//获取有关联的列表
+		return { 
+		...state, 
+		isSelectContext: { ...state.isSelectContext, loading: true, },
+		};
+	},
+	['video/get/success/comment'](state, action) {
+		return { 
+			...state,
+			isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
+		}
+	},
+	['video/post/comment'](state, action) {
+		data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
+		return { ...state,}
+	},
+	['video/delete/comment'](state, action) {
+		
+		return { ...state,}
+	},
 	/**['video/changeMode'](state, action) {
 		/**模式有主页展示，推荐模式，分类展示
 		const newMode = action.mode;
 		return { ...state, mode: newMode }
 	},**/
+	// ------------通用--改变分页-----------------------------------------
 	['video/changeCategory'](state, action) {
 		return { ...state, isSelectCategory: action.isSelectCategory }
 	},
@@ -64,14 +120,14 @@ const video = handleActions({
 	},
 }, {
 	stateName: 'video',
-		categorySource: {//分页中的列表
-			list:[],
-			loading: false,
-		},
-		recommend: {//主页，推荐栏列表
-			list:[],
-			loading: false,
-		},//装载视频内容，看api分类
+	categorySource: {//分页中的列表
+		list:[],
+		loading: false,
+	},
+	recommend: {//主页，推荐栏列表
+		list:[],
+		loading: false,
+	},//装载视频内容，看api分类
 	total: 0,//数据总数
 	categoryTitle: '视频分类',
 	category: [
@@ -87,6 +143,12 @@ const video = handleActions({
 			 ],
 	isSelectCategory: 0,//选定的分类，没选定就是分类的7
 	isSelectPagination: 1,//选定的分页，默认从1开始
+	isSelectContext: {
+		id: 0,
+		context: {},
+		list: [],
+		comment: [],//课程评论列表
+	},//选定的内容
 	loading: false,//加载中
 });
 

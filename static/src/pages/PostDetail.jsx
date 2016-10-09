@@ -1,6 +1,8 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Breadcrumb, Row, Col, Icon } from 'antd';
+import { connect } from 'react-redux';
+import pathToRegexp from 'path-to-regexp';
 import Layout from '../layouts/Layout/Layout';
 
 import Comment from '../components/Comment/Comment';
@@ -10,24 +12,34 @@ import PostDetailPannel from '../layouts/PostDetailPannel/PostDetailPannel';
 
 import styles from './commont.less';
 
-const PostDetail = ({ location }) => {
-	/*chidren为router*/
-	const handleTabsLink = ({...e}) =>{
-		/*e为点击事件，包含tabs的key(然而键并不是key：xxx)
-		console.log(e[0])*/
-		const hash = (key) =>{
-			switch(key){
-				case '1': return '#!/list/';
-				case '2': return '#!/comment/';
+const PostDetail = ({ forum, user, dispatch, location }) => {
+	const { stateName, isSelectContext } = forum
+
+	// -------------action----------------
+	const handlePostSubmit = (form, value, e) => {//评论表单提交(参数顺序不能反)
+		e.preventDefault();
+		form.validateFields((errors, values) => {
+			if (!!errors) {
+				return;
 			}
-		}
-		return window.location.hash = hash(e[0]);
+			if (user.list <= 0) return;
+			// dispatch({
+			// 	type: 'video/post/comment',
+			// 	body: value['body'],
+			// 	author_id: user.list.user_id,
+			// 	course_id: context.isSelectContext.id,
+			// })
+		});
 	}
-	const handleActiveTab = () =>{
-		switch(location.hash){
-			case '#!/list/': return '1';
-			case '#!/comment/': return '2';
-		}
+	const handlePostDelete = (value, e) =>{
+		// if ((list.user_type == 2 && list.user_id == isSelectContext.context.author_id) || (list.user_type >= 3)){
+		// 	// 第二道防线
+		// 	dispatch({
+		// 		type: `${stateName}/delete/comment`,
+		// 		commentid: id,
+		// 	})
+		// }
+
 	}
 	return (
 		<Layout location={location}>
@@ -40,15 +52,15 @@ const PostDetail = ({ location }) => {
 							<Icon type="home" />
 							</Breadcrumb.Item>
 							<Breadcrumb.Item>
-							全部课程
+							{ forum.categoryTitle }
 							</Breadcrumb.Item>
 				
 				</Breadcrumb>
 			</div>
 			<Col span={16} lg={17} >
 				<PostDetailPannel>
-					<InputForm />
-					<Comment />
+					<InputForm user={user} onSubmit={handlePostSubmit.bind(this)}/>
+					<Comment onDelete={handlePostDelete.bind(this)}/>
 				</PostDetailPannel>
 			</Col>
 			</Row>
@@ -62,4 +74,11 @@ PostDetail.PropTypes = {
 
 };
 
-export default PostDetail;
+function mapStateToProp({forum,user},{ location,}){//参数一可追加
+	return {
+	 	forum: forum,//context为当前读取的store（video，text，test）
+		user: user,
+	};
+};
+
+export default connect(mapStateToProp)(PostDetail);

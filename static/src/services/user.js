@@ -4,7 +4,7 @@ var apiUrl = 'http://api.jxnugo.com'
 export var data = {}
 
 export async function getUserState() {
-  	return xFetch(apiUrl+'/api/user/info',{method: 'GET',});
+  	return xFetch(apiUrl+'/api/user/'+data['user_id']+'/info',{method: 'GET',});
 }
 
 export async function setUserState() {
@@ -18,9 +18,14 @@ export async function setUserState() {
 }
 
 export async function userRegister() {
+
   	return xFetch(apiUrl+'/api/user/register',{method: 'POST',
   		body:JSON.stringify(data['body']),
   });
+}
+
+export async function userRegisterConfirm() {
+	return xFetch(apiUrl+'/api/user/confirm/'+data['code'],{method: 'GET',});
 }
 
 export async function UserisFollowing() {

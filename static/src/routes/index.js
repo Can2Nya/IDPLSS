@@ -17,26 +17,37 @@ import NotFound from '../pages/NotFound';
 const Routes = ({ history, dispatch }) =>{
 	//initPageStore(history,dispatch);
 	history.listen(({ pathname, hash }) =>{
+		// 注册初始化------------------
+		if(pathname.search('register')!== -1){
+			const match = pathToRegexp('#!/:token').exec(hash);
+			if(match){
+				dispatch({
+					type: 'user/register/confirm',
+					code: match[1]
+				})
+			}
+		}
 		//分类页初始化-------------------
 		if(pathname.search('category')!== -1){
 			const matchpathname = pathToRegexp('/category/:context/').exec(pathname)
 			const context = matchpathname[1];
 			dispatch({
-				type: `${context}/init/`
+				type: `${context}/init/categorySource`
 			})
+
 			if(hash){
 				const match = pathToRegexp('#!/:category/:pagination').exec(hash);
 				const category = parseInt(match[1]);
 				const pagination = parseInt(match[2]);
 				dispatch({
-					type: `${context}/init/commplete`,
+					type: `${context}/init/commplete/categorySource`,
 					category: category,
 					pagination: pagination,
 				})
 			}
 			else{
 				dispatch({
-					type: `${context}/init/commplete`,
+					type: `${context}/init/commplete/categorySource`,
 					category: 0,
 					pagination: 1,
 				})
@@ -46,6 +57,25 @@ const Routes = ({ history, dispatch }) =>{
 			})
 		}
 		//end------------------------
+		// detail init-------------------
+		if(pathname.search('detail')!== -1){
+			const match = pathToRegexp('/detail/:context/:id/#!/:fuc').exec(pathname+hash);
+			const context = match[1]
+			const id = match[2]
+			const fuc = match[3]
+			dispatch({
+				type: `${context}/init/detail`,
+				id: id,
+				fuc: fuc,
+			})
+			dispatch({
+				type: 'video/get/detail',
+			})
+			dispatch({
+				type: `${context}/get/${fuc}`,
+			})
+		}
+		// 
 	})
 	return(
 	<Router history={history}>
@@ -59,7 +89,10 @@ const Routes = ({ history, dispatch }) =>{
 			<Route path="test/"  />
 			<Route path="forum/" />
 		</Route>
-		<Route path="/detail/:id/" component={Detail}>
+		<Route path="/detail/" component={Detail}>
+			<Route path="video/:id/" />
+			<Route path="text/:id/" />
+			<Route path="test/:id/" />
 		</Route>
 		<Route path="/post/:id/" component={PostDetail} />
 		<Route path="/user/:id/" component={User}>
