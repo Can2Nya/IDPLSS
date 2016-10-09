@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { combineReducer, subscriptions } from 'redux';
 
-//import { data } from '../services/test.js';//向test传送的数据
+import { data } from '../services/test.js';//向test传送的数据
 
 const test = handleActions({
 	['test/init/categorySource'](state, action){
@@ -11,8 +11,8 @@ const test = handleActions({
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false}
 	},
 	['test/get/categorySource'](state, action) {
-		//data['category'] = state.isSelectCategory;
-		//data['pagination'] = state.isSelectPagination;
+		data['category'] = state.isSelectCategory;
+		data['pagination'] = state.isSelectPagination;
 		return { 
 		...state, 
 		categorySource: { ...state.categorySource, loading: true, },
@@ -61,10 +61,7 @@ const test = handleActions({
 		};
 	},
 	['test/get/detail'](state, action) {//获取有关联的列表
-		return { 
-		...state, 
-		isSelectContext: { ...state.isSelectContext, loading: true, },
-		};
+		return { ...state, };
 	},
 	['test/get/success/detail'](state, action) {
 		return { 
@@ -73,7 +70,6 @@ const test = handleActions({
 		}
 	},
 	['test/get/series'](state, action) {//获取有关联的列表
-		console.log('series')
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -82,29 +78,29 @@ const test = handleActions({
 	['test/get/success/series'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, list: action.payload.courses, loading: false },
+			isSelectContext: { ...state.isSelectContext, list: action.payload.problem_list, loading: false },
 		}
 	},
-	['test/get/comment'](state, action) {//获取有关联的列表
-		return { 
-		...state, 
-		isSelectContext: { ...state.isSelectContext, loading: true, },
-		};
-	},
-	['test/get/success/comment'](state, action) {
-		return { 
-			...state,
-			isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
-		}
-	},
-	['test/post/comment'](state, action) {
-		data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
-		return { ...state,}
-	},
-	['test/delete/comment'](state, action) {
+	// ['test/get/comment'](state, action) {//获取有关联的列表
+	// 	return { 
+	// 	...state, 
+	// 	isSelectContext: { ...state.isSelectContext, loading: true, },
+	// 	};
+	// },
+	// ['test/get/success/comment'](state, action) {
+	// 	return { 
+	// 		...state,
+	// 		isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
+	// 	}
+	// },
+	// ['test/post/comment'](state, action) {
+	// 	data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
+	// 	return { ...state,}
+	// },
+	// ['test/delete/comment'](state, action) {
 		
-		return { ...state,}
-	},
+	// 	return { ...state,}
+	// },
 	/**['test/changeMode'](state, action) {
 		/**模式有主页展示，推荐模式，分类展示
 		const newMode = action.mode;

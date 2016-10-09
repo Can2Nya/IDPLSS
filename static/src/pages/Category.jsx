@@ -93,7 +93,7 @@ const Category = ({ location, dispatch, context }) => {
 				if(!video.show) return
 				return(
 					<Col span={8} lg={6} key={index}> 
-					<VideoCover data={video} type='small' />
+					<VideoCover data={video} type='small'/>
 					</Col>
 				);
 			})

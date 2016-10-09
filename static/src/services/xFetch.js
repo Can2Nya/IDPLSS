@@ -11,6 +11,14 @@ function check401(res) {
 	return res;
 }
 
+function check105(res) {
+	if (res.status === 105) {
+	//location.href = '/401';
+	return Promise.reject(errorMessages(res));
+	}
+	return res;
+}
+
 function check404(res) {
 	if (res.status === 404) {
 	return Promise.reject(errorMessages(res));

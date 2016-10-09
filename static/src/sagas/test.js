@@ -63,7 +63,7 @@ function* getTestDetailListSource() {
 		const { jsonResult } = yield call(req.getTestDetailList);
 		if (jsonResult) {
 			yield put({
-				type: `test/get/success/${data['fuc']}`,
+				type: `test/get/success/`,
 				payload: jsonResult,
 			});
 		}
@@ -76,43 +76,43 @@ function* getTestDetailListSource() {
 	}
 }
 
-function* postTestDetailCommentSource() {
-	try {
-		const { jsonResult } = yield call(req.postTestDetailComment);
-		if (jsonResult) {
-			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `test/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
-		}
-	} catch (err) {
-		message.error(err);
-		// yield put({
-		//   type: 'test/get/failed/recommend',
-		//   err,
-		// });
-	}
-}
+// function* postTestDetailCommentSource() {
+// 	try {
+// 		const { jsonResult } = yield call(req.postTestDetailComment);
+// 		if (jsonResult) {
+// 			message.success(jsonResult.status);
+// 			// yield put({
+// 			// 	type: `test/get/success/${data['fuc']}`,
+// 			// 	payload: jsonResult,
+// 			// });
+// 		}
+// 	} catch (err) {
+// 		message.error(err);
+// 		// yield put({
+// 		//   type: 'test/get/failed/recommend',
+// 		//   err,
+// 		// });
+// 	}
+// }
 
-function* deleteTestDetailCommentSource() {
-	try {
-		const { jsonResult } = yield call(req.deleteTestDetailComment);
-		if (jsonResult) {
-			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `test/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
-		}
-	} catch (err) {
-		message.error(err);
-		// yield put({
-		//   type: 'test/get/failed/recommend',
-		//   err,
-		// });
-	}
-}
+// function* deleteTestDetailCommentSource() {
+// 	try {
+// 		const { jsonResult } = yield call(req.deleteTestDetailComment);
+// 		if (jsonResult) {
+// 			message.success(jsonResult.status);
+// 			// yield put({
+// 			// 	type: `test/get/success/${data['fuc']}`,
+// 			// 	payload: jsonResult,
+// 			// });
+// 		}
+// 	} catch (err) {
+// 		message.error(err);
+// 		// yield put({
+// 		//   type: 'test/get/failed/recommend',
+// 		//   err,
+// 		// });
+// 	}
+// }
 
 function* watchTestCategorySourceGet() {
 	yield takeLatest('test/get/categorySource', getTestCategorySource)
@@ -126,20 +126,20 @@ function* watchTestDetailGet() {
 function* watchTestDetailListGet() {
 	yield takeLatest(['test/get/series','test/get/comment'], getTestDetailListSource)
 }
-function* watchTestDetailCommentPost() {
-	yield takeLatest('test/post/comment', postTestDetailCommentSource)
-}
-function* watchTestDetailCommentDelete() {
-	yield takeLatest('test/delete/comment', deleteTestDetailCommentSource)
-}
+// function* watchTestDetailCommentPost() {
+// 	yield takeLatest('test/post/comment', postTestDetailCommentSource)
+// }
+// function* watchTestDetailCommentDelete() {
+// 	yield takeLatest('test/delete/comment', deleteTestDetailCommentSource)
+// }
 
 export default function* () {
 	yield fork(watchTestCategorySourceGet);
 	yield fork(watchTestRecommendGet)
 	yield fork(watchTestDetailGet)
 	yield fork(watchTestDetailListGet)
-	yield fork(watchTestDetailCommentPost)
-	yield fork(watchTestDetailCommentDelete)
+	// yield fork(watchTestDetailCommentPost)
+	// yield fork(watchTestDetailCommentDelete)
 	// Load test.
 	//yield put({
 	//	type: 'test/get/categorySource',

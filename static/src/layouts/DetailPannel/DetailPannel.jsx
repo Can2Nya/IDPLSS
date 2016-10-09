@@ -9,7 +9,7 @@ import Comment from '../../components/Comment/Comment';
 
 import styles from './DetailPannel.less';
 
-const DetailPannel = ({ children }) => {
+const DetailPannel = ({ children, data }) => {
 	const DetailPannelCls = () =>{
 		/*var style = {};
 		if(type == 'video') style[[styles.video]] = true;
@@ -26,7 +26,7 @@ const DetailPannel = ({ children }) => {
 		<div className={styles.title} >简介
 		</div>
 		<div className={styles.text}>
-		<p>xxxxxxxxgdhjsgjdgsajdgj</p>
+		<p>{ data["description"] }</p>
 		</div>
 		{ children }
 		

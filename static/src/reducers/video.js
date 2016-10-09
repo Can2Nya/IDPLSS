@@ -83,7 +83,7 @@ const video = handleActions({
 	['video/get/success/series'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, list: action.payload.courses, loading: false },
+			isSelectContext: { ...state.isSelectContext, list: action.payload.video_list, loading: false },
 		}
 	},
 	['video/get/comment'](state, action) {//获取有关联的列表

@@ -62,7 +62,7 @@ function* getTextDetailListSource() {
 		const { jsonResult } = yield call(req.getTextDetailList);
 		if (jsonResult) {
 			yield put({
-				type: `text/get/success/${data['fuc']}`,
+				type: `text/get/success/comment`,
 				payload: jsonResult,
 			});
 		}
@@ -134,7 +134,11 @@ function* watchTextDetailCommentDelete() {
 
 export default function* () {
 	yield fork(watchTextCategorySourceGet);
-	//yield fork(watchTextRecommendGet)
+	yield fork(watchTextRecommendGet)
+	yield fork(watchTextDetailGet)
+	yield fork(watchTextDetailListGet)
+	yield fork(watchTextDetailCommentPost)
+	yield fork(watchTextDetailCommentDelete)
 	// Load text.
 	//yield put({
 	//	type: 'text/get/categorySource',

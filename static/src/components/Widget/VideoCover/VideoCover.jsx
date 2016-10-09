@@ -2,13 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Row, Col } from 'antd';
 import classNames from 'classnames';
+import classNamesBind from 'classnames/bind';
 
 import styles from './VideoCover.less';
 
-const VideoCover = ({ type, data }) => {
+const VideoCover = ({ type, data, }) => {
 	const coverCls = () =>{
-		/*if(type == 'small') return styles.small;
-		if(type == 'big') return styles.big;*/
 		return classNames({
 			[styles[type]]:true,
 		})
@@ -16,7 +15,7 @@ const VideoCover = ({ type, data }) => {
 	return (
 		<div className={coverCls()}>
 			<Link to={{ pathname: `/detail/video/${data.id}/`, hash: '#!/series/'}} >
-			<div className={styles.img} style={{backgroundImage:`url(${data.images})`}}>
+			<div className={styles.img} style={{backgroundImage: `url(${data['images']})`}}>
 				<div className={styles.showmun}>
 					<span>&#xe60e; </span>
 					<span>1111</span>

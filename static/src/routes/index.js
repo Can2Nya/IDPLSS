@@ -59,20 +59,27 @@ const Routes = ({ history, dispatch }) =>{
 		//end------------------------
 		// detail init-------------------
 		if(pathname.search('detail')!== -1){
-			const match = pathToRegexp('/detail/:context/:id/#!/:fuc').exec(pathname+hash);
+			const match = pathToRegexp('/detail/:context/:id/').exec(pathname);
 			const context = match[1]
 			const id = match[2]
-			const fuc = match[3]
 			dispatch({
 				type: `${context}/init/detail`,
 				id: id,
-				fuc: fuc,
 			})
+			if(hash){
+				const matchHash = pathToRegexp('#!/:fuc/').exec(hash)
+				const fuc = matchHash[1]
+				dispatch({
+					type: `${context}/init/detail`,
+					id: id,
+					fuc: fuc,
+				})
+				dispatch({
+					type: `${context}/get/${fuc}`,
+				})
+			}
 			dispatch({
-				type: 'video/get/detail',
-			})
-			dispatch({
-				type: `${context}/get/${fuc}`,
+				type: `${context}/get/detail`,
 			})
 		}
 		// 

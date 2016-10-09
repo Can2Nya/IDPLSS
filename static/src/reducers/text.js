@@ -73,19 +73,19 @@ const text = handleActions({
 			isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
 		}
 	},
-	['text/get/series'](state, action) {//获取有关联的列表
-		console.log('series')
-		return { 
-		...state, 
-		isSelectContext: { ...state.isSelectContext, loading: true, },
-		};
-	},
-	['text/get/success/series'](state, action) {
-		return { 
-			...state,
-			isSelectContext: { ...state.isSelectContext, list: action.payload.courses, loading: false },
-		}
-	},
+	// ['text/get/series'](state, action) {//获取有关联的列表
+	// 	console.log('series')
+	// 	return { 
+	// 	...state, 
+	// 	isSelectContext: { ...state.isSelectContext, loading: true, },
+	// 	};
+	// },
+	// ['text/get/success/series'](state, action) {
+	// 	return { 
+	// 		...state,
+	// 		isSelectContext: { ...state.isSelectContext, list: action.payload.courses, loading: false },
+	// 	}
+	// },
 	['text/get/comment'](state, action) {//获取有关联的列表
 		return { 
 		...state, 

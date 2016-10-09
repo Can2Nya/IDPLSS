@@ -4,12 +4,12 @@ let apiUrl = 'http://api.jxnugo.com'
 export let data = {}
 
 export async function getTextCategory() {
-	if (data['category']!== -1 ) {
-		if (data['type']!== -1 ) return xFetch(apiUrl+'/api/text-resources/category/'+data['category']+'/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
+	if (data['category']!= -1 ) {
+		// if (data['type']!== -1 ) return xFetch(apiUrl+'/api/text-resources/category/'+data['category']+'/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
 		return xFetch(apiUrl+'/api/text-resources/category/'+data['category']+'?page='+data['pagination'],{method: 'GET',})
 	}
 	else{
-		if (data['type']!== -1 ) return xFetch(apiUrl+'/api/text-resources/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
+		if (data['type']!= -1 ) return xFetch(apiUrl+'/api/text-resources/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
 		return xFetch(apiUrl+'/api/text-resources?page='+data['pagination'],{method: 'GET',});
 	}
   	

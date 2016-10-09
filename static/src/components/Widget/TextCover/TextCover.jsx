@@ -19,24 +19,28 @@ const TextCover = ({ wordtype, type, data }) => {
 			[styles[word[wordtype]]]:true,
 		})
 	};
-	const renderTextCover = (typeCls, coverCls) =>{
-		if(type == 'big') return <div className={typeCls}>
-			<div className={coverCls}>
+	const renderTextCover = () =>{
+		if(type == 'big') return <div className={typeCls()}>
+			<div className={coverCls()}>
+			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/'}}>
 			<div className={styles.title}>{ data.resource_name }
 			</div>
+			</Link>
 			<div className={styles.position}>
-			{/*<div className={styles.subtitle}>课程名称</div>*/}
-			<div className={styles.subtitle}>{ data.name }</div>
+			<div className={styles.subtitle}>{ data.author_name }</div>
 			</div>
 		</div>
 		</div>;
 		if(type == 'small') return <div className={typeCls}>
 			<div className={coverCls}>
+			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/'}}>
 			<div className={styles.title}>{ data.resource_name }</div>
+			</Link>
 			</div>
+			
 			</div>;
 	}
-	return renderTextCover(typeCls(),coverCls());
+	return renderTextCover();
 };
 
 TextCover.propTypes = {  

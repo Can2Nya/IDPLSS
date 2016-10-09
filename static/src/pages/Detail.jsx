@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Row, Col, Icon, Tabs } from 'antd';
+import { Breadcrumb, Row, Col, Icon, Tabs, Spin } from 'antd';
 import pathToRegexp from 'path-to-regexp';
 import Layout from '../layouts/Layout/Layout';
 
@@ -18,6 +18,7 @@ import styles from './commont.less';
 
 const Detail = ({ context, user, dispatch, location }) => {
 	const { stateName, isSelectContext } = context
+	const data = isSelectContext.context
 	const { list } = user
 
 	// -------------action----------------
@@ -27,7 +28,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 			if (!!errors) {
 				return;
 			}
-			if (user.list <= 0) return;
+			if (user.list.length <= 0) return;
 			dispatch({
 				type: `${stateName}/post/comment`,
 				body: value['body'],
@@ -75,7 +76,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 		if(isSelectContext.list <= 0 || !isSelectContext.list){
 			return;
 		}
-		if(location.search('register')!== -1){
+		if(hash.search('series')!== -1){
 			return isSelectContext.list.map((video,index) =>{
 				if(!video.show) return
 				return(
@@ -84,6 +85,11 @@ const Detail = ({ context, user, dispatch, location }) => {
 			})
 		}
 	}
+	const renderIsDisableSeries = () =>{// 是否禁用系列列表
+		if(stateName == 'video') return false;
+		return true;
+	}
+	// ----------------------------------------------
 	return (
 		<Layout location={location}>
 			<div className={styles.contain}>
@@ -101,18 +107,16 @@ const Detail = ({ context, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={8} lg={7}>
-			<Preview type='video' />
+			<Preview type={`${stateName}`} data={ data } />
 			</Col>
 
 			<Col span={16} lg={17} >
 			<div className={styles.detail}>
-			<DetailPannel>
+			<DetailPannel data={ data } >
 				<div className={styles.tabpannel}>
 				<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={handleActiveTab()}>
-				<Tabs.TabPane tab='列表' key={1} >
-					<List>
-					11111111111
-					</List>
+				<Tabs.TabPane tab='列表' key={1} disabled={renderIsDisableSeries()}>
+					{ renderList() }
 				</Tabs.TabPane>
 				<Tabs.TabPane tab='评论' key={2} >
 
