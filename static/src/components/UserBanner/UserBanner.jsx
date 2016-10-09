@@ -5,29 +5,24 @@ import classNames from 'classnames';
 
 import styles from './UserBanner.less';
 
-const UserBanner = () => {
-	/*const UserBannerCls = () =>{
-		/*var style = {};
-		if(type == 'video') style[[styles.video]] = true;
-		if(type == 'word') style[[styles.word]] = true;
-		if(type == 'ppt') style[[styles.ppt]] = true;
-		if(type == 'pdf') style[[styles.pdf]] = true;
-
-		return classNames({
-			[styles[type]]:true
-		});
-	};*/
+const UserBanner = ({ data }) => {
+	const isStatus = () =>{
+		return data.user.user_type? '教师': '学生';
+	}
+	const renderUserAvator = {
+		backgroundImage: "url("+data.config.qiniu+'/'+data.user.user_avatar+")"
+	}
 	return (
-		<div className={styles.pannel}>
-		<div className={styles.avatar}>
+		<div className={styles.pannel} >
+		<div className={styles.avatar} style={renderUserAvator}>
 		</div>
 		<div className={styles.userinfo}>
 			<div className={styles.name}>
-			用户名
+			{ data.user.name }
 			</div>
 			<div className={styles.introduce}>
-			<span>身份</span>
-			xxxxxxxxxxxx
+			<span>{ isStatus() }</span><br />
+			{ data.user.user_about_me }
 			</div>
 		</div>
 		</div>

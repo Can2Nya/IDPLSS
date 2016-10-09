@@ -35,7 +35,7 @@ const TopNav = ({ config }) => {
 				</div>
 				<div className={styles.col}
 				>
-				<Link to="/bbs/" activeClassName={styles.active}><Button>学习交流</Button></Link>
+				<Link to={{ pathname:`/category/forum/`}} activeClassName={styles.active}><Button>学习交流</Button></Link>
 				</div>
 			</div>
 			<div className={styles.right}

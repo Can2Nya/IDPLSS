@@ -6,6 +6,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer as routing } from 'react-router-redux';
+import sequenceAction from 'redux-sequence-action';//排序action中间件
 import reducers from '../reducers/index';
 import SagaManager from '../sagas/SagaManager';
 import './index.less';
@@ -16,7 +17,7 @@ import './index.less';
 const sagaMiddleware = createSagaMiddleware();
 const initialState = {};
 const enhancer = compose(
-  applyMiddleware(sagaMiddleware),
+  applyMiddleware(sagaMiddleware,sequenceAction),
   window.devToolsExtension ? window.devToolsExtension() : f => f
 );
 const store = createStore(combineReducers({

@@ -3,13 +3,13 @@ import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Row, Col, Button, Tabs } from 'antd';
 import classNames from 'classnames';
 
-import InputForm from '../InputForm/InputForm';
-import Comment from '../Comment/Comment';
+import InputForm from '../../components/InputForm/InputForm';
+import Comment from '../../components/Comment/Comment';
 
 
 import styles from './DetailPannel.less';
 
-const DetailPannel = ({ children }) => {
+const DetailPannel = ({ children, data }) => {
 	const DetailPannelCls = () =>{
 		/*var style = {};
 		if(type == 'video') style[[styles.video]] = true;
@@ -26,7 +26,7 @@ const DetailPannel = ({ children }) => {
 		<div className={styles.title} >简介
 		</div>
 		<div className={styles.text}>
-		<p>xxxxxxxxgdhjsgjdgsajdgj</p>
+		<p>{ data["description"] }</p>
 		</div>
 		{ children }
 		

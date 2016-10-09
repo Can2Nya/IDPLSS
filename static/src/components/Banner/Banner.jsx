@@ -23,7 +23,7 @@ const Banner = ({ config }) => {
 					</Massage>
 				</Col>
 				<Col span={2}>
-					<User >
+					<User textStyle={{ color: '#523552'}}>
 					</User>
 				</Col>
 			</Row>

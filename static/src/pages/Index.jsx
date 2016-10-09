@@ -19,15 +19,13 @@ const Index = ({ location }) => {
 			<Title type='big'  title='推荐课程' />
 			</div>
 			<div className={styles.margin}>
-			<VideoCover type='small' />
+			
 			</div>
 			<div className={styles.marginCenter}>
 			<Title type='big'  title='推荐文档' />
 			</div>
 			<div className={styles.margin}>
-			<TextCover wordtype='word' type='big' />
-			<TextCover wordtype='ppt' type='big' />
-			<TextCover wordtype='pdf' type='big' />
+			
 			</div>
 			<div className={styles.marginCenter}>
 			<Title type='big'  title='真题测试' />
