@@ -26,7 +26,9 @@
     "redux": "^3.5.2",
     "redux-actions": "0.9.x",
     "redux-saga": "^0.10.4",
-    "redux-sequence-action": "^0.2.0"
+    "redux-sequence-action": "^0.2.0",
+    "video.js": "^5.11.7",
+    "videojs": "^1.0.0"
   },
   "devDependencies": {
     "atool-test-mocha": "^0.1.4",
@@ -46,7 +48,7 @@
     "glob": "^7.0.3",
     "pre-commit": "1.x",
     "redbox-react": "^1.2.2",
-    "video.js": "^5.11.6"
+    "video.js": "^5.11.7"
   },
   "pre-commit": [
     "lint"

@@ -28,20 +28,20 @@ const Preview = ({ type, data }) => {
 	// const PreviewVideoBg = {
 	// 	backgroundImage: `url(${data.images})`,
 	// }
-	// const renderBg = () =>{
-	// 	if(!!data['images'] && type == 'video') {
-	// 		// return({
-	// 		// backgroundImage: `url(${data.images})`
-	// 		// })
-	// 		console.log(data)
-	// 		return <div className={PreviewCls()} style={{ backgroundImage: `url(${data.images})` }} ></div>
-	// 	}
-	// 	console.log('3')
-	// 	return <div className={PreviewCls()}></div>
-	// }
+	const renderBg = () =>{
+		if(type == 'video') {
+			return({
+			backgroundImage: `url(${data.images})`
+			})
+			// console.log(data)
+			// return <div className={PreviewCls()} style={{ backgroundImage: `url(${data.images})` }} ></div>
+		}
+		// console.log('3')
+		// return <div className={PreviewCls()}></div>
+	}
 	return (
 		<div className={styles.preview}>
-		<div className={PreviewCls()} style={{backgroundImage: `url(${data.images})`,}} ></div>
+		<div className={PreviewCls()} style={renderBg()} ></div>
 		<div className={styles.contant}>
 		<div className={styles.text}>{ data["course_name"] || data['resource_name'] }</div>
 		<Button className={styles.button}>开始浏览</Button>

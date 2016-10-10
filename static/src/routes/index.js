@@ -10,6 +10,7 @@ import Detail from '../pages/Detail';
 import PostDetail from '../pages/PostDetail';
 import Register from '../pages/Register';
 import User from '../pages/User';
+import PlayVideo from '../pages/PlayVideo';
 import NotFound from '../pages/NotFound';
 
 //import { initPageStore } from './initPageStore';
@@ -105,6 +106,9 @@ const Routes = ({ history, dispatch }) =>{
 		<Route path="/user/:id/" component={User}>
 		</Route>
 		<Route path="/register/" component={Register}>
+		</Route>
+		<Route path="/play/" >
+			<Route path="video/:id/" component={PlayVideo}  />
 		</Route>
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}
