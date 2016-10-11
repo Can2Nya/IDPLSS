@@ -126,12 +126,26 @@
 	}
 }
 .playVideo{
+	
+	.videoBlock{
+		background-color: lighten(@gray, 10%);
+		padding: 30px 0;
+	}
 	.video{
 		width: 980px;
-    	height: 608px;
+		height: 608px;
+		box-shadow: 0 0 10px @gray;
 	}
-	.videoLg{
-		width: 1160px;
-		height: 737px;
+	@media (min-width: 992px){
+		.video{
+			width: 900px;
+			height: 559px;
+		}
+	}
+	@media (min-width: 1500px){
+		.video{
+			width: 1250px;
+			height: 800px;
+		}
 	}
 }

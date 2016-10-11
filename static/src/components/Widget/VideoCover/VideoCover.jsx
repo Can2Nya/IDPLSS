@@ -23,7 +23,7 @@ const VideoCover = ({ type, data, }) => {
 			</div>
 			</Link>
 			<div className={styles.title}>{ data.course_name }</div>
-			<div className={styles.user}>{ data.author_id }</div>
+			<div className={styles.user}>{ data.author_name }</div>
 		</div>
 	);
 };

@@ -1,19 +1,24 @@
 import { handleActions } from 'redux-actions';
 import { combineReducer } from 'redux';
+import cookie from 'js-cookie';
 
 import { data } from '../services/user.js';//向user传送的数据
 
 const user = handleActions({
 	['user/login'](state, action) {
-		data['user_id'] = action.userId;
-		console.log(data)
+		data['body'] = { user_name_or_email: action.data.username, user_password: action.data.password };
 		return { ...state, isloginFormSubmit: true }
 	},
-	['user/login/success'](state, action) {//登录成功获取用户信息
-	  	return { ...state, list: action.payload, isloginFormSubmit: false, modalState: false, };
+	['user/login/success'](state, action) {//登录成功获取用户id
+		cookie.set('user_id', action.payload.user_id);
+		return { 
+			...state, 
+			// list: { ...state.list, user_id: action.payload.user_id }, 
+			isloginFormSubmit: false, modalState: false, };
 	},
 	['user/login/failed'](state, action) {
-	  	return { ...state, list: [], isloginFormSubmit: false };
+		cookie.remove(['authorization','user_id'])
+		return { ...state, isloginFormSubmit: false };
 	},
 	['user/login/modal/toggle'](state, action) {
 		return { ...state, modalState: !action.modalState, isloginFormSubmit: false };
@@ -23,6 +28,7 @@ const user = handleActions({
 		//const newList = list.clear()
 		return { ...state, list: [] };
 	},
+	// ------------------注册------------------------------
 	// ---------------------------------------------------
 	['user/register'](state, action) {
 		return { ...state, isregisterFormSubmit: true }
@@ -33,7 +39,7 @@ const user = handleActions({
 	['user/register/failed'](state, action) {
 		return { ...state, isregisterFormSubmit: false }
 	},
-	// 
+	// --------------------------------------------------
 	['user/register/confirm'](state, action) {
 		data['code'] = action.code
 		return { ...state, isregisterConfirm: true, stepState: 3 }
@@ -51,17 +57,24 @@ const user = handleActions({
 	['user/register/allowStepChange'](state, action) {
 		return { ...state, isAllowStepChange: action.isAllowStepChange }
 	},
-	// ---------------------------------------------------
-	['user/info/get'](state, action){
+	// -----------------------end----------------------------
+	['user/get/info'](state, action){
+		data['user_id'] = action.user_id || cookie.get('user_id')
 		return { ...state }
 	},
-	['user/info/set'](state, action){
+	['user/get/success/info'](state, action){
+		return { 
+	  		...state, 
+	  		list: action.payload, 
+	  	};
+	},
+	['user/set/info'](state, action){
 		return { ...state }
 	},
-	['user/info/isFollowing'](state, action){//判断当前用户是否关注某用户
+	['user/post/isFollowing'](state, action){//判断当前用户是否关注某用户
 		return { ...state }
 	},
-	['user/info/isFollowedBy'](state, action){//判断当前用户是否关注某用户
+	['user/post/isFollowedBy'](state, action){//判断当前用户是否关注某用户
 		return { ...state }
 	},
 }, {

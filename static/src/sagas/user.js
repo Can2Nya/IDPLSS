@@ -3,22 +3,25 @@ import { take, call, put, fork, cancel } from 'redux-saga/effects';
 
 import { message } from 'antd';
 
-import { getUserState, 
-	setUserState, 
-	UserisFollowing, 
-	UserisFollowedBy, 
-	userRegister,
-	userRegisterConfirm } from '../services/user';
-//import * from '../services/user';
+// import { getUserState, 
+// 	setUserState, 
+// 	UserisFollowing, 
+// 	UserisFollowedBy, 
+// 	userRegister,
+// 	userRegisterConfirm } from '../services/user';
+import * as req from '../services/user';
 
-function* getUser() {
+function* login() {
 	try {
-		const { jsonResult } = yield call(getUserState);
+		const { jsonResult } = yield call(req.userLogin);
 		if (jsonResult) {
 			yield put({
 				type: 'user/login/success',
 				payload: jsonResult,
 			});
+			yield put({
+				type: 'user/get/info',
+			})
 		}
 	} catch (err) {
 		message.error(err);
@@ -28,9 +31,26 @@ function* getUser() {
 	}
 }
 
+function* getUser() {
+	try {
+		const { jsonResult } = yield call(req.getUserState);
+		if (jsonResult) {
+			yield put({
+				type: 'user/get/success/info',
+				payload: jsonResult,
+			});
+		}
+	} catch (err) {
+		message.error(err);
+		// yield put({
+		// 	type: 'user/login/failed',
+		// });
+	}
+}
+
 function* setUser() {
 	try {
-		const { jsonResult } = yield call(setUserState);
+		const { jsonResult } = yield call(req.setUserState);
 		if (jsonResult) {
 			//yield put({
 				//type: 'user/login/success',
@@ -49,7 +69,7 @@ function* setUser() {
 
 function* register() {
 	try {
-		const { jsonResult } = yield call(userRegister);
+		const { jsonResult } = yield call(req.userRegister);
 		if (jsonResult) {
 			yield put({
 				type: 'user/register/success',
@@ -66,7 +86,7 @@ function* register() {
 
 function* registerConfirm() {
 	try {
-		const { jsonResult } = yield call(userRegisterConfirm);
+		const { jsonResult } = yield call(req.userRegisterConfirm);
 		if (jsonResult) {
 			yield put({
 				type: 'user/register/confirm/success',
@@ -83,7 +103,7 @@ function* registerConfirm() {
 
 function* isFollowing() {
 	try {
-		const { jsonResult } = yield call(UserisFollowing);
+		const { jsonResult } = yield call(req.UserisFollowing);
 		if (jsonResult) {
 			//yield put({
 				//type: 'user/login/success',
@@ -102,7 +122,7 @@ function* isFollowing() {
 
 function* isFollowedBy() {
 	try {
-		const { jsonResult } = yield call(UserisFollowedBy);
+		const { jsonResult } = yield call(req.UserisFollowedBy);
 		if (jsonResult) {
 			//yield put({
 				//type: 'user/login/success',
@@ -121,12 +141,14 @@ function* isFollowedBy() {
 
 
 
-function* watchUserGet() {
-	yield* takeLatest(['user/login','user/info/get'], getUser)
+function* watchUserLogin() {
+	yield* takeLatest('user/login', login)
 }
-
+function* watchUserGet() {
+	yield* takeLatest('user/get/info', getUser)
+}
 function* watchUserSet() {
-	yield* takeLatest('user/info/set', setUser)
+	yield* takeLatest('user/set/info', setUser)
 }
 function* watchUserRegister() {
 	yield* takeLatest('user/register', register)
@@ -146,6 +168,7 @@ function* watchisFollowedBy() {
 }*/
 
 export default function* () {
+	yield fork(watchUserLogin);
 	yield fork(watchUserGet);
 	yield fork(watchUserSet);
 	yield fork(watchUserRegister);

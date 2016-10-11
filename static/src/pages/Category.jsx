@@ -106,11 +106,20 @@ const Category = ({ location, dispatch, context }) => {
 						</Col>
 						)
 				});
+			case 'test': 
+				return context.categorySource.list.map((test,index) =>{
+					if(!test.show) return;
+					return(
+						<Col span={24} key={index}> 
+						<TestCover type='big' data={test}/>
+						</Col>
+						)
+				})
 			case 'forum': 
 				return context.categorySource.list.map((forum,index) =>{
-					if(!text.show) return;
+					if(!forum.show) return;
 					return(
-						<Col span={8} lg={6} key={index}> 
+						<Col span={24} key={index}> 
 						<PostCover commenttype='game' type='big' data={forum}/>
 						</Col>
 						)
@@ -181,7 +190,7 @@ const Category = ({ location, dispatch, context }) => {
 			
 		</div>
 		{ textExetend() }
-			<Row>
+			<Row gutter={16}>
 			{/**<TestCover type='big' />
 			<TestCover type='small' />
 			<VideoCover type='big' />

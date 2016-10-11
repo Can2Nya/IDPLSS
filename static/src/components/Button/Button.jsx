@@ -13,7 +13,7 @@ const Button = ({ children, type, loading, htmlType, icon, onClick }) => {
 	return (
 		<AntdButton type={type} 
 		className={buttonCls} 
-		onClick={onClick.bind(this)}
+		onClick={onClick}
 		loading={loading}
 		htmlType={htmlType}
 		icon={icon}
