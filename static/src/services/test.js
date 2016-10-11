@@ -1,7 +1,7 @@
 import xFetch from './xFetch';
 
-// let apiUrl = 'http://api.jxnugo.com'
-let apiUrl = '127.0.0.1:5000'
+let apiUrl = 'http://api.jxnugo.com'
+// let apiUrl = '127.0.0.1:5000'
 export let data = {}
 
 export async function getTestCategory() {
