@@ -39,7 +39,6 @@ def auth_error():
     # TODO(Ddragon):修改unauthorized的错误描述
 
 
-
 @main.route('/api/user/is-confirm', methods=['POST'])
 def is_confirmed():
     """
@@ -115,6 +114,10 @@ def verify_user():
         if u is None:
             return bad_request('user_name or email incorrect')
     if u.verify_password(u_password):
-        return self_response('verify successful')
+        return jsonify({
+            "status": "verify successful",
+            "user_id": u.id
+        })
+
     else:
         return bad_request('password incorrect')

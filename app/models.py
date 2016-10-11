@@ -5,6 +5,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSigna
 from datetime import datetime
 from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform
 from app import db
+import random
 
 
 class Permission:
@@ -170,6 +171,20 @@ class User(db.Model):
     test_problems = db.relationship('TestProblem', backref='author', lazy='dynamic')
     test_record = db.relationship('TestRecord', backref='answer', lazy='dynamic')
     answer_record = db.relationship('AnswerRecord', backref='answer', lazy='dynamic')
+
+    @staticmethod
+    def generate_fake(count=50):
+        from sqlalchemy.exc import IntegrityError
+        import forgery_py
+        random.seed()
+        for i in range(count):
+            u = User(name='idplss_'+str(count), user_name=forgery_py.internet.user_name(True), email=forgery_py.internet.email_address(), confirmed=True,
+                     pass_word='123456',  about_me=forgery_py.lorem_ipsum.sentence(), member_since=forgery_py.date.date(True))
+            db.session.add(u)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     @staticmethod
     def add_user():
@@ -390,6 +405,20 @@ class Post(db.Model):
     def __repr__(self):
         return '< Post_title %r>' % self.title
 
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = Post(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
+                     title=forgery_py.lorem_ipsum.title(),
+                     post_category=random.randint(0, 6), show=True, author_id=u.id, images="FsEAykjBT4VlaqS934nGjd7GbmLu:Fn5e3ZfrHJ4GbfPmlaAjhfYAxiFn")
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_post = {
             'id': self.id,
@@ -429,6 +458,19 @@ class PostComment(db.Model):
     def __repr__(self):
         return '<Comment_id %r>' % self.id
 
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = PostComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1, 2)), timestamp=forgery_py.date.date(True),
+                      show=True, author_id=u.id, post_id=random.randint(1, 48))
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_comment = {
             'comment_id': self.id,
@@ -463,6 +505,20 @@ class Course(db.Model):
     show = db.Column(db.Boolean, default=True)
     course_all_video = db.relationship('VideoList', backref='course', lazy='dynamic')
     course_comments = db.relationship('CourseComment', backref='course', lazy='dynamic')
+
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = Course(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
+                       course_name=forgery_py.lorem_ipsum.title(),
+                       course_category=random.randint(0, 6), show=True, author_id=u.id, images="FsEAykjBT4VlaqS934nGjd7GbmLu")
+            db.session.add(p)
+            db.session.commit()
 
     def __repr__(self):
         return '<course_name is %r>' % self.course_name
@@ -513,6 +569,19 @@ class VideoList(db.Model):
     def __repr__(self):
         return '<course_video_name is %r>' % self.video_name
 
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = VideoList(video_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
+                      video_order=random.randint(1,10), video_name=forgery_py.lorem_ipsum.title(), show=True, author_id=u.id, course_id=random.randint(1,48))
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_video = {
             'id': self.id,
@@ -555,6 +624,19 @@ class CourseComment(db.Model):
     def __repr__(self):
         return 'CourseComment_id %r>' % self.id
 
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = CourseComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  5)), timestamp=forgery_py.date.date(True),
+                      show=True, author_id=u.id, course_id=random.randint(1, 48))
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_comment = {
             'id': self.id,
@@ -589,6 +671,20 @@ class TextResource(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('TextResourceComment', backref='text_resources', lazy='dynamic')
+
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = TextResource(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
+                             resource_name=forgery_py.lorem_ipsum.title(), resource_type=random.choice([1, 3, 4]),
+                             resource_category=random.randint(0, 6), show=True, author_id=u.id, source_url="www.baidu.com")
+            db.session.add(p)
+            db.session.commit()
 
     def __reper__(self):
         return '<TextResource file_name %r>' % self.file_name
@@ -634,6 +730,19 @@ class TextResourceComment(db.Model):
     def __repr__(self):
         return '<TextResourceComment id %r>' % self.id
 
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = TextResourceComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  2)), timestamp=forgery_py.date.date(True),
+                      show=True, author_id=random.randint(1,5), text_resource_id=random.randint(1, 5))
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_text_resource_comment = {
             "id": self.id,
@@ -674,6 +783,19 @@ class TestList(db.Model):
 
     def __repr__(self):
         return '< test_list titile is %r>' % self.test_title
+
+    @staticmethod
+    def generate_fake(count=50):
+        import forgery_py
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = TestList(test_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True), test_title=forgery_py.lorem_ipsum.title(), key_words="computer science",
+                         test_category=random.randint(0, 6), show=True, author_id=u.id, image="FsEAykjBT4VlaqS934nGjd7GbmLu")
+            db.session.add(p)
+            db.session.commit()
 
     def to_json(self):
         json_test = {
