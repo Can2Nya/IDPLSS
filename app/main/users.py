@@ -99,13 +99,14 @@ def reset_password(token):
 
 @main.route('/api/user/<int:id>/info', methods=['GET', 'PUT'])
 @auth.login_required
-def user_info():
+def user_info(id):
     user = User.query.get_or_404(id)
+    print user.user_name
     if request.method == 'GET':
         if user is None:
             return self_response('user does not exist')
         else:
-            return make_response(jsonify(user.to_json()))
+            return jsonify(user.to_json())
     elif request.method == 'PUT':
         user = User.from_json(user, request.json)
         db.session.add(user)
@@ -122,7 +123,7 @@ def show_user(uid):
     return jsonify(user.to_json())
 
 
-@main.route('/api/user/is_following', methods=['POST'])
+@main.route('/api/user/is-following', methods=['POST'])
 @get_current_user
 @auth.login_required
 def is_following():
@@ -141,7 +142,7 @@ def is_following():
         return self_response(False)
 
 
-@main.route('/api/user/is_followed_by', methods=['POST'])
+@main.route('/api/user/is-followed-by', methods=['POST'])
 @get_current_user
 @auth.login_required
 def is_followed_by():

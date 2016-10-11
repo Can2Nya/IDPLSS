@@ -5,7 +5,6 @@ from app.main.decorators import get_current_user, permission_required
 from app.main.responses import not_found, forbidden
 from app.main.authentication import auth
 from app.main import main
-from app.utils.model_tools import calc_count
 from app.utils.responses import self_response
 
 
