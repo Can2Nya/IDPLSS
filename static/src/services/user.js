@@ -1,6 +1,7 @@
 import xFetch from './xFetch';
 
-var apiUrl = 'http://api.jxnugo.com'
+// var apiUrl = 'http://api.jxnugo.com'
+let apiUrl = '127.0.0.1:5000'
 export var data = {}
 
 export async function userLogin() {
