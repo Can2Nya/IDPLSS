@@ -147,12 +147,13 @@ const Category = ({ location, dispatch, context }) => {
 			return (
 			<div className={styles.margin}>
 			<span>筛选文档格式</span>
-			<Select style={{ width: 120 }} defaultValue="-1" onChange={handleToggleTextType} disabled={isDisable}>
-				<Select.Option value='-1'>全部格式</Select.Option>
-				<Select.Option value='0'>其他</Select.Option>
-				<Select.Option value='1'>word</Select.Option>
-				<Select.Option value='2'>excel</Select.Option>
-				<Select.Option value='3'>pdf</Select.Option>
+			<Select style={{ width: 120 }} defaultValue={-1} onChange={handleToggleTextType} disabled={isDisable}>
+				<Select.Option value={-1}>全部格式</Select.Option>
+				<Select.Option value={0}>其他</Select.Option>
+				<Select.Option value={1}>word</Select.Option>
+				<Select.Option value={2}>excel</Select.Option>
+				<Select.Option value={3}>pdf</Select.Option>
+				<Select.Option value={4}>ppt</Select.Option>
 			</Select>
 			</div>
 			
