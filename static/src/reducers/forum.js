@@ -11,7 +11,7 @@ const forum = handleActions({
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false}
 	},
 	['forum/get/categorySource'](state, action) {
-		data['category'] = state.isSelectCategory;
+		data['category'] = state.isSelectCategory - 1;
 		data['pagination'] = state.isSelectPagination;
 		return { 
 		...state, 
@@ -53,7 +53,7 @@ const forum = handleActions({
 	},
 	// -----------详细列表--------------------------------------------
 	['forum/init/detail'](state, action) {
-		data['fuc'] = action.fuc
+		// data['fuc'] = action.fuc
 		data['coursesId'] = action.id
 		return { 
 		...state, 
@@ -141,13 +141,14 @@ const forum = handleActions({
 			 '经管法律',
 			 '语言文学',
 			 '艺术音乐',
+			 '兴趣生活',
 			 ],
 	modalState: false,
 	isSelectCategory: 0,//选定的分类，没选定就是分类的7
 	isSelectPagination: 1,//选定的分页，默认从1开始
 	isSelectContext: {
 		id: 0,
-		context: {},
+		context: {},//描述内容【detail
 		comment: [],//课程评论列表
 	},//选定的内容
 	loading: false,//加载中

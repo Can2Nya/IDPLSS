@@ -17,7 +17,7 @@ function* getForumCategorySource() {
 		message.error(err);
 		yield put({
 		  type: 'forum/get/failed/categorySource',
-		  err,
+		  
 		});
 	}
 }
@@ -34,7 +34,7 @@ function* getForumRecommendSource() {
 		message.error(err);
 		yield put({
 		  type: 'forum/get/failed/recommend',
-		  err,
+		  
 		});
 	}
 }
@@ -52,7 +52,7 @@ function* getForumDetailSource() {
 		message.error(err);
 		// yield put({
 		//   type: 'forum/get/failed/recommend',
-		//   err,
+		//   
 		// });
 	}
 }
@@ -70,7 +70,7 @@ function* getForumDetailSource() {
 // 		message.error(err);
 // 		// yield put({
 // 		//   type: 'forum/get/failed/recommend',
-// 		//   err,
+// 		//   
 // 		// });
 // 	}
 // }
@@ -89,7 +89,7 @@ function* postForumDetailCommentSource() {
 		message.error(err);
 		// yield put({
 		//   type: 'forum/get/failed/recommend',
-		//   err,
+		//   
 		// });
 	}
 }
@@ -108,7 +108,7 @@ function* deleteForumDetailCommentSource() {
 		message.error(err);
 		// yield put({
 		//   type: 'forum/get/failed/recommend',
-		//   err,
+		//   
 		// });
 	}
 }

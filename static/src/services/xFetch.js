@@ -19,6 +19,14 @@ function check105(res) {
 	return res;
 }
 
+function check502(res) {
+	if (res.status === 502) {
+	//location.href = '/401';
+	return Promise.reject(errorMessages(res));
+	}
+	return res;
+}
+
 function check404(res) {
 	if (res.status === 404) {
 	return Promise.reject(errorMessages(res));
@@ -50,6 +58,8 @@ function xFetch(url, options) {
 	try{
 		return fetch(url, opts)
 			.then(check401)
+			.then(check105)
+			.then(check502)
 			.then(check404)
 			.then(jsonParse)
 			.then(errorMessageParse);

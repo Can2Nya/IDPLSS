@@ -27,11 +27,11 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
 		dispatch({
 			type: 'user/login',
-			userId: data.username
+			data: data,
 		})
 	}
 	const handleLogout = ()=>{
-		cookie.remove('authorization')
+		cookie.remove(['authorization','user_id'])
 		dispatch({
 			type: 'user/logout',
 		})

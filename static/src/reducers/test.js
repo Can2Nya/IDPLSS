@@ -133,7 +133,7 @@ const test = handleActions({
 			 '经管法律',
 			 '语言文学',
 			 '艺术音乐',
-			 
+			 '兴趣生活',
 			 ],
 	isSelectCategory: 0,//选定的分类，没选定就是分类的1
 	isSelectPagination: 1,//选定的分页，默认从1开始

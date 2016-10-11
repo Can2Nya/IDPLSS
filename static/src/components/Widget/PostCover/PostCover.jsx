@@ -29,10 +29,12 @@ const PostCover = ({ type, commenttype, data }) => {
 				{ renderTypeIcon() }
 			</Col>
 			<Col span={20}>
+			<Link to={{ pathname: `/post/${data.id}/`}}>
 			<div className={styles.title}>{ data.title }</div>
+			</Link>
 			<div style={{ margin: '15px 0 0 0'}}>
 				<div className={styles.avatar}></div>
-				<span className={styles.username}>{ data.name } at { data.timestamp }</span>
+				<span className={styles.username}>{ data.author_name } at { data.timestamp }</span>
 			</div>
 			</Col>
 			<Col span={2} style={{ textAlign:'center' }}>

@@ -1,11 +1,14 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Row, Col, Icon, Tabs, Spin } from 'antd';
+import { Row, Col } from 'antd';
 import classNames from 'classnames';
 // import pathToRegexp from 'path-to-regexp';
 import videojs from 'video.js/dist/video.min.js';
 import Layout from '../layouts/Layout/Layout';
+
+import VideoTitle from '../components/VideoTitle/VideoTitle';
+import UserLittleInfo from '../components/UserLittleInfo/UserLittleInfo';
 
 import styles from './commont.less';
 import 'video.js/dist/video-js.min.css';
@@ -13,7 +16,8 @@ import 'video.js/dist/video-js.min.css';
 const PlayVideo = ({ video, dispatch, location }) =>{
 	const videoCls = classNames({
 		'video-js': true,
-		'vjs-default-skin': true
+		'vjs-default-skin': true,
+		[styles.video]: true,
 	})
 	const renderVideo = () =>{
 		const play = videojs('videoPlay')
@@ -23,18 +27,40 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 	// renderVideo.play();
 	return(
 		<Layout location={location}>
-		<div className={styles.playVideo+' '+styles.contain}>
-		<Row>
-		</Row>
-		<Row>
-		<Col span={20} >
-			<video id='videoPlay' className={videoCls} onClick={renderVideo.bind(this)} controls>
-				<source src='http://cn-jxnc-dx-v-02.acgvideo.com/vg6/d/6e/10715538-1.flv?expires=1476104400&ssig=JMgje0IxgwgUkBMMsjnGbw&oi=3060534227&rate=0' />
-			</video>
+		<div className={styles.playVideo}>
+
+		<div className={styles.contain}>
+		<div className={styles.margin}>
+
+		<Row type='flex' align='top'>
+		<Col span={18}>
+			<VideoTitle location={location}/>
 		</Col>
+		<Col span={6}>
+			<UserLittleInfo />
+		</Col>
+
 		</Row>
+		</div>
+		</div>
+
+		<div className={styles.videoBlock}>
+		<div className={styles.contain}>
+		<Row type='flex' justify='center'>
+
+			<video id='videoPlay' className={videoCls} onClick={renderVideo.bind(this)} controls preload='auto'>
+				<source src='http://cn-zjcz7-dx.acgvideo.com/vg9/d/c0/10518563-1.flv?expires=1476123600&ssig=URF0YHEmRn2syRokK_mi7g&oi=3060534227&rate=0' />
+			</video>
+			
+		</Row>
+		</div>
+		</div>
+
+		<div className={styles.contain}>
 		<Row>
 		</Row>
+		</div>
+
 		</div>
 		</Layout>
 	)

@@ -24,7 +24,7 @@ const Search = () => {
             className={styles.input}
             filterOption={false}
             showSearch={true}
-            placeholder="少年想搜些什么呢"
+            placeholder="输入文字搜索"
             notFoundContent="然而什么也没有"
           >
           </Select>

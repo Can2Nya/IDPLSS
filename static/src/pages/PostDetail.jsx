@@ -58,7 +58,7 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={16} lg={17} >
-				<PostDetailPannel>
+				<PostDetailPannel data={isSelectContext.context}>
 					<InputForm user={user} onSubmit={handlePostSubmit.bind(this)}/>
 					<Comment onDelete={handlePostDelete.bind(this)}/>
 				</PostDetailPannel>

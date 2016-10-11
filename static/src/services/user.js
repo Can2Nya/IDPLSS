@@ -3,6 +3,12 @@ import xFetch from './xFetch';
 var apiUrl = 'http://api.jxnugo.com'
 export var data = {}
 
+export async function userLogin() {
+	return xFetch(apiUrl+'/api/user/verify',{method: 'POST',
+		body: JSON.stringify(data['body']),
+	});
+}
+
 export async function getUserState() {
   	return xFetch(apiUrl+'/api/user/'+data['user_id']+'/info',{method: 'GET',});
 }

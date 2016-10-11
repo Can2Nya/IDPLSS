@@ -14,7 +14,7 @@ const TextCover = ({ wordtype, type, data }) => {
 	}
 	const coverCls = () =>{
 		/*文件类型*/
-		const word = ['other','word','excel','pdf']
+		const word = ['other','word','excel','pdf','ppt']
 		return classNames({
 			[styles[word[wordtype]]]:true,
 		})
@@ -26,9 +26,9 @@ const TextCover = ({ wordtype, type, data }) => {
 			<div className={styles.title}>{ data.resource_name }
 			</div>
 			</Link>
-			<div className={styles.position}>
+			
 			<div className={styles.subtitle}>{ data.author_name }</div>
-			</div>
+			
 		</div>
 		</div>;
 		if(type == 'small') return <div className={typeCls}>

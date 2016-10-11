@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import styles from './TestCover.less';
 
-const TestCover = ({ type }) => {
+const TestCover = ({ type, data }) => {
 	const coverCls = () =>{
 		/*if(type == 'small') return styles.small;
 		if(type == 'big') return styles.big;*/
@@ -19,11 +19,13 @@ const TestCover = ({ type }) => {
 			;
 		if (type == 'big') return <Row>
 			<Col lg={21} span={18}>
-			<div className={styles.title}>试题题目</div>
-			<div className={styles.subtitle}>出题人</div>
+			<div className={styles.title}>{data.test_title}</div>
+			<div className={styles.subtitle}>{data.author_name}</div>
 			</Col>
 			<Col lg={3} span={6}>
+			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/comment/'}}>
 			<Button className={styles.button}>开始测试</Button>
+			</Link>
 			</Col>
 			</Row>
 		;

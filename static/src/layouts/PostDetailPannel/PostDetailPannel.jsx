@@ -9,7 +9,7 @@ import Comment from '../../components/Comment/Comment';
 
 import styles from './PostDetailPannel.less';
 
-const PostDetailPannel = ({ children }) => {
+const PostDetailPannel = ({ children, data }) => {
 	const PostDetailPannelCls = () =>{
 		/*var style = {};
 		if(type == 'video') style[[styles.video]] = true;
@@ -29,13 +29,13 @@ const PostDetailPannel = ({ children }) => {
 		</Col>
 		<Col span={19} lg={20}>
 		<div className={styles.title}>
-		xxxxxxxxgdhjsgjdgsajdgj标题
+		{ data.title }
 		</div>
 		<div className={styles.username}>
-		username
+		{ data.author_name }
 		</div>
 		<div className={styles.text}>
-		<p>xxxxxxxneirong</p>
+		<p>{ data.body }</p>
 		</div>
 		</Col>
 		</Row>
