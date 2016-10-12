@@ -206,7 +206,7 @@ const Category = ({ location, dispatch, context }) => {
 			<Pagination 
 			onChange={handleChangePagination.bind(this)} 
 			total={total} current={isSelectPagination} 
-			pageSize={30} 
+			pageSize={12} 
 			defaultPageSize={12} 
 			/>
 		</div>
