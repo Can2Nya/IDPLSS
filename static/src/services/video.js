@@ -6,6 +6,7 @@ export let data = {}
 
 export async function getVideoCategory() {
 	let url;
+	console.log(data)
 	if (data['category']!== -1 ) url = apiUrl+'/api/courses/category/'+data['category']+'?page='+data['pagination']
 	else url = apiUrl+'/api/courses?page='+data['pagination']
   	return xFetch(url,{method: 'GET',});
