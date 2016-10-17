@@ -1,6 +1,7 @@
 // Learn more on how to config.
 // - https://github.com/ant-tool/atool-build#配置扩展
 
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('atool-build/lib/webpack');
 const fs = require('fs');
 const path = require('path');
@@ -19,11 +20,20 @@ module.exports = function(webpackConfig) {
   // });
 // test.
   webpackConfig.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-        compress: {
-            warnings: false
-        }
-    }),
+    // new HtmlWebpackPlugin({
+    //   hash: true,
+    //   template: "./src/entries/index.html",
+    //   filename: "index.html",
+    //   files: {
+    //     "css": [ "index.css" ],
+    //     "js": [ "index.js", "index.js"]
+    //   }
+    // }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //     compress: {
+    //         warnings: false
+    //     }
+    // }),
     // new webpack.optimize.CommonsChunkPlugin('vendor',  'vendor.js'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin()

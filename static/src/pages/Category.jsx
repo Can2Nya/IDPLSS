@@ -82,7 +82,9 @@ const Category = ({ location, dispatch, context }) => {
 
 	const renderList = () =>{
 		if(context.categorySource.loading){
-			return <Spin />;
+			return <Col span={1}>
+			<Spin />
+			</Col>;
 		}
 		if(context.categorySource.list <=0 || !context.categorySource.list){
 			return;
@@ -146,7 +148,7 @@ const Category = ({ location, dispatch, context }) => {
 			if (isSelectCategory == 0) isDisable = true;
 			return (
 			<div className={styles.margin}>
-			<span>筛选文档格式</span>
+			<span>筛选文档格式  :</span>
 			<Select style={{ width: 120 }} defaultValue={-1} onChange={handleToggleTextType} disabled={isDisable}>
 				<Select.Option value={-1}>全部格式</Select.Option>
 				<Select.Option value={0}>其他</Select.Option>
@@ -191,7 +193,8 @@ const Category = ({ location, dispatch, context }) => {
 			
 		</div>
 		{ textExetend() }
-			<Row gutter={16}>
+		<div style={{ minHeight: "850px" }}>
+			<Row gutter={16} type="flex" align="middle" justify="center">
 			{/**<TestCover type='big' />
 			<TestCover type='small' />
 			<VideoCover type='big' />
@@ -202,6 +205,7 @@ const Category = ({ location, dispatch, context }) => {
 			{ renderList() }
 
 			</Row>
+		</div>
 		<div className={styles.margin}>
 			<Pagination 
 			onChange={handleChangePagination.bind(this)} 
@@ -210,6 +214,7 @@ const Category = ({ location, dispatch, context }) => {
 			defaultPageSize={12} 
 			/>
 		</div>
+
 		</Col>
 		</Spin>
 

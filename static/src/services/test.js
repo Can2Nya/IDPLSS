@@ -11,11 +11,11 @@ export async function getTestCategory() {
   	return xFetch(url,{method: 'GET',});
 }
 export async function getTestDetail() {
-	return xFetch(apiUrl+'/api/courses/detail/'+data['coursesId'],{method: 'GET',});
+	return xFetch(apiUrl+'/api/courses/detail/'+data['testId'],{method: 'GET',});
 }
 
 export async function getTestDetailList() {
-	let url = '/api/test-list/'+data['testId']+'/problems';
+	let url = apiUrl+'/api/test-list/'+data['testId']+'/problems?page='+data['pagination'];
 	// if(data['fuc'] == 'series') url += '/video-list';
 	// if(data['fuc'] == 'comment') url += '/comments';
 	
@@ -31,3 +31,8 @@ export async function getTestDetailList() {
 // export async function deleteTestDetailComment() {
 // 	return xFetch(apiUrl+'/api/courses/detail/comment/'+data['commentId'],{method: 'DELETE',});
 // }
+export async function postProblemResult() {
+	return xFetch(apiUrl+'/api/test-list/test-answer/'+data['problemId'],{method: 'POST',
+		body: JSON.stringify(data['body']),
+	});
+}

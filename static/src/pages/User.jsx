@@ -2,6 +2,7 @@ import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Breadcrumb, Row, Col, Icon, Tabs } from 'antd';
+import cookie from 'js-cookie';
 
 import Layout from '../layouts/Layout/Layout';
 import DynamicPannel from '../layouts/UserPannel/DynamicPannel';
@@ -12,7 +13,6 @@ import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
 
-
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
 import TextCover from '../components/Widget/TextCover/TextCover';
@@ -21,7 +21,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, user }) => {
-	const { list } = user
+	const { userList } = user
 
 	const userMenu = {
 		'1': '#!/dynamic/',
@@ -47,14 +47,14 @@ const User = ({ location, user }) => {
 		<div className={styles.user}>
 			<div className={styles.userbg}>
 				<div className={styles.contain} style={{padding:'0 10%',position:'relative',top:'-50px'}}>
-				<UserBanner data={{ 'user':list, 'config':config }}/>
+				<UserBanner data={{ 'user':userList, 'config':config }}/>
 				</div>
 			</div>
 			<div className={styles.contain+' '+styles.tabpannel}>
 			<div className={styles.position}>
 			<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={handleActiveTab()}>
 				<Tabs.TabPane tab='动态' key='1'>
-					<DynamicPannel data={{ 'user': list }} />
+					<DynamicPannel data={{ 'user': userList }} />
 				</Tabs.TabPane>
 				<Tabs.TabPane tab='历史' key='2'>
 					<TabPannel data={{'nav': ['视频','文本资料','测试']}} title='历史' />
@@ -65,9 +65,11 @@ const User = ({ location, user }) => {
 				<Tabs.TabPane tab='收藏' key='4'>
 					<TabPannel data={{'nav': ['视频','文本资料','测试']}} title='历史' />
 				</Tabs.TabPane>
-				<Tabs.TabPane tab='设置' key='6'>
+				{ cookie.get('user_id') == userList.user_id ? (
+					<Tabs.TabPane tab='设置' key='6'>
 					<SettingPannel />
-				</Tabs.TabPane>
+					</Tabs.TabPane>
+				):[] }
 			</Tabs>
 			</div>
 			</div>

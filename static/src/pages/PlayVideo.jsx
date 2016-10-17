@@ -19,10 +19,21 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		'vjs-default-skin': true,
 		[styles.video]: true,
 	})
-	const renderVideo = () =>{
-		const play = videojs('videoPlay')
-		play.play();
-	}
+	const RenderVideo = React.createClass({
+		componentDidMount()	{
+			const play = videojs('videoPlay')
+			// play.play();
+		},
+		render() {
+			return(
+				<video id='videoPlay' className={videoCls} controls preload='auto'>
+					<source src='http://ocaxzmfrd.bkt.clouddn.com/%E5%B8%88%E5%A4%A7+%E5%AE%A3%E4%BC%A0%E8%A7%86%E9%A2%91.mp4' />
+				</video>
+			)
+		}
+		// const play = videojs('videoPlay')
+		// play.play();
+	})
 	// const renderVideo = videojs('videoPlay');
 	// renderVideo.play();
 	return(
@@ -48,9 +59,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		<div className={styles.contain}>
 		<Row type='flex' justify='center'>
 
-			<video id='videoPlay' className={videoCls} onClick={renderVideo.bind(this)} controls preload='auto'>
-				<source src='http://cn-zjcz7-dx.acgvideo.com/vg9/d/c0/10518563-1.flv?expires=1476123600&ssig=URF0YHEmRn2syRokK_mi7g&oi=3060534227&rate=0' />
-			</video>
+			<RenderVideo />
 			
 		</Row>
 		</div>

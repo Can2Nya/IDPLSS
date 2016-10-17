@@ -2,22 +2,23 @@ import { handleActions } from 'redux-actions';
 import { combineReducer } from 'redux';
 import cookie from 'js-cookie';
 
-import { data } from '../services/user.js';//向user传送的数据
+// import { data } from '../services/user.js';//向user传送的数据
 
 const user = handleActions({
 	['user/login'](state, action) {
-		data['body'] = { user_name_or_email: action.data.username, user_password: action.data.password };
+		// 触发此action需要body
 		return { ...state, isloginFormSubmit: true }
 	},
 	['user/login/success'](state, action) {//登录成功获取用户id
 		cookie.set('user_id', action.payload.user_id);
 		return { 
 			...state, 
-			// list: { ...state.list, user_id: action.payload.user_id }, 
+			// loginUserList: { ...state.loginUserList, user_id: action.payload.user_id }, 
 			isloginFormSubmit: false, modalState: false, };
 	},
 	['user/login/failed'](state, action) {
-		cookie.remove(['authorization','user_id'])
+		cookie.remove('authorization')
+		cookie.remove('user_id')
 		return { ...state, isloginFormSubmit: false };
 	},
 	['user/login/modal/toggle'](state, action) {
@@ -25,12 +26,14 @@ const user = handleActions({
 	},
 
 	['user/logout'](state, action){
-		//const newList = list.clear()
-		return { ...state, list: [] };
+		cookie.remove('authorization')
+		cookie.remove('user_id')
+		return { ...state, loginUserList: [] };
 	},
 	// ------------------注册------------------------------
 	// ---------------------------------------------------
 	['user/register'](state, action) {
+		// 触发此action需要body
 		return { ...state, isregisterFormSubmit: true }
 	},
 	['user/register/success'](state, action) {
@@ -41,7 +44,8 @@ const user = handleActions({
 	},
 	// --------------------------------------------------
 	['user/register/confirm'](state, action) {
-		data['code'] = action.code
+		// 触发此action需要confirm_code
+		// data['code'] = action.code
 		return { ...state, isregisterConfirm: true, stepState: 3 }
 	},
 	['user/register/confirm/success'](state, action) {
@@ -58,16 +62,39 @@ const user = handleActions({
 		return { ...state, isAllowStepChange: action.isAllowStepChange }
 	},
 	// -----------------------end----------------------------
+	['user/get/loginInfo'](state, action){
+		// 触发此action需要user_id
+		// data['user_id'] = cookie.get('user_id')
+		return { ...state }
+	},
+	['user/get/success/loginInfo'](state, action){
+		return { 
+	  		...state, 
+	  		loginUserList: action.payload, 
+	  	};
+	},
 	['user/get/info'](state, action){
-		data['user_id'] = action.user_id || cookie.get('user_id')
+		// 触发此action需要user_id
+		// data['user_id'] = action.user_id
 		return { ...state }
 	},
 	['user/get/success/info'](state, action){
 		return { 
 	  		...state, 
-	  		list: action.payload, 
+	  		userList: action.payload, 
 	  	};
 	},
+	// ['user/transfer/loginInfo'](state, action){//将已登录信息转移到这里
+	// 	const { userList } = state
+	// 	if(userList.user_id == cookie.get('user_id')){
+	// 		console.log('changeuser')
+	// 		return { 
+	// 			...state,
+	// 			loginUserList: userList
+	// 		}
+	// 	}
+	// 	return { ...state }
+	// },
 	['user/set/info'](state, action){
 		return { ...state }
 	},
@@ -78,7 +105,8 @@ const user = handleActions({
 		return { ...state }
 	},
 }, {
-	list: [],//用户信息
+	loginUserList: [],// 已登录信息(自己的必须信息)
+	userList: [],//用户信息(可以是自己的或者是别人的)
 	modalState: false,//modal是否被激活
 	stepState: 0,//注册步骤状态
 	isAllowStepChange: false,//可以允许改变步骤

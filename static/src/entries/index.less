@@ -1,3 +1,4 @@
+@import (reference) '../config/config.less';
 
 :global {
   html, body, #root {
@@ -15,7 +16,17 @@
 	  url('//at.alicdn.com/t/font_1471351717_6371713.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
 	  url('//at.alicdn.com/t/font_1471351717_6371713.svg#iconfont') format('svg'); /* iOS 4.1- */
 	}
-  
+  // 颜色调整
+  span[class~="ant-spin-dot"]{
+    &:after{
+      background-color: @purple;
+    }
+  }
+  li[class~="ant-pagination-item-active"]{
+    background-color: @purple;
+    border-color: @purple;
+  }
+
 
 }
 #root {
