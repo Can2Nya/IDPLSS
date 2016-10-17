@@ -16,6 +16,7 @@
     "isomorphic-fetch": "^2.2.1",
     "js-cookie": "^2.1.1",
     "path-to-regexp": "^1.5.3",
+    "pdfjs-dist": "^1.6.234",
     "rc-queue-anim": "^0.12.4",
     "rc-tween-one": "^0.8.5",
     "react": "^15.0.2",

@@ -63,7 +63,7 @@ function* getTestDetailListSource() {
 		const { jsonResult } = yield call(req.getTestDetailList);
 		if (jsonResult) {
 			yield put({
-				type: `test/get/success/`,
+				type: `test/get/success/series`,
 				payload: jsonResult,
 			});
 		}

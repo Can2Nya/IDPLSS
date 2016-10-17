@@ -13,7 +13,7 @@ import config from '../../../config/config';
 import styles from './User.less';
 
 let User = ({ user, dispatch, textStyle, form }) => {
-	const { list, modalState, loginFormisSubmit } = user;
+	const { loginUserList, modalState, loginFormisSubmit } = user;
 	
 	const { getFieldProps } = form;
 	const handleModelToggle = () =>{
@@ -27,18 +27,17 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
 		dispatch({
 			type: 'user/login',
-			data: data,
+			body: { user_name_or_email: data.username, user_password: data.password }
 		})
 	}
 	const handleLogout = ()=>{
-		cookie.remove(['authorization','user_id'])
 		dispatch({
 			type: 'user/logout',
 		})
 	}
 	const renderUser = () =>{
 		
-		if(list.length <= 0) return(
+		if(loginUserList.length <= 0) return(
 			<div className={styles.text}>
 			<Link to='/register/'><span className={styles.item} style={textStyle}>注册</span></Link>
 			<a><span className={styles.item} style={textStyle} onClick={handleModelToggle.bind(this)} >登录</span></a>
@@ -74,22 +73,22 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			const renderList =() =>{
 				return(
 					<div className={styles.list}>
-						{/**list.map((item,index) => {
-							if(index == list.length-1) var one={'border':0};
+						{/**loginUserList.map((item,index) => {
+							if(index == loginUserList.length-1) var one={'border':0};
 							return(
 							<div className={styles.item} key={index} style={one}>
 							{item}
 							</div>)
 						})*/}
-					<div className={styles.item}>{ list.name }</div>
-					<Link to={{pathname: `/user/${ list.user_id }/`, hash: '#!/dynamic/' }} ><div className={styles.item}>个人中心</div></Link>
-					<Link to={{pathname: `/user/${ list.user_id }/`, hash: '#!/setting/' }} ><div className={styles.item}>设置</div></Link>
+					<div className={styles.item}>{ loginUserList.name }</div>
+					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/' }} ><div className={styles.item}>个人中心</div></Link>
+					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/' }} ><div className={styles.item}>设置</div></Link>
 					<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 					</div>
 				);
 			}
 			const renderUserAvator = {
-				backgroundImage: "url("+config.qiniu+'/'+list.user_avatar+")"
+				backgroundImage: "url("+config.qiniu+'/'+loginUserList.user_avatar+")"
 			}
 			return (
 			<Popover placement="bottomRight" content={renderList()} overlayStyle={{padding:0}}>

@@ -86,8 +86,12 @@ const Detail = ({ context, user, dispatch, location }) => {
 		}
 	}
 	const renderIsDisableSeries = () =>{// 是否禁用系列列表
-		if(stateName == 'video') return false;
-		return true;
+		if(stateName == 'text') return true;
+		return false;
+	}
+	const renderIsDisableComment = () =>{
+		if(stateName == 'test') return true;
+		return false;
 	}
 	// ----------------------------------------------
 	return (
@@ -118,7 +122,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 				<Tabs.TabPane tab='列表' key={1} disabled={renderIsDisableSeries()}>
 					{ renderList() }
 				</Tabs.TabPane>
-				<Tabs.TabPane tab='评论' key={2} >
+				<Tabs.TabPane tab='评论' key={2} disabled={renderIsDisableComment()}>
 
 					<InputForm 
 					onSubmit={handlePostSubmit}

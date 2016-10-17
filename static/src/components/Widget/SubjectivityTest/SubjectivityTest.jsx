@@ -23,7 +23,7 @@ const TestCover = ({ type, data }) => {
 			<div className={styles.subtitle}>{data.author_name}</div>
 			</Col>
 			<Col lg={3} span={6}>
-			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/series/'}}>
+			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/comment/'}}>
 			<Button className={styles.button}>开始测试</Button>
 			</Link>
 			</Col>

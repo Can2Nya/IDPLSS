@@ -49,10 +49,11 @@ let Register = ({ dispatch, location, form, user }) => {
 			if(errors){
 				return ;
 			}
-			data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
+			// data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
 
 			dispatch({
 				type:'user/register',
+				body: form.getFieldsValue(['user_name','user_email','user_password'])
 			})
 		});
 	}

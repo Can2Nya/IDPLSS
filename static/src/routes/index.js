@@ -12,6 +12,8 @@ import PostDetail from '../pages/PostDetail';
 import Register from '../pages/Register';
 import User from '../pages/User';
 import PlayVideo from '../pages/PlayVideo';
+// import PlayText from '../pages/PlayText';
+import PlayTest from '../pages/PlayTest';
 import NotFound from '../pages/NotFound';
 
 //import { initPageStore } from './initPageStore';
@@ -26,7 +28,7 @@ const Routes = ({ history, dispatch }) =>{
 			if(match){
 				dispatch({
 					type: 'user/register/confirm',
-					code: match[1]
+					confirm_code: match[1]
 				})
 			}
 		}
@@ -96,17 +98,40 @@ const Routes = ({ history, dispatch }) =>{
 			})
 		}
 		// -------------end--------------------
-		//  postdetail init-------------------
+		// -test problem init------------------
+		if(pathname.search('play/test')!== -1){
+			const match = pathToRegexp('/play/test/:testId/:recordId').exec(pathname);
+			dispatch({
+				type: 'test/init/problem',
+				testId: match[1],
+				testRecordId: match[2],
+			})
+			dispatch({
+				type: 'test/get/series'
+			})
+		}
 
-		// -------------end--------------------
 		// login listen----------------------
-		// if(user.list.length <= 0 && cookie.get('user_id')){
-		// 	dispatch({
-		// 		type: 'user/get/info'
-		// 	})
-		// }
-		
+		if(cookie.get('user_id') && cookie.get('authorization')){
 
+			dispatch({
+				type: 'user/get/loginInfo',
+				user_id: cookie.get('user_id')
+			})
+			// 该action再saga处理
+			// dispatch({
+			// 	type: 'user/transfer/loginInfo'
+			// })
+		}
+		// user zone init-----------------------
+		if(pathname.search('user')!== -1){
+			
+			const match = pathToRegexp('/user/:id/').exec(pathname)
+			dispatch({
+				type: 'user/get/info',
+				user_id: match[1]
+			})
+		}
 	})
 	return(
 	<Router history={history}>
@@ -124,6 +149,7 @@ const Routes = ({ history, dispatch }) =>{
 			<Route path="video/:id/" />
 			<Route path="text/:id/" />
 			<Route path="test/:id/" />
+			<Route path="*" component={NotFound}  />
 		</Route>
 		<Route path="/post/:id/" component={PostDetail} />
 		<Route path="/user/:id/" component={User}>
@@ -132,6 +158,9 @@ const Routes = ({ history, dispatch }) =>{
 		</Route>
 		<Route path="/play/" >
 			<Route path="video/:id/" component={PlayVideo}  />
+			{/*<Route path="text/:id/" component={PlayText}  />*/}
+			<Route path="test/:testId/:recordId/" component={PlayTest}  />
+			<Route path="*" component={NotFound}  />
 		</Route>
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}
