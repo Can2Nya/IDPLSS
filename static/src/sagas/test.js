@@ -5,9 +5,9 @@ import { message } from 'antd';
 
 import { data } from '../services/test.js';//
 
-function* getTestCategorySource() {
+function* getTestCategorySource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTestCategory);
+		const { jsonResult } = yield call(req.getTestCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'test/get/success/categorySource',
@@ -22,9 +22,9 @@ function* getTestCategorySource() {
 		});
 	}
 }
-function* getTestRecommendSource() {
+function* getTestRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTestCategory);
+		const { jsonResult } = yield call(req.getTestCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'test/get/success/recommend',
@@ -40,9 +40,9 @@ function* getTestRecommendSource() {
 	}
 }
 
-function* getTestDetailSource() {
+function* getTestDetailSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTestDetail);
+		const { jsonResult } = yield call(req.getTestDetail, action);
 		if (jsonResult) {
 			yield put({
 				type: `test/get/success/detail`,
@@ -58,9 +58,9 @@ function* getTestDetailSource() {
 	}
 }
 
-function* getTestDetailListSource() {
+function* getTestDetailListSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTestDetailList);
+		const { jsonResult } = yield call(req.getTestDetailList, action);
 		if (jsonResult) {
 			yield put({
 				type: `test/get/success/series`,

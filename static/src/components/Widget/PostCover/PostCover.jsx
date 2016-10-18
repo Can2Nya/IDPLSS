@@ -29,7 +29,7 @@ const PostCover = ({ type, commenttype, data }) => {
 				{ renderTypeIcon() }
 			</Col>
 			<Col span={20}>
-			<Link to={{ pathname: `/post/${data.id}/`}}>
+			<Link to={{ pathname: `/post/${data.id}/`, hash: `#!/1/`}}>
 			<div className={styles.title}>{ data.title }</div>
 			</Link>
 			<div style={{ margin: '15px 0 0 0'}}>

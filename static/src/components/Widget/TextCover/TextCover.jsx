@@ -22,7 +22,7 @@ const TextCover = ({ wordtype, type, data }) => {
 	const renderTextCover = () =>{
 		if(type == 'big') return <div className={typeCls()}>
 			<div className={coverCls()}>
-			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/'}}>
+			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/1/'}}>
 			<div className={styles.title}>{ data.resource_name }
 			</div>
 			</Link>
@@ -33,7 +33,7 @@ const TextCover = ({ wordtype, type, data }) => {
 		</div>;
 		if(type == 'small') return <div className={typeCls}>
 			<div className={coverCls}>
-			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/'}}>
+			<Link to={{ pathname: `/detail/text/${data.id}/`, hash: '#!/comment/1/'}}>
 			<div className={styles.title}>{ data.resource_name }</div>
 			</Link>
 			</div>

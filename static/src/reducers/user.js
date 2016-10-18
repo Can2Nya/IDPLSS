@@ -5,6 +5,8 @@ import cookie from 'js-cookie';
 // import { data } from '../services/user.js';//向user传送的数据
 
 const user = handleActions({
+	// 登录，获取用户信息------------------------------------
+
 	['user/login'](state, action) {
 		// 触发此action需要body
 		return { ...state, isloginFormSubmit: true }
@@ -20,6 +22,28 @@ const user = handleActions({
 		cookie.remove('authorization')
 		cookie.remove('user_id')
 		return { ...state, isloginFormSubmit: false };
+	},
+	['user/get/loginInfo'](state, action){
+		// 触发此action需要user_id
+		// data['user_id'] = cookie.get('user_id')
+		return { ...state }
+	},
+	['user/get/success/loginInfo'](state, action){
+		return { 
+	  		...state, 
+	  		loginUserList: action.payload, 
+	  	};
+	},
+	['user/get/info'](state, action){
+		// 触发此action需要user_id
+		// data['user_id'] = action.user_id
+		return { ...state }
+	},
+	['user/get/success/info'](state, action){
+		return { 
+	  		...state, 
+	  		userList: action.payload, 
+	  	};
 	},
 	['user/login/modal/toggle'](state, action) {
 		return { ...state, modalState: !action.modalState, isloginFormSubmit: false };
@@ -62,28 +86,7 @@ const user = handleActions({
 		return { ...state, isAllowStepChange: action.isAllowStepChange }
 	},
 	// -----------------------end----------------------------
-	['user/get/loginInfo'](state, action){
-		// 触发此action需要user_id
-		// data['user_id'] = cookie.get('user_id')
-		return { ...state }
-	},
-	['user/get/success/loginInfo'](state, action){
-		return { 
-	  		...state, 
-	  		loginUserList: action.payload, 
-	  	};
-	},
-	['user/get/info'](state, action){
-		// 触发此action需要user_id
-		// data['user_id'] = action.user_id
-		return { ...state }
-	},
-	['user/get/success/info'](state, action){
-		return { 
-	  		...state, 
-	  		userList: action.payload, 
-	  	};
-	},
+	
 	// ['user/transfer/loginInfo'](state, action){//将已登录信息转移到这里
 	// 	const { userList } = state
 	// 	if(userList.user_id == cookie.get('user_id')){
@@ -95,6 +98,7 @@ const user = handleActions({
 	// 	}
 	// 	return { ...state }
 	// },
+	// --用户中心-----------------------------------------------
 	['user/set/info'](state, action){
 		return { ...state }
 	},

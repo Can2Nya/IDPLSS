@@ -6,11 +6,11 @@ import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import * as req from '../services/video';
 import { message } from 'antd';
 
-import { data } from '../services/video.js';//
+// import { data } from '../services/video.js';//
 
-function* getVideoCategorySource() {
+function* getVideoCategorySource(action) {
 	try {
-		const { jsonResult } = yield call(req.getVideoCategory);
+		const { jsonResult } = yield call(req.getVideoCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'video/get/success/categorySource',
@@ -25,9 +25,9 @@ function* getVideoCategorySource() {
 		});
 	}
 }
-function* getVideoRecommendSource() {
+function* getVideoRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getVideoCategory);
+		const { jsonResult } = yield call(req.getVideoCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'video/get/success/recommend',
@@ -43,9 +43,9 @@ function* getVideoRecommendSource() {
 	}
 }
 
-function* getVideoDetailSource() {
+function* getVideoDetailSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getVideoDetail);
+		const { jsonResult } = yield call(req.getVideoDetail, action);
 		if (jsonResult) {
 			yield put({
 				type: `video/get/success/detail`,
@@ -61,14 +61,23 @@ function* getVideoDetailSource() {
 	}
 }
 
-function* getVideoDetailListSource() {
+function* getVideoDetailListSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getVideoDetailList);
+		const { jsonResult } = yield call(req.getVideoDetailList, action);
 		if (jsonResult) {
-			yield put({
-				type: `video/get/success/${data['fuc']}`,
-				payload: jsonResult,
-			});
+			if(action.type == 'video/get/series') {
+				yield put({
+					type: `video/get/success/series`,
+					payload: jsonResult,
+				});
+			}
+			if(action.type == 'video/get/comment') {
+				yield put({
+					type: `video/get/success/comment`,
+					payload: jsonResult,
+				});
+			}
+			
 		}
 	} catch (err) {
 		message.error(err);
@@ -79,9 +88,9 @@ function* getVideoDetailListSource() {
 	}
 }
 
-function* postVideoDetailCommentSource() {
+function* postVideoDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.postVideoDetailComment);
+		const { jsonResult } = yield call(req.postVideoDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
 			// yield put({
@@ -98,9 +107,9 @@ function* postVideoDetailCommentSource() {
 	}
 }
 
-function* deleteVideoDetailCommentSource() {
+function* deleteVideoDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.deleteVideoDetailComment);
+		const { jsonResult } = yield call(req.deleteVideoDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
 			// yield put({

@@ -64,38 +64,64 @@ const Routes = ({ history, dispatch }) =>{
 		//end------------------------
 		// detail init-------------------
 		if(pathname.search('detail')!== -1 || pathname.search('post')!== -1){
-			let match, context, id;
+			let match, context, id, fuc;
 			// comment detail
 			if(pathname.search('detail')!== -1){
-				match = pathToRegexp('/detail/:context/:id/').exec(pathname);
+				match = pathToRegexp('/detail/:context/:id/#!/:fuc/:pagination/').exec(pathname+hash);
 				context = match[1]
 				id = match[2]
-			}
-			// post detail
-			if(pathname.search('post')!== -1){
-				match = pathToRegexp('/post/:id/').exec(pathname);
-				context = 'forum'
-				id = match[1]
-			}
-			dispatch({
-				type: `${context}/init/detail`,
-				id: id,
-			})
-			if(hash){
-				const matchHash = pathToRegexp('#!/:fuc/').exec(hash)
-				const fuc = matchHash[1]
+				fuc = match[3]
 				dispatch({
-					type: `${context}/init/detail`,
-					id: id,
-					fuc: fuc,
+					type: `${context}/get/detail`,
+					id: id
 				})
 				dispatch({
 					type: `${context}/get/${fuc}`,
+					id: id,
+					pagination: match[4]
 				})
 			}
-			dispatch({
-				type: `${context}/get/detail`,
-			})
+			// post detail
+			if(pathname.search('post')!== -1){
+				match = pathToRegexp('/post/:id/#!/:pagination/').exec(pathname+hash);
+				context = 'forum'
+				id = match[1]
+				dispatch({
+					type: `${context}/get/detail`,
+					id: id
+				})
+				dispatch({
+					type: 'forum/get/comment',
+					id: id,
+					pagination: match[2]
+				})
+			}
+			
+			// dispatch({
+			// 	type: `${context}/init/detail`,
+			// 	id: id,
+			// })
+			// if(hash){
+			// 	// 除了论坛都有hash
+			// 	const matchHash = pathToRegexp('#!/:fuc/:pagination').exec(hash)
+			// 	const fuc = matchHash[1]
+			// 	// dispatch({
+			// 	// 	type: `${context}/init/detail`,
+			// 	// 	id: id,
+			// 	// 	fuc: fuc,
+			// 	// })
+			// 	dispatch({
+			// 		type: `${context}/get/${fuc}`,
+			// 		id: id,
+			// 		pagination: matchHash[2]
+			// 	})
+			// }else{
+			// 	dispatch({
+			// 		type: 'forum/get/comment',
+			// 		id: id,
+			// 		pagination: match[2]
+			// 	})
+			// }
 		}
 		// -------------end--------------------
 		// -test problem init------------------
@@ -118,10 +144,6 @@ const Routes = ({ history, dispatch }) =>{
 				type: 'user/get/loginInfo',
 				user_id: cookie.get('user_id')
 			})
-			// 该action再saga处理
-			// dispatch({
-			// 	type: 'user/transfer/loginInfo'
-			// })
 		}
 		// user zone init-----------------------
 		if(pathname.search('user')!== -1){

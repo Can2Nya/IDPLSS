@@ -14,12 +14,12 @@ let InputForm = ({ form, user, onSubmit }) => {
 		],
 	});
 	const renderUserAvatar = ()=> {
-		if(user.list['user_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${user.list['user_avatar']})`}}></div>
+		if(user.loginUserList['user_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${user.loginUserList['user_avatar']})`}}></div>
 		else return <div className={styles.avatar}></div>
 	}
 
 	const renderNoUser = () =>{
-		if(user.list <= 0) return <div className={styles.nouser}>登录后可评论</div>;
+		if(user.loginUserList <= 0) return <div className={styles.nouser}>登录后可评论</div>;
 		else return <Input type="textarea" { ...bodyProps } placeholder="请输入文字" autosize={{ minRows: 4, maxRows: 6 }} />
 	}
 	return (
