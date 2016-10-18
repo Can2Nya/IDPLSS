@@ -4,9 +4,9 @@ import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import * as req from '../services/forum';
 import { message } from 'antd';
 
-function* getForumCategorySource() {
+function* getForumCategorySource(action) {
 	try {
-		const { jsonResult } = yield call(req.getForumCategory);
+		const { jsonResult } = yield call(req.getForumCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'forum/get/success/categorySource',
@@ -21,9 +21,9 @@ function* getForumCategorySource() {
 		});
 	}
 }
-function* getForumRecommendSource() {
+function* getForumRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getForumCategory);
+		const { jsonResult } = yield call(req.getForumCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'forum/get/success/recommend',
@@ -39,9 +39,9 @@ function* getForumRecommendSource() {
 	}
 }
 
-function* getForumDetailSource() {
+function* getForumDetailSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getForumDetail);
+		const { jsonResult } = yield call(req.getForumDetail, action);
 		if (jsonResult) {
 			yield put({
 				type: `forum/get/success/detail`,
@@ -57,33 +57,31 @@ function* getForumDetailSource() {
 	}
 }
 
-// function* getForumDetailListSource() {
-// 	try {
-// 		const { jsonResult } = yield call(req.getForumDetailList);
-// 		if (jsonResult) {
-// 			yield put({
-// 				type: `forum/get/success/${data['fuc']}`,
-// 				payload: jsonResult,
-// 			});
-// 		}
-// 	} catch (err) {
-// 		message.error(err);
-// 		// yield put({
-// 		//   type: 'forum/get/failed/recommend',
-// 		//   
-// 		// });
-// 	}
-// }
-
-function* postForumDetailCommentSource() {
+function* getForumDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.postForumDetailComment);
+		const { jsonResult } = yield call(req.getForumDetailList, action);
+		if (jsonResult) {
+			yield put({
+				type: 'forum/get/success/comment',
+				payload: jsonResult,
+			});
+		}
+	} catch (err) {
+		message.error(err);
+	}
+}
+
+function* postForumDetailCommentSource(action) {
+	try {
+		const { jsonResult } = yield call(req.postForumDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `forum/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			
+			yield put({
+				type: 'forum/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);
@@ -94,22 +92,19 @@ function* postForumDetailCommentSource() {
 	}
 }
 
-function* deleteForumDetailCommentSource() {
+function* deleteForumDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.deleteForumDetailComment);
+		const { jsonResult } = yield call(req.deleteForumDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `forum/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			yield put({
+				type: 'forum/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);
-		// yield put({
-		//   type: 'forum/get/failed/recommend',
-		//   
-		// });
 	}
 }
 
@@ -122,9 +117,9 @@ function* watchForumRecommendGet() {
 function* watchForumDetailGet() {
 	yield takeLatest('forum/get/detail', getForumDetailSource)
 }
-// function* watchForumDetailListGet() {
-// 	yield takeLatest(['forum/get/series','forum/get/comment'], getForumDetailListSource)
-// }
+function* watchForumDetailListGet() {
+	yield takeLatest('forum/get/comment', getForumDetailCommentSource)
+}
 function* watchForumDetailCommentPost() {
 	yield takeLatest('forum/post/comment', postForumDetailCommentSource)
 }
@@ -136,12 +131,7 @@ export default function* () {
 	yield fork(watchForumCategorySourceGet);
 	yield fork(watchForumRecommendGet)
 	yield fork(watchForumDetailGet)
-	// yield fork(watchForumDetailListGet)
+	yield fork(watchForumDetailListGet)
 	yield fork(watchForumDetailCommentPost)
 	yield fork(watchForumDetailCommentDelete)
-	// Load forum.
-	//yield put({
-	//	type: 'forum/get/categorySource',
-
-	//});
 }

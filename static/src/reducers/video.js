@@ -53,28 +53,30 @@ const video = handleActions({
 		};
 	},
 	// -----------课程详细列表--------------------------------------------
-	['video/init/detail'](state, action) {
-		data['fuc'] = action.fuc
-		data['coursesId'] = action.id
-		return { 
-		...state, 
-		isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
-		};
-	},
-	['video/get/detail'](state, action) {//获取有关联的列表
+	// ['video/init/detail'](state, action) {
+	// 	data['fuc'] = action.fuc
+	// 	data['coursesId'] = action.id
+	// 	return { 
+	// 	...state, 
+	// 	isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
+	// 	};
+	// },
+	['video/get/detail'](state, action) {
+		// 触发此action需要 id
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
 		};
 	},
 	['video/get/success/detail'](state, action) {
+		// 触发此action需要 id
 		return { 
 			...state,
 			isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
 		}
 	},
-	['video/get/series'](state, action) {//获取有关联的列表
-		console.log('series')
+	['video/get/series'](state, action) {
+		// 触发此action需要 id pagination
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -83,10 +85,17 @@ const video = handleActions({
 	['video/get/success/series'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, list: action.payload.video_list, loading: false },
+			isSelectContext: { 
+				...state.isSelectContext, 
+				list: action.payload.video_list, 
+				loading: false,
+				total: action.payload.count
+			},
 		}
 	},
 	['video/get/comment'](state, action) {//获取有关联的列表
+		// 触发此action需要 id pagination
+
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -95,15 +104,21 @@ const video = handleActions({
 	['video/get/success/comment'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
+			isSelectContext: { 
+				...state.isSelectContext, 
+				comment: action.payload.posts, 
+				loading: false,
+				total: action.payload.count
+			},
 		}
 	},
 	['video/post/comment'](state, action) {
-		data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
+		// // 触发此action需要 body ,id
+		// data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
 		return { ...state,}
 	},
 	['video/delete/comment'](state, action) {
-		
+		// 触发此action需要 id comment_id
 		return { ...state,}
 	},
 	/**['video/changeMode'](state, action) {
@@ -144,10 +159,14 @@ const video = handleActions({
 	isSelectCategory: 0,//选定的分类，没选定就是分类的7
 	isSelectPagination: 1,//选定的分页，默认从1开始
 	isSelectContext: {
+		total: 0,
 		id: 0,
 		context: {},
 		list: [],
 		comment: [],//课程评论列表
+		isSelectContext:{
+
+		}//选定内容中的内容
 	},//选定的内容
 	loading: false,//加载中
 });

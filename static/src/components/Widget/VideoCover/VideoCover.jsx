@@ -14,7 +14,7 @@ const VideoCover = ({ type, data, }) => {
 	};
 	return (
 		<div className={coverCls()}>
-			<Link to={{ pathname: `/detail/video/${data.id}/`, hash: '#!/series/'}} >
+			<Link to={{ pathname: `/detail/video/${data.id}/`, hash: '#!/series/1/'}} >
 			<div className={styles.img} style={{backgroundImage: `url(${data['images']})`}}>
 				<div className={styles.showmun}>
 					<span>&#xe60e; </span>

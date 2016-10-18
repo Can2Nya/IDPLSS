@@ -5,46 +5,37 @@ import classNames from 'classnames';
 
 import styles from './Comment.less';
 
-const Comment = ({ user,  onDelete }) => {
-	/*const CommentCls = () =>{
-		/*var style = {};
-		if(type == 'video') style[[styles.video]] = true;
-		if(type == 'word') style[[styles.word]] = true;
-		if(type == 'ppt') style[[styles.ppt]] = true;
-		if(type == 'pdf') style[[styles.pdf]] = true;
-
-		return classNames({
-			[styles[type]]:true
-		});
-	};*/
-	const data = {
-      "author_id": 1,
-      "body": "post comment 5  written by ddragon",
-      "comment_id": 5,
-      "post_id": 1,
-      "show": true,
-      "timestamp": "Sat, 24 Sep 2016 04:46:30 GMT"
-    }
+const Comment = ({ user, data, onDelete }) => {
+	// user={authorid,loginid,logintype}
+	const renderUserAvatar = ()=> {
+		if(data['author_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${data['author_avatar']})`}}></div>
+		else return <div className={styles.avatar}></div>
+	}
+	const renderDeleteButton = () =>{
+		if ((user.loginid == user.authorid) || (user.logintype >= 3) || (user.loginid == data['author_id'])){
+			return <a onClick={onDelete.bind(this, data['comment_id'], data['author_id'])}><span>&#xe602; 删除</span></a>
+		}
+	}
 	return (
 		<div className={styles.comment}>
 			<div className={styles.main}>
 				<Row>
 					<Col span={3} lg={2}>
-					<div className={styles.avatar}></div>
+					{ renderUserAvatar() }
 					</Col>
 					<Col span={21} lg={22}>
-					<div className={styles.username}>用户名<span>时间</span>
+					<div className={styles.username}>{data['author_name']} <span>{data['timestamp']}</span>
 					</div>
 					<div className={styles.context}>
 					<p>
-					xxxxxxxxxxxxx
+					{ data['body'] }
 					</p>
 					</div>
 					</Col>
 				</Row>
 				<div className={styles.tool}>
 					<div className={styles.icon}>
-					<a onClick={onDelete.bind(this, data['post_id'])}><span>&#xe602; 删除</span></a>
+					{ renderDeleteButton() }
 					<a><span>&#xe60b; 点赞</span></a>
 					</div>
 				</div>

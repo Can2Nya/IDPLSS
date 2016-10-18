@@ -49,7 +49,7 @@ const Preview = ({ type, data }) => {
 		<div className={styles.preview}>
 		<div className={PreviewCls()} style={renderBg()} ></div>
 		<div className={styles.contant}>
-		<div className={styles.text}>{ data["course_name"] || data['resource_name'] }</div>
+		<div className={styles.text}>{ data["course_name"] || data['resource_name'] || data['test_title'] }</div>
 		
 		{ renderButton() }
 		

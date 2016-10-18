@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Row, Col, Icon, Tabs, Spin } from 'antd';
+import { Breadcrumb, Pagination, Row, Col, Icon, Tabs, Spin } from 'antd';
 import pathToRegexp from 'path-to-regexp';
 import Layout from '../layouts/Layout/Layout';
 
@@ -18,8 +18,10 @@ import styles from './commont.less';
 
 const Detail = ({ context, user, dispatch, location }) => {
 	const { stateName, isSelectContext } = context
-	const data = isSelectContext.context
-	const { list } = user
+	const { total, comment } = isSelectContext
+	const { id } = isSelectContext.context
+
+	const { loginUserList } = user
 
 	// -------------action----------------
 	const handlePostSubmit = (form, value, e) => {//评论表单提交(参数顺序不能反)
@@ -28,27 +30,46 @@ const Detail = ({ context, user, dispatch, location }) => {
 			if (!!errors) {
 				return;
 			}
-			if (user.list.length <= 0) return;
+			if (loginUserList.length <= 0) return;
+			// video->course_id,text->text_resource_id
+			let pram = {
+				video: 'course_id',
+				text: 'text_resource_id'
+			}
+
+			let body = {}
+			body['body'] = value.body
+			body['author_id'] = loginUserList.user_id
+			body[pram[stateName]] = id
+
 			dispatch({
 				type: `${stateName}/post/comment`,
-				body: value['body'],
-				author_id: list.user_id,
-				id: isSelectContext.id,
+				id: id,
+				body: body
+				// body: { body: value['body'], author_id: loginUserList.user_id, `${pram[stateName]}`: id}
+				// body: value['body'],
+				// author_id: loginUserList.user_id,
+				// id: isSelectContext.id,
 				//这个id可以指各种区域需要的字段,字段名在对应的reducers接收
 
 			})
 		});
 	}
 
-	const handlePostDelete = (id, e) =>{
-		// if ((list.user_type == 2 && list.user_id == isSelectContext.context.author_id) || (list.user_type >= 3)){
-		// 	// 第二道防线
-		// 	dispatch({
-		// 		type: `${stateName}/delete/comment`,
-		// 		commentid: id,
-		// 	})
-		// }
-
+	const handlePostDelete = (commentid, authorid, e) =>{
+		if ((user.loginUserList.user_type == 2 && user.loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
+			// 第二道防线
+			dispatch({
+				type: `${stateName}/delete/comment`,
+				id: id,
+				comment_id: commentid,
+			})
+		}
+	}
+	const handleChangePagination = (page) =>{
+		if(location.hash.search(series) !== -1) window.location.hash = `#!/series/${page}`
+		if(location.hash.search(comment) !== -1) window.location.hash = `#!/comment/${page}`
+		
 	}
 	// -------------fuc-------------------------
 	const handleTabsLink = ({...e}) =>{
@@ -56,17 +77,17 @@ const Detail = ({ context, user, dispatch, location }) => {
 		console.log(e[0])*/
 		const hash = (key) =>{
 			switch(key){
-				case '1': return '#!/series/';
-				case '2': return '#!/comment/';
+				case '1': return '#!/series/1/';
+				case '2': return '#!/comment/1/';
 			}
 		}
-		return window.location.hash = hash(e[0]);
+		window.location.hash = hash(e[0]);
 	}
 	const handleActiveTab = () =>{
-		switch(location.hash){
-			case '#!/series/': return '1';
-			case '#!/comment/': return '2';
-		}
+		if(location.hash.search('series') !== -1) return '1'
+		if(location.hash.search('comment') !== -1) return '2'
+			// case '#!/series/': return '1';
+			// case '#!/comment/': return '2';
 	}
 	// -----------------render----------------------
 	const renderList = () =>{
@@ -76,11 +97,22 @@ const Detail = ({ context, user, dispatch, location }) => {
 		if(isSelectContext.list <= 0 || !isSelectContext.list){
 			return;
 		}
-		if(hash.search('series')!== -1){
-			return isSelectContext.list.map((video,index) =>{
-				if(!video.show) return
+		if(location.hash.search('series')!== -1){
+			return isSelectContext.list.map((list,index) =>{
+				if(!list.show) return
 				return(
-					<List>{ video['video_name'] }</List>
+					<List key={index}>{ list['video_name'] || list['problem_description'] }</List>
+				);
+			})
+		}
+		if(location.hash.search('comment')!== -1){
+			return isSelectContext.comment.map((comment,index) =>{
+				if(!comment.show) return
+				return(
+					<Comment key={index} data={comment} user={{ 
+					authorid: isSelectContext.context.author_id, 
+					loginid: user.loginUserList.user_id, 
+					logintype: user.loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
 				);
 			})
 		}
@@ -111,16 +143,17 @@ const Detail = ({ context, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={8} lg={7}>
-			<Preview type={`${stateName}`} data={ data } />
+			<Preview type={`${stateName}`} data={ isSelectContext.context } />
 			</Col>
 
 			<Col span={16} lg={17} >
 			<div className={styles.detail}>
-			<DetailPannel data={ data } >
+			<DetailPannel data={ isSelectContext.context } >
 				<div className={styles.tabpannel}>
 				<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={handleActiveTab()}>
 				<Tabs.TabPane tab='列表' key={1} disabled={renderIsDisableSeries()}>
 					{ renderList() }
+					<Pagination current={20} total={total} onChange={handleChangePagination} />
 				</Tabs.TabPane>
 				<Tabs.TabPane tab='评论' key={2} disabled={renderIsDisableComment()}>
 
@@ -128,8 +161,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 					onSubmit={handlePostSubmit}
 					user={user}/>
 
-					<Comment 
-					onDelete={handlePostDelete}/>
+					<Pagination current={20} total={total} onChange={handleChangePagination} />
 				</Tabs.TabPane>
 				</Tabs>
 				</div>

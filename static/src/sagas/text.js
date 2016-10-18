@@ -3,11 +3,9 @@ import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import * as req from '../services/text';
 import { message } from 'antd';
 
-import { data } from '../services/text.js';//
-
-function* getTextCategorySource() {
+function* getTextCategorySource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTextCategory);
+		const { jsonResult } = yield call(req.getTextCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'text/get/success/categorySource',
@@ -22,9 +20,9 @@ function* getTextCategorySource() {
 		});
 	}
 }
-function* getTextRecommendSource() {
+function* getTextRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTextCategory);
+		const { jsonResult } = yield call(req.getTextCategory, action);
 		if (jsonResult) {
 			yield put({
 				type: 'text/get/success/recommend',
@@ -39,9 +37,9 @@ function* getTextRecommendSource() {
 		});
 	}
 }
-function* getTextDetailSource() {
+function* getTextDetailSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTextDetail);
+		const { jsonResult } = yield call(req.getTextDetail, action);
 		if (jsonResult) {
 			yield put({
 				type: `text/get/success/detail`,
@@ -57,9 +55,9 @@ function* getTextDetailSource() {
 	}
 }
 
-function* getTextDetailListSource() {
+function* getTextDetailListSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTextDetailList);
+		const { jsonResult } = yield call(req.getTextDetailList, action);
 		if (jsonResult) {
 			yield put({
 				type: `text/get/success/comment`,
@@ -75,9 +73,9 @@ function* getTextDetailListSource() {
 	}
 }
 
-function* postTextDetailCommentSource() {
+function* postTextDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.postTextDetailComment);
+		const { jsonResult } = yield call(req.postTextDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
 			// yield put({
@@ -94,9 +92,9 @@ function* postTextDetailCommentSource() {
 	}
 }
 
-function* deleteTextDetailCommentSource() {
+function* deleteTextDetailCommentSource(action) {
 	try {
-		const { jsonResult } = yield call(req.deleteTextDetailComment);
+		const { jsonResult } = yield call(req.deleteTextDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
 			// yield put({

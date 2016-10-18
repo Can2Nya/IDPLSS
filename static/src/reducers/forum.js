@@ -52,15 +52,16 @@ const forum = handleActions({
 		};
 	},
 	// -----------详细列表--------------------------------------------
-	['forum/init/detail'](state, action) {
-		// data['fuc'] = action.fuc
-		data['coursesId'] = action.id
-		return { 
-		...state, 
-		isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
-		};
-	},
-	['forum/get/detail'](state, action) {//获取有关联的列表
+	// ['forum/init/detail'](state, action) {
+	// 	// data['fuc'] = action.fuc
+	// 	data['coursesId'] = action.id
+	// 	return { 
+	// 	...state, 
+	// 	isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
+	// 	};
+	// },
+	['forum/get/detail'](state, action) {
+		// 触发此action需要id
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -69,7 +70,11 @@ const forum = handleActions({
 	['forum/get/success/detail'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
+			isSelectContext: { 
+				...state.isSelectContext, 
+				context: action.payload, 
+				loading: false 
+			},
 		}
 	},
 	// ['forum/get/series'](state, action) {//获取有关联的列表
@@ -86,6 +91,7 @@ const forum = handleActions({
 	// 	}
 	// },
 	['forum/get/comment'](state, action) {//获取有关联的列表
+		// 触发此action需要id, pagination
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -94,15 +100,21 @@ const forum = handleActions({
 	['forum/get/success/comment'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
+			isSelectContext: { 
+				...state.isSelectContext, 
+				comment: action.payload.posts, 
+				loading: false,
+				total: action.payload.count
+			},
 		}
 	},
 	['forum/post/comment'](state, action) {
-		data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
+		// 触发此action需要body，id
+		// data['body'] = { body: action['body'], author_id: action['author_id'], course_id: action['id']}
 		return { ...state,}
 	},
 	['forum/delete/comment'](state, action) {
-		
+		// 触发此action需要id,(comment_id)
 		return { ...state,}
 	},
 	/**['forum/changeMode'](state, action) {
@@ -147,7 +159,7 @@ const forum = handleActions({
 	isSelectCategory: 0,//选定的分类，没选定就是分类的7
 	isSelectPagination: 1,//选定的分页，默认从1开始
 	isSelectContext: {
-		id: 0,
+		total: 0,//comment总数
 		context: {},//描述内容【detail
 		comment: [],//课程评论列表
 	},//选定的内容

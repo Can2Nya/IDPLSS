@@ -4,7 +4,7 @@ let apiUrl = 'http://api.jxnugo.com'
 // let apiUrl = '127.0.0.1:5000'
 export let data = {}
 
-export async function getTextCategory() {
+export async function getTextCategory(action) {
 	if (data['category']!= -1 ) {
 		if (data['type']!= -1 || data['type']!= '-1') return xFetch(apiUrl+'/api/text-resources/category/'+data['category']+'/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
 		else return xFetch(apiUrl+'/api/text-resources/category/'+data['category']+'?page='+data['pagination'],{method: 'GET',})
@@ -15,24 +15,24 @@ export async function getTextCategory() {
 	}
   	
 }
-export async function getTextDetail() {
-	return xFetch(apiUrl+'/api/text-resources/'+data['coursesId'],{method: 'GET',});
+export async function getTextDetail(action) {
+	return xFetch(`${apiUrl}/api/text-resources/${action.id}`,{method: 'GET',});
 }
 
-export async function getTextDetailList() {
-	let url = '/api/text-resources/'+data['coursesId'];
-	//if(data['fuc'] == 'series') url += '/video-list';
-	if(data['fuc'] == 'comment') url += '/comments';
+export async function getTextDetailList(action) {
+	let url = `${apiUrl}/api/text-resources/${action.id}`;
+	// if(action.type == 'video/get/series') url += '/video-list';
+	if(action.type == 'text/get/comment') url += '/comments';
 	
 	return xFetch(url,{method: 'GET',});
 }
 
-export async function postTextDetailComment() {
-	return xFetch(apiUrl+'/api/text-resources/detail/'+data['coursesId']+'/new-comment',{method: 'POST',
-		body: JSON.stringify(data['body']),
+export async function postTextDetailComment(action) {
+	return xFetch(`${apiUrl}/api/text-resources/detail/${action.id}/new-comment`,{method: 'POST',
+		body: JSON.stringify(action.body),
 	});
 }
 
-export async function deleteTextDetailComment() {
-	return xFetch(apiUrl+'/api/text-resources/detail/comment/'+data['commentId'],{method: 'DELETE',});
+export async function deleteTextDetailComment(action) {
+	return xFetch(`${apiUrl}/api/text-resources/detail/comment/${action.comment_id}`,{method: 'DELETE',});
 }
