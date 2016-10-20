@@ -148,10 +148,63 @@ const Routes = ({ history, dispatch }) =>{
 		// user zone init-----------------------
 		if(pathname.search('user')!== -1){
 			
-			const match = pathToRegexp('/user/:id/').exec(pathname)
+			const match = pathToRegexp('/user/:id/#!/:fuc/:subTab/').exec(pathname+hash)
 			dispatch({
 				type: 'user/get/info',
 				user_id: match[1]
+			})
+			let action = 'user/get/user';
+			
+			if(match[2] == 'post'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '1'
+				})
+				switch(match[3]){
+					case '0': action += 'Post'; break;
+					case '1': action += 'PostComment'; break;
+				}
+			}
+			if(match[2] == 'favorite'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '2'
+				})
+
+				switch(match[3]){
+					case '0': action += 'VideoCollection'; break;
+					case '1': action += 'TextCollection'; break;
+					case '2': action += 'TestComplete'; break;
+				}
+			}
+			if(match[2] == 'comment'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '3'
+				})
+				switch(match[3]){
+					case '0': action += 'VideoCollection'; break;
+					case '1': action += 'TextCollection'; break;
+				}
+			}
+			if(match[2] == 'upload'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '4'
+				})
+				switch(match[3]){
+					case '0': action += 'Video'; break;
+					case '1': action += 'Text'; break;
+					case '2': action += 'Test'; break;
+				}
+			}
+			dispatch({
+				type: 'user/changeSelectSubTab',
+				isSelectSubTab: match[3]
+			})
+			dispatch({
+				type: action,
+				pagination: 1
 			})
 		}
 	})

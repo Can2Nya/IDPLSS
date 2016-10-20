@@ -46,7 +46,7 @@ function* getUser(action) {// arg内有action参数
 			if(type == 'user/get/loginInfo'){
 				yield put({
 					type: 'user/get/success/loginInfo',
-					payload: jsonResult,
+					payload: jsonResult
 				});
 			}
 		}
@@ -150,6 +150,29 @@ function* isFollowedBy(action) {
 		//});
 	}
 }
+function* getUserZoneData(action) {
+	try {
+		const { jsonResult } = yield call(req.userZoneData, action);
+		if (jsonResult) {
+			if((action.type != 'user/get/userVideoList') || (action.type != 'user/get/userTestList')){
+				yield put({
+					type: 'user/get/zoneData/success',
+					payload: jsonResult.collection_courses ||  jsonResult.posts || jsonResult.posts_comments || jsonResult.collection_posts || jsonResult.courses || jsonResult.course_comments || jsonResult.text_resources || jsonResult.course_comments || jsonResult.collection_text_resources || jsonResult.test_list || jsonResult.resource_comments || jsonResult.test_record ,
+					total: jsonResult.count,
+				})
+			}
+			else{
+				yield put({
+					type: 'user/get/zoneSubData/success',
+					payload: jsonResult,
+					total: jsonResult.count,
+				})
+			}
+		}
+	} catch (err) {
+		message.error(err);
+	}
+}
 
 
 
@@ -168,12 +191,28 @@ function* watchUserRegister() {
 function* watchUserRegisterConfirm() {
 	yield* takeLatest('user/register/confirm', registerConfirm)
 }
+function* watchUserZoneData() {
+	yield* takeLatest([
+		'user/get/userPost',
+		'user/get/userPostComment',
+		'user/get/userPostCollection',
+		'user/get/userVideo',
+		'user/get/userVideoComment',
+		'user/get/userVideoCollection',
+		'user/get/userText',
+		'user/get/userTextComment',
+		'user/get/userTextCollection',
+		'user/get/userTest',
+		'user/get/userTestComplete'
+		], getUserZoneData)
+}
 function* watchisFollowing() {
 	yield* takeLatest('user/info/isFollowing', isFollowing)
 }
 function* watchisFollowedBy() {
 	yield* takeLatest('user/info/isFollowedBy', isFollowedBy)
 }
+
 
 /*function* watchUserGetJson() {
 	yield* takeLatest(['user/login','user/getInfo','user/register'], getJson)
@@ -187,6 +226,7 @@ export default function* () {
 	yield fork(watchUserRegisterConfirm);
 	yield fork(watchisFollowing);
 	yield fork(watchisFollowedBy);
+	yield fork(watchUserZoneData)
 	//yield fork(watchUserGetJson)
 	// Load user.//
 	// yield put({

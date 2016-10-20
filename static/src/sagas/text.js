@@ -78,10 +78,11 @@ function* postTextDetailCommentSource(action) {
 		const { jsonResult } = yield call(req.postTextDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `text/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			yield put({
+				type: 'text/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);
@@ -97,10 +98,11 @@ function* deleteTextDetailCommentSource(action) {
 		const { jsonResult } = yield call(req.deleteTextDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `text/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			yield put({
+				type: 'text/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);

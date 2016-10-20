@@ -168,6 +168,9 @@ const video = handleActions({
 
 		}//选定内容中的内容
 	},//选定的内容
+	upload: {
+		uploadState: 0, // 上传百分比
+	},
 	loading: false,//加载中
 });
 

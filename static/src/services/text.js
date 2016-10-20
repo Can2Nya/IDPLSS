@@ -28,11 +28,11 @@ export async function getTextDetailList(action) {
 }
 
 export async function postTextDetailComment(action) {
-	return xFetch(`${apiUrl}/api/text-resources/detail/${action.id}/new-comment`,{method: 'POST',
+	return xFetch(`${apiUrl}/api/text-resources/${action.id}/new-comment`,{method: 'POST',
 		body: JSON.stringify(action.body),
 	});
 }
 
 export async function deleteTextDetailComment(action) {
-	return xFetch(`${apiUrl}/api/text-resources/detail/comment/${action.comment_id}`,{method: 'DELETE',});
+	return xFetch(`${apiUrl}/api/text-resources/comment/${action.comment_id}`,{method: 'DELETE',});
 }

@@ -23,11 +23,11 @@ export async function getVideoDetailList(action) {
 }
 
 export async function postVideoDetailComment(action) {
-	return xFetch(`${apiUrl}/api/courses/detail/${action.id}/new-comment`,{method: 'POST',
+	return xFetch(`${apiUrl}/api/courses/${action.id}/new-comment`,{method: 'POST',
 		body: JSON.stringify(action.body),
 	});
 }
 
 export async function deleteVideoDetailComment(action) {
-	return xFetch(`${apiUrl}/api/courses/detail/comment/${action.comment_id}`,{method: 'DELETE',});
+	return xFetch(`${apiUrl}/api/courses/comment/${action.comment_id}`,{method: 'DELETE',});
 }
