@@ -1,0 +1,43 @@
+@import (reference) '../../config/config.less';
+
+.preview{
+	width: 90%;
+	box-shadow: 0 0 10px #eee;
+	.bg{
+		height: 200px;
+		width: 100%;
+		background-repeat: no-repeat;
+		background-position: 50% 0;
+	}
+	.word{
+		background: url('@{QINIU-URL}/images/widget/big/word.png');
+		.bg;
+	}
+	.pdf{
+		background: url('@{QINIU-URL}/images/widget/big/pdf.png');
+		.bg;
+	}
+	.ppt{
+		background: url('@{QINIU-URL}/images/widget/big/ppt.png');
+		.bg;
+	}
+	.video{
+		.bg;
+		background-color: @gray;
+		background-position: 0% 0%;
+		background-size: cover;
+	}
+	.contant{
+		padding: 15px;
+	}
+	.text{
+		margin: 10px 0;
+		font-size: 24px;
+		color: @purple;
+	}
+	.button{
+		.btn-sp;
+		height: auto;
+		background-color: @yellow;
+	}
+}

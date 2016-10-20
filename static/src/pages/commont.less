@@ -1,0 +1,170 @@
+@import (reference) '../config/config.less';
+
+.contain{
+	.container;
+	&:after{
+		clear: both;
+		content: '';
+		display: table;
+	}
+}
+/*上下外间距*/
+.margin{
+	margin: 1.5em 0;
+}
+/*左右内边距*/
+.padding{
+	padding: 0 1.5em;
+}
+/*水平居中*/
+.divCenter{
+	margin-left: auto;
+	margin-right: auto;
+}
+/*双栏布局*/
+.float{
+	float: left;
+}
+.left{
+	width: 25%;
+	padding-right: 15px;
+	.float;
+}
+.right{
+	width: 75%;
+	.float;
+}
+/*排列块间隔*/
+.marginBlock{
+	margin:0 0 20px 0;
+}
+
+/*居中＋上下边距*/
+.marginCenter{
+	.margin;
+	.divCenter;
+}
+
+
+/*用户User*/
+.user{
+	.userbg{
+	background-image: url('@{QINIU-URL}/images/bg.png');
+	height: 180px;
+	margin-top: 65px;
+	}
+	.tabpannel{
+		width: 60%;
+		.position{
+			position: relative;
+			top: -50px;
+		}
+		div[class~='ant-tabs']{
+			overflow: visible;
+		}
+		div[class='ant-tabs-content']{
+			box-shadow: 0 0 10px @gray;
+			overflow: hidden;
+		}
+		div[class~='ant-tabs-nav-wrap']{
+			background-color: rgba(0, 0, 0, 0.5)
+		}
+		div[class~='ant-tabs-nav-container']{
+			zoom: 1.4;
+		}
+		div[class~='ant-tabs-ink-bar']{
+			background-color: @yellow;
+		}
+		div[class~='ant-tabs-tab-inner']{
+			color: @white;
+		}
+		div[role='tab']{
+			margin: 0 20px;
+			height: auto;
+		}
+		div[role='tablist']{
+			margin-bottom: 0;
+		}
+	}
+}
+
+/*详细Detail*/
+.detail{
+	.tabpannel{
+		div[class*='ant-tabs-tab-inner']
+		{
+			color: @purple !important;
+			
+		}
+		div[class*='ant-tabs-ink-bar']{
+			background-color: @purple !important;
+		}
+	}
+}
+/*注册register*/
+.register{
+	.mail{
+		.iconfont;
+		color: @gray;
+		font-size: 200px;
+		font-weight: lighter;
+		text-align: center;
+		line-height: 180px;
+	}
+	.msg{
+		color: @purple;
+		font-size: 26px;
+		text-align: center;
+		font-weight: 400;
+	}
+	.rightmsg{
+		display: block;
+		color: @purple;
+		font-size: 200px;
+		font-weight: lighter;
+		text-align: center;
+		line-height: 250px;
+	}
+}
+.playVideo{
+	
+	.videoBlock{
+		background-color: lighten(@gray, 10%);
+		padding: 30px 0;
+	}
+	.video{
+		width: 980px;
+		height: 608px;
+		box-shadow: 0 0 10px @gray;
+	}
+	@media (min-width: 992px){
+		.video{
+			width: 900px;
+			height: 559px;
+		}
+	}
+	@media (min-width: 1500px){
+		.video{
+			width: 1250px;
+			height: 800px;
+		}
+	}
+}
+.playTest{
+	div[class~="ant-progress-bg"]{
+		background-color: @purple !important;
+	}
+	.position{
+		position: absolute;
+		width: 100%;
+	}
+	.testBlock{
+		
+		padding: 30px 0;
+	}
+	.testBg{
+		padding: 30px;
+		background-color: @white;
+		box-shadow: 0 0 10px @gray;
+	}
+}

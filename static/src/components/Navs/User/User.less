@@ -1,0 +1,33 @@
+@import (reference) '../../../config/config.less';
+
+.text{
+	width: 80px;
+	font-size: 14px;
+	.item{
+		color: @white;
+		display: inline-block;
+		margin-left: 5px;
+	}
+}
+.list{
+	.item{
+		color: @purple;
+		font-size: 12px;
+		border-bottom: 1px dashed @purple;
+		padding: 10px 5px;
+	}
+
+
+}
+.userImg{
+	background-color:  @gray;
+	background-size: cover;
+	background-repeat: no-repeat;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	float: right;
+	:after{
+		clear: both;
+	}
+}
