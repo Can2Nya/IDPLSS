@@ -58,6 +58,9 @@ def post_detail(pid):
     if request.method == 'GET':
         post = Post.query.get_or_404(pid)
         if post.show is not False:
+            post.page_view += 1
+            db.session.add(post)
+            db.session.commit()
             return jsonify(post.to_json())
         else:
             return not_found()

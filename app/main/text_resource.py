@@ -1,12 +1,11 @@
 # coding: utf-8
 from flask import request, g, url_for, current_app, jsonify
-from app.models import db, User, TextResource, TextResourceComment, Permission
-from app.main.decorators import permission_required, get_current_user
+from app.models import db, User, TextResource, TextResourceComment, Permission, TextResourceBehavior
+from app.main.decorators import permission_required, get_current_user, user_login_info
 from app.main.authentication import auth
 from app.main import main
 from app.main.responses import bad_request, not_found, forbidden
 from app.utils.responses import self_response
-from app.utils.model_tools import calc_count
 
 
 @main.route('/api/text-resources', methods=['GET'])
@@ -162,12 +161,32 @@ def is_collecting_resource(rid):
 def collect_resource(rid):
     text_resource = TextResource.query.get_or_404(rid)
     user = g.current_user
+    behavior = TextResourceBehavior.query.filter_by(user_id=user.id, text_resource_id=text_resource.id).first()
     if request.method == 'GET':
         user.collect_text_resouce(text_resource)
+        text_resource.download_sum += 1
+        db.session.add(text_resource)
+        if behavior is None:
+            record = TextResourceBehavior(user_id=user.id, text_resource_id=text_resource.id, is_collect=True)
+            db.session.add(record)
+        else:
+            behavior.is_collect = True
+            db.session.add(behavior)
+        db.session.commit()
         return self_response('collect text resource successfully')
     elif request.method == 'DELETE':
-        user.uncollect_text_resource(text_resource)
-        return self_response('unfavorite text resource successfully')
+        if user.is_collecting_text_resouurce(text_resource):
+            user.uncollect_text_resource(text_resource)
+            text_resource.download_sum -= 1
+            db.session.add(text_resource)
+            db.session.commit()
+            if behavior is not None:
+                behavior.is_collect = False
+                db.session.add(behavior)
+                db.sessionc.commit()
+            return self_response('unfavorite text resource successfully')
+        else:
+            return bad_request('user does not collect text resource ago')
     else:
         return self_response('invalid operation')
 
@@ -194,3 +213,27 @@ def search_text_resource():
         'next': url_next,
         'count': pagination.total
     })
+
+
+@main.route('/api/text-resources/like/<int:tid>', methods=['GET'])
+@user_login_info
+def like_text_resource(tid):
+    t_resource = TextResource.query.get_or_404(tid)
+    t_resource.like += 1
+    db.session.add(t_resource)
+    user = g.current_user
+    if user is None:
+        db.session.commit()
+        return self_response('guest like text resource successfully')
+    else:
+        behavior = TextResourceBehavior.query.filter_by(user_id=user.id, text_resource_id=t_resource.id).first()
+        if behavior is None:
+            record = TextResourceBehavior(user_id=user.id, text_resource_id=t_resource.id, is_like=True)
+            db.session.add(record)
+        else:
+            behavior.is_like = True
+            db.session.add(behavior)
+        db.session.commit()
+        return self_response('like text_resource successfully')
+
+

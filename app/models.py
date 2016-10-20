@@ -146,9 +146,12 @@ class User(db.Model):
     avatar = db.Column(db.String(64))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow, index=True)
     confirmed = db.Column(db.Boolean, default=False)
     name = db.Column(db.String(32))
+    sex = db.Column(db.Integer, default=0)  # 性别  0代表男生  1代表女生
+    subject = db.Column(db.String(32))  # 注册填写专业学科类别 1哲学 2经济学 3法学 4教育学 5文学 6历史学 7理学 8工学 9农学 10医学 11军事学 12管理学
+    interested_field = db.Column(db.Integer,  default=0)  # 注册时填写感兴趣的领域 基础科学1 工程技术2 历史哲学3 经管法律4 语言文化5 艺术音乐6 兴趣生活7
     about_me = db.Column(db.String(128))
     followings = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref('follower',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
@@ -173,12 +176,12 @@ class User(db.Model):
     answer_record = db.relationship('AnswerRecord', backref='answer', lazy='dynamic')
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
         import forgery_py
         random.seed()
         for i in range(count):
-            u = User(name='idplss_'+str(count), user_name=forgery_py.internet.user_name(True), email=forgery_py.internet.email_address(), confirmed=True,
+            u = User(name='user_'+str(i), user_name=forgery_py.internet.user_name(True), email=forgery_py.internet.email_address(), confirmed=True,
                      pass_word='123456',  about_me=forgery_py.lorem_ipsum.sentence(), member_since=forgery_py.date.date(True))
             db.session.add(u)
             try:
@@ -214,8 +217,11 @@ class User(db.Model):
             'user_type': self.user_type,
             'user_avatar': self.avatar,
             'user_about_me': self.about_me,
+            'sex': self.sex,
             'user_member_since': time_transform(self.member_since),
             'user_last_seen': time_transform(self.last_seen),
+            'interested_field': self.interested_field,
+            'subject': self.subject,
             'user_followers': self.followers.count(),
             'user_followings': self.followings.count(),
             'user_role_id'
@@ -228,6 +234,9 @@ class User(db.Model):
         user.name = set_model_attr(json_user, 'name')
         user.about_me = set_model_attr(json_user, 'about_me')
         user.avatar = set_model_attr(json_user, 'avatar')
+        user.subject = set_model_attr((json_user, 'subject'))
+        user.interested_field = set_model_attr(json_user, 'interested_field')
+        user.sex = set_model_attr(json_user, 'sex')
         return user
 
     @property
@@ -396,8 +405,10 @@ class Post(db.Model):
     title = db.Column(db.String(64))
     post_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     body = db.Column(db.Text)
+    page_view = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     images = db.Column(db.String(512))
+    like = db.Column(db.Integer, default=0)
     show = db.Column(db.Boolean, default=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('PostComment', backref='post', lazy='dynamic')
@@ -406,16 +417,14 @@ class Post(db.Model):
         return '< Post_title %r>' % self.title
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
-        user_count = User.query.count()
-        random.seed()
         for i in range(count):
-            u = User.query.offset(random.randint(0, user_count-1)).first()
             p = Post(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
                      title=forgery_py.lorem_ipsum.title(),
-                     post_category=random.randint(0, 6), show=True, author_id=u.id, images="FsEAykjBT4VlaqS934nGjd7GbmLu:Fn5e3ZfrHJ4GbfPmlaAjhfYAxiFn")
+                     post_category=random.randint(0, 6), like=random.randint(1,1000), page_view=random.randint(1, 1200),
+                     show=True, author_id=random.randint(1, 100), images="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png")
             db.session.add(p)
             db.session.commit()
 
@@ -425,6 +434,8 @@ class Post(db.Model):
             'title': self.title,
             'post_category': self.post_category,
             'body': self.body,
+            'like': self.like,
+            'page_view': self.page_view,
             'timestamp': time_transform(self.timestamp),
             'images': self.images,
             'show': self.show,
@@ -459,15 +470,12 @@ class PostComment(db.Model):
         return '<Comment_id %r>' % self.id
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=200):
         import forgery_py
         random.seed()
-        user_count = User.query.count()
-        random.seed()
         for i in range(count):
-            u = User.query.offset(random.randint(0, user_count-1)).first()
             p = PostComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1, 2)), timestamp=forgery_py.date.date(True),
-                      show=True, author_id=u.id, post_id=random.randint(1, 48))
+                      show=True, author_id=random.randint(1, 100), post_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -500,6 +508,8 @@ class Course(db.Model):
     description = db.Column(db.Text)
     course_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     images = db.Column(db.String(256))
+    like = db.Column(db.Integer, default=0)
+    collect_sum = db.Column(db.Integer, default=0)  # 收藏该课程的人
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     show = db.Column(db.Boolean, default=True)
@@ -507,16 +517,13 @@ class Course(db.Model):
     course_comments = db.relationship('CourseComment', backref='course', lazy='dynamic')
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
-        user_count = User.query.count()
-        random.seed()
         for i in range(count):
-            u = User.query.offset(random.randint(0, user_count-1)).first()
             p = Course(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
-                       course_name=forgery_py.lorem_ipsum.title(),
-                       course_category=random.randint(0, 6), show=True, author_id=u.id, images="FsEAykjBT4VlaqS934nGjd7GbmLu")
+                       course_name=forgery_py.lorem_ipsum.title(), like=random.randint(1, 1000), collect_sum=random.randint(0, 200),
+                       course_category=random.randint(0, 6), show=True, author_id=random.randint(1, 100), images="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png")
             db.session.add(p)
             db.session.commit()
 
@@ -528,6 +535,7 @@ class Course(db.Model):
             'id': self.id,
             'course_name': self.course_name,
             'description': self.description,
+            'like': self.like,
             'course_category': self.course_category,
             'images': self.images,
             'show': self.show,
@@ -570,7 +578,7 @@ class VideoList(db.Model):
         return '<course_video_name is %r>' % self.video_name
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
         user_count = User.query.count()
@@ -578,7 +586,7 @@ class VideoList(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = VideoList(video_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
-                      video_order=random.randint(1,10), video_name=forgery_py.lorem_ipsum.title(), show=True, author_id=u.id, course_id=random.randint(1,48))
+                      video_order=random.randint(1, 10), video_name=forgery_py.lorem_ipsum.title(), show=True, author_id=u.id, course_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -625,7 +633,7 @@ class CourseComment(db.Model):
         return 'CourseComment_id %r>' % self.id
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
         user_count = User.query.count()
@@ -633,7 +641,7 @@ class CourseComment(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = CourseComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  5)), timestamp=forgery_py.date.date(True),
-                      show=True, author_id=u.id, course_id=random.randint(1, 48))
+                      show=True, author_id=u.id, course_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -664,16 +672,18 @@ class TextResource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     resource_name = db.Column(db.String(128))
     description = db.Column(db.Text)
+    download_sum = db.Column(db.Integer, default=0)  # 下载该资源的总人数
     resource_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     resource_type = db.Column(db.Integer, default=0)  # word类型1  excel类型2  pdf类型3  ppt类型4 其它0
     source_url = db.Column(db.String(256))
+    like = db.Column(db.Integer, default=0)
     show = db.Column(db.Boolean, default=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('TextResourceComment', backref='text_resources', lazy='dynamic')
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
         user_count = User.query.count()
@@ -681,12 +691,12 @@ class TextResource(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = TextResource(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
-                             resource_name=forgery_py.lorem_ipsum.title(), resource_type=random.choice([1, 3, 4]),
-                             resource_category=random.randint(0, 6), show=True, author_id=u.id, source_url="www.baidu.com")
+                             resource_name=forgery_py.lorem_ipsum.title(), resource_type=random.choice([1, 3, 4]), download_sum=random.randint(1, 200),
+                             like=random.randint(1, 1000), resource_category=random.randint(0, 6), show=True, author_id=u.id, source_url="www.baidu.com")
             db.session.add(p)
             db.session.commit()
 
-    def __reper__(self):
+    def __repr__(self):
         return '<TextResource file_name %r>' % self.file_name
 
     def to_json(self):
@@ -696,7 +706,8 @@ class TextResource(db.Model):
             "description": self.description,
             "source_url": self.source_url,
             "show": self.show,
-            "resource_type":self.resource_type,
+            "like": self.like,
+            "resource_type": self.resource_type,
             "timestamp": time_transform(self.timestamp),
             "author_id": self.author_id,
             "author_user_name": id_change_user(self.author_id).user_name,
@@ -731,7 +742,7 @@ class TextResourceComment(db.Model):
         return '<TextResourceComment id %r>' % self.id
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=200):
         import forgery_py
         random.seed()
         user_count = User.query.count()
@@ -739,7 +750,7 @@ class TextResourceComment(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = TextResourceComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  2)), timestamp=forgery_py.date.date(True),
-                      show=True, author_id=random.randint(1,5), text_resource_id=random.randint(1, 5))
+                      show=True, author_id=random.randint(1, 100), text_resource_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -774,9 +785,11 @@ class TestList(db.Model):
     test_title = db.Column(db.String(128))
     test_description = db.Column(db.Text)
     show = db.Column(db.Boolean, default=True)
+    test_sum = db.Column(db.Integer, default=0)  # 参与过该测试的人
     test_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     key_words = db.Column(db.String(128))  # 存储该试卷对应的知识点
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    like = db.Column(db.Integer, default=0)
     image = db.Column(db.String(256))  # 存放该测试的封面图
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     problems = db.relationship('TestProblem', backref='testList', lazy='dynamic')
@@ -785,7 +798,7 @@ class TestList(db.Model):
         return '< test_list titile is %r>' % self.test_title
 
     @staticmethod
-    def generate_fake(count=50):
+    def generate_fake(count=100):
         import forgery_py
         random.seed()
         user_count = User.query.count()
@@ -793,7 +806,8 @@ class TestList(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = TestList(test_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True), test_title=forgery_py.lorem_ipsum.title(), key_words="computer science",
-                         test_category=random.randint(0, 6), show=True, author_id=u.id, image="FsEAykjBT4VlaqS934nGjd7GbmLu")
+                         like=random.randint(1, 100), test_category=random.randint(0, 6), show=True, author_id=u.id, image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png", \
+                test_sum=random.randint(0, 200))
             db.session.add(p)
             db.session.commit()
 
@@ -803,6 +817,7 @@ class TestList(db.Model):
             "test_title": self.test_title,
             "test_description": self.test_description,
             "show": self.show,
+            "like": self.like,
             "test_category": self.test_category,
             "key_words": self.key_words,
             "timestamp": time_transform(self.timestamp),
@@ -850,6 +865,25 @@ class TestProblem(db.Model):
 
     def __repr__(self):
         return '<probles id is %r>' % self.id
+
+    @staticmethod
+    def generate_fake(count=100):
+        import forgery_py
+        random.seed()
+        for i in range(count):
+            p = TestProblem(problem_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  3)),
+                            timestamp=forgery_py.date.date(True),
+                            problem_order=random.randint(1, 50), show=True, problem_type=random.randint(0, 1),
+                            choice_a=forgery_py.lorem_ipsum.sentence(),
+                            choice_b=forgery_py.lorem_ipsum.sentence(),
+                            choice_c=forgery_py.lorem_ipsum.sentence(),
+                            choice_d=forgery_py.lorem_ipsum.sentence(),
+                            right_answer=random.randint(1, 4),
+                            answer_explain=forgery_py.lorem_ipsum.sentence(),
+                            test_list_id=random.randint(1, 100),
+                            author_id=random.randint(1, 100), description_image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png")
+            db.session.add(p)
+            db.session.commit()
 
     def to_json(self):
         json_problem = {
@@ -908,6 +942,16 @@ class TestRecord(db.Model):
     def __repr__(self):
         return '<test record id is %r>' % self.id
 
+    @staticmethod
+    def generate_fake(count=100):
+        random.seed()
+        for i in range(count):
+            p = TestRecord(
+                           show=True, answerer_id=random.randint(1, 100), test_list_id=random.randint(1, 100), test_accuracy=0,
+                            )
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_test_record = {
             "id": self.id,
@@ -948,6 +992,20 @@ class AnswerRecord(db.Model):
     def __repr__(self):
         return '<answer record id is %r>' % self.id
 
+    @staticmethod
+    def generate_fake(count=100):
+        import forgery_py
+        random.seed()
+        for i in range(count):
+            p = AnswerRecord(show=True, answerer_id=random.randint(1, 100), right_answer=forgery_py.lorem_ipsum.sentence(),
+                           user_answer=forgery_py.lorem_ipsum.sentence(),
+                           problem_type=random.randint(0, 1),
+                           test_record_id=random.randint(1, 100),
+                           problem_id=random.randint(1, 100),
+                           test_list_id=random.randint(1, 100) )
+            db.session.add(p)
+            db.session.commit()
+
     def to_json(self):
         json_ans_record = {
             "id": self.id,
@@ -979,3 +1037,70 @@ class AnswerRecord(db.Model):
                             test_list_id=test_list_id)
 
 
+class TextResourceBehavior(db.Model):
+    __tablename__ = 'text_resource_behavior'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resources.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_collect = db.Column(db.Boolean, default=False)
+    is_like = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<text_resource record user_id is %r>' % self.user_id
+
+    @staticmethod
+    def generate_fake(count=200):
+        random.seed()
+        user_count = User.query.count()
+        random.seed()
+        for i in range(count):
+            u = User.query.offset(random.randint(0, user_count-1)).first()
+            p = TextResourceBehavior(user_id=random.randint(1, 102), text_resource_id=random.randint(1,100),
+                                     is_collect=random.randint(0, 1), is_like=random.randint(0, 1))
+            db.session.add(p)
+            db.session.commit()
+
+
+class CourseBehavior(db.Model):
+    __tablename__ = 'course_behavior'
+    id = db.Column(db.Integer, primary_key=BadSignature)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_collect = db.Column(db.Boolean, default=False)
+    is_like = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<course_record user_id is %r>' % self.user_id
+
+    @staticmethod
+    def generate_fake(count=200):
+        random.seed()
+        for i in range(count):
+            p = CourseBehavior(user_id=random.randint(1, 102), course_id=random.randint(1,100),
+                                     is_collect=random.randint(0, 1), is_like=random.randint(0, 1))
+            db.session.add(p)
+            db.session.commit()
+
+
+class TestBehavior(db.Model):
+    __tablename__ = 'test_behavior'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    test_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_test = db.Column(db.Boolean, default=False)
+    is_like = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<test_record user_id is %r>' % self.user_id
+
+    @staticmethod
+    def generate_fake(count=200):
+        random.seed()
+        for i in range(count):
+            p = TestBehavior(user_id=random.randint(1, 102), test_id=random.randint(1,100),
+                                     is_test=random.randint(0, 1), is_like=random.randint(0, 1))
+            db.session.add(p)
+            db.session.commit()

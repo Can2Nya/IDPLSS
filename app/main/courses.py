@@ -1,10 +1,10 @@
 # codint: utf-8
 from flask import g, request, url_for, current_app, jsonify
-from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses
-from app.main.responses import forbidden, not_found
+from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses, CourseBehavior
+from app.main.responses import forbidden, not_found, bad_request
 from app.utils.responses import self_response
 from app.utils.model_tools import calc_count
-from app.main.decorators import get_current_user, permission_required, admin_required
+from app.main.decorators import get_current_user, permission_required, user_login_info
 from app.main import main
 from app.main.authentication import auth
 
@@ -195,12 +195,32 @@ def is_collecting_video(cid):
 def collect_course_video(vid):
     course = Course.query.get_or_404(vid)
     user = g.current_user
+    behavior = CourseBehavior.query.filter_by(user_id=user.id, course_id=vid).first()
     if request.method == 'GET':
         user.collect_course(course)
+        course.collect_sum += 1
+        db.session.add(course)
+        if behavior is None:
+            record = CourseBehavior(user_id=user.id, course_id=vid, is_collect=True)
+            db.session.add(record)
+        else:
+            behavior.is_collect = True
+            db.session.add(behavior)
+        db.session.commit()
         return self_response('collect course successfully')
     elif request.method == 'DELETE':
-        user.uncollect_course(course)
-        return self_response('unfavorite course successfully')
+        if user.is_collecting_course(course):
+            user.uncollect_course(course)
+            course.collect_sum -= 1
+            db.session.add(course)
+            db.session.commit()
+            if behavior is not None:
+                behavior.is_collect = False
+                db.session.add(behavior)
+                db.session.commit()
+            return self_response('unfavorite course successfully')
+        else:
+            return bad_request('user does not collect course ago')
     else:
         return self_response('invalid operation')
 
@@ -227,6 +247,30 @@ def search_course():
         'next': url_next,
         'count': pagination.total
     })
+
+
+@main.route('/api/courses/like/<int:cid>', methods=['GET'])
+@user_login_info
+def like_course(cid):
+    course = Course.query.get_or_404(cid)
+    course.like += 1
+    db.session.add(course)
+    user = g.current_user
+    if user is None:
+        db.session.commit()
+        return self_response("guest like successfully")
+    else:
+        course_behavior = CourseBehavior.query.filter_by(user_id=user.id, course_id=cid).first()
+        if course_behavior is None:
+            record = CourseBehavior(user_id=user.id, course_id=cid, is_like=True)
+            db.session.add(record)
+        else:
+            course_behavior.is_like = True
+            db.session.add(course_behavior)
+        db.session.commit()
+        return self_response("login user like successfully")
+
+
 
 
 

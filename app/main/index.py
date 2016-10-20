@@ -15,7 +15,8 @@ def index():
     :return:response
     """
     # print g.current_user.user_name
-    return render_template('index.html')
+    pass
+
 
 @main.route('/api/test', methods=['GET'])
 def test():

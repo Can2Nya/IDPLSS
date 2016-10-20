@@ -90,5 +90,38 @@ def get_current_user(f):
     return decorated_function
 
 
+def user_login_info(f):
+    """
+    记录用户的行为日志,记录之前判断是否有登录,如有登录则当前登录的用户
+    :param f:
+    :return:如果已经登录返回当前登录用户,未登录返回None
+    """
+    from app.main.responses import not_found
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth = request.authorization
+        if not auth:
+            g.current_user = None
+        else:
+            current_user = User.verify_auth_token(auth.username)   # verify token user
+            if current_user is None:
+                current_user = User.query.filter_by(user_name=auth.username).first()
+                auth_ok = False
+                if current_user is not None:
+                    auth_ok = current_user.verify_password(auth.password)
+                else:
+                    current_user = User.query.filter_by(email=auth.username).first()
+                    if current_user is not None:
+                        auth_ok = current_user.verify_password(auth.password)
+                if not auth_ok:
+                    return not_found()
+            g.current_user = current_user
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+
+
 
 
