@@ -94,10 +94,10 @@ const Detail = ({ context, user, dispatch, location }) => {
 		if(isSelectContext.loading){
 			return <Spin />;
 		}
-		if(isSelectContext.list <= 0 || !isSelectContext.list){
-			return;
-		}
 		if(location.hash.search('series')!== -1){
+			if(isSelectContext.list.length <= 0){
+				return <div>暂时还未有内容</div>;
+			}
 			return isSelectContext.list.map((list,index) =>{
 				if(!list.show) return
 				return(
@@ -106,6 +106,9 @@ const Detail = ({ context, user, dispatch, location }) => {
 			})
 		}
 		if(location.hash.search('comment')!== -1){
+			if(isSelectContext.comment.length <= 0){
+				return <div>暂时还未有评论</div>;
+			}
 			return isSelectContext.comment.map((comment,index) =>{
 				if(!comment.show) return
 				return(
@@ -160,7 +163,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 					<InputForm 
 					onSubmit={handlePostSubmit}
 					user={user}/>
-
+					{ renderList() }
 					<Pagination current={20} total={total} onChange={handleChangePagination} />
 				</Tabs.TabPane>
 				</Tabs>

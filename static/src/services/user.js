@@ -35,6 +35,29 @@ export async function userRegisterConfirm(action) {
 	return xFetch(`${apiUrl}/api/user/confirm/${action.confirm_code}`,{method: 'GET',});
 }
 
+export async function userZoneData(action) {
+	let url = `${apiUrl}/api/user/`
+	if(action.type == 'user/get/userPost') url+= `posts`;
+	if(action.type == 'user/get/userPostComment') url+= `posts-comments`;
+	if(action.type == 'user/get/userPostCollection') url+= `collection-posts`;
+
+	if(action.type == 'user/get/userVideo') url+= `course`;
+	if(action.type == 'user/get/userVideoList') url+= `${apiUrl}/api/courses/${action.courseid}/video-list`;
+	if(action.type == 'user/get/userVideoComment') url+= `course-comments`;
+	if(action.type == 'user/get/userVideoCollection') url+= 'collection-courses';
+
+	if(action.type == 'user/get/userText') url+= `text-resources`;
+	if(action.type == 'user/get/userTextComment') url = `text-resource-comments`;
+	if(action.type == 'user/get/userTextCollection') url+= `collection-text-resources`;
+
+	if(action.type == 'user/get/userTest') url+= `test-list`;
+	if(action.type == 'user/get/userTestList') url = `${apiUrl}/api/test-list/${action.testid}/problems`; // yihuigai
+	if(action.type == 'user/get/userTestComplete') url+= `test-record`;
+	url += `?page=${action.pagination}`
+	console.log(url)
+	return xFetch(url,{method: 'GET',});
+}
+
 export async function UserisFollowing(action) {
 	return xFetch(`${apiUrl}/api/user/is_following`,{method: 'POST',
 		body:JSON.stringify({

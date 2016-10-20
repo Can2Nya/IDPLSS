@@ -93,10 +93,11 @@ function* postVideoDetailCommentSource(action) {
 		const { jsonResult } = yield call(req.postVideoDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `video/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			yield put({
+				type: 'video/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);
@@ -112,10 +113,11 @@ function* deleteVideoDetailCommentSource(action) {
 		const { jsonResult } = yield call(req.deleteVideoDetailComment, action);
 		if (jsonResult) {
 			message.success(jsonResult.status);
-			// yield put({
-			// 	type: `video/get/success/${data['fuc']}`,
-			// 	payload: jsonResult,
-			// });
+			yield put({
+				type: 'video/get/comment',
+				id: action.id,
+				pagination: 1
+			})
 		}
 	} catch (err) {
 		message.error(err);
