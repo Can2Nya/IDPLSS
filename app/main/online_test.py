@@ -1,7 +1,7 @@
 # coding:utf-8
 from flask import current_app, jsonify, g, request, url_for
-from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, Permission
-from app.main.decorators import get_current_user, permission_required
+from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, Permission, TestBehavior
+from app.main.decorators import get_current_user, permission_required, user_login_info
 from app.main.responses import not_found, forbidden
 from app.main.authentication import auth
 from app.main import main
@@ -56,10 +56,10 @@ def test_list_category(cid):
     all_test = pagination.items
     prev_url = None
     if pagination.has_prev:
-        prev_url = url_for('main.test_list_category', page=page-1, _external=True)
+        prev_url = url_for('main.test_list_category', cid=cid, page=page-1, _external=True)
     next_url = None
     if pagination.has_next:
-        next_url = url_for('main.test_list_category', page=page+1, _external=True)
+        next_url = url_for('main.test_list_category', cid=cid, page=page+1, _external=True)
     return jsonify({
         'test_list': [test.to_json() for test in all_test],
         'prev': prev_url,
@@ -130,8 +130,25 @@ def problem_operation(tid, pid):
 @auth.login_required
 @get_current_user
 def new_test_record():
-    test_record = TestRecord.from_json(request.json)
+    """
+    记录用户已经参与的测试列表,对应前端类似于"开始测试"按钮
+    :return: json格式 返回请求状态:test_id
+    """
+    user = g.current_user
+    record_info = request.json
+    test_record = TestRecord.from_json(record_info)
     db.session.add(test_record)
+    test_id = record_info['test_id']
+    test_info = TestList.query.get_or_404(test_id)  # 累加参与了做题的人数
+    test_info.test_sum += 1
+    db.session.add(test_info)
+    behavior = TestBehavior.query.filter_by(user_id=user.id, test_id=test_id).first()
+    if behavior is None:
+        record = TestBehavior(user_id=user.id, test_id=test_id, is_test=True)
+        db.session.add(record)
+    else:
+        behavior.is_like = True
+        db.session.add(behavior)
     db.session.commit()
     return jsonify({
         "status": 'create rest record successfully',
@@ -211,6 +228,28 @@ def search_test_list():
         'next': url_next,
         'count': pagination.total
     })
+
+
+@main.route('/api/test-list/like/<int:tid>', methods=['GET'])
+@user_login_info
+def like_test(tid):
+    test = TestList.query.get_or_404(tid)
+    user = g.current_user
+    test.like += 1
+    db.session.add(test)
+    if user is None:
+        db.session.commit()
+        return self_response("guest like test successfully")
+    else:
+        behavior = TestBehavior.query.filter_by(user_id=user.id, test_id=test.id).first()
+        if behavior is None:
+            record = TestBehavior(user_id=user.id, test_id=test.id, is_like=True)
+            db.session.add(record)
+        else:
+            behavior.is_like = True
+            db.sesion.add(behavior)
+        db.session.commit()
+        return self_response("login user like test successfully")
 
 
 
