@@ -194,7 +194,7 @@ const Category = ({ location, dispatch, context }) => {
 		</div>
 		{ textExetend() }
 		<div style={{ minHeight: "850px" }}>
-			<Row gutter={16} type="flex" align="middle" justify="center">
+			<Row gutter={16} type="flex" align="middle" >
 			{/**<TestCover type='big' />
 			<TestCover type='small' />
 			<VideoCover type='big' />

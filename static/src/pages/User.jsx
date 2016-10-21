@@ -95,7 +95,7 @@ const User = ({ location, dispatch, user }) => {
 		if(loading){
 			return <Spin />;
 		}
-		if(userZoneList.length <= 0){
+		if(userZoneList.length <= 0 || !userZoneList){
 			return <div>暂时还未有内容</div>;
 		}
 		if(isSelectTab == '1'){
@@ -147,7 +147,7 @@ const User = ({ location, dispatch, user }) => {
 				if(!data.show) return;
 				return(
 					<Col span={8} lg={6} key={index}> 
-					<TextCover wordtype={data.resource_type} type='big' data={text}/>
+					<TextCover wordtype={data.resource_type} type='big' data={data}/>
 					</Col>
 				)
 				case '2':
@@ -185,10 +185,13 @@ const User = ({ location, dispatch, user }) => {
 					config={{'nav': ['我创建的主题','我回复的']}} 
 					title='帖子' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
-					total={total}
-					/>
+					>
+					<Row gutter={16} type="flex" align="middle" >
 					{ renderList() }
+					</Row>
 					<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
+					</TabPannel>
+					
 
 				</Tabs.TabPane>,
 				<Tabs.TabPane tab='我参与的' key='2'>
@@ -197,35 +200,39 @@ const User = ({ location, dispatch, user }) => {
 					config={{'nav': ['课程','文本资料','测试']}} 
 					title='我参与的' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
-					total={total}
-					/>
+					>
+					<Row gutter={16} type="flex" align="middle" >
 					{ renderList() }
+					</Row>
 					<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
+					</TabPannel>
 
 				</Tabs.TabPane>,
 				<Tabs.TabPane tab='评论' key='3'>
-					<TabPannel 
-					
+					<TabPannel
 					config={{'nav': ['课程','文本资料']}} 
 					title='评论' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
-					total={total}
-					/>
+					>
+					<Row gutter={16} type="flex" align="middle" >
 					{ renderList() }
+					</Row>
 					<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
+					</TabPannel>
 
 				</Tabs.TabPane>,
 					<Tabs.TabPane tab='我上传的' key='4'>
 						<TabPannel 
-						
 						config={{'nav': ['课程','文本资料','测试']}} 
 						title='我上传的资料' 
 						onTabClick={handleSubTabsLink.bind(this)} 
 						activeKey={isSelectSubTab}
-						total={total}
-						/>
+						>
+						<Row gutter={16} type="flex" align="middle" >
 						{ renderList() }
+						</Row>
 						<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
+						</TabPannel>
 
 					</Tabs.TabPane>,
 					<Tabs.TabPane tab='设置' key='5'>
