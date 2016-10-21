@@ -41,7 +41,7 @@ export async function userZoneData(action) {
 	if(action.type == 'user/get/userPostComment') url+= `posts-comments`;
 	if(action.type == 'user/get/userPostCollection') url+= `collection-posts`;
 
-	if(action.type == 'user/get/userVideo') url+= `course`;
+	if(action.type == 'user/get/userVideo') url+= `courses`;
 	if(action.type == 'user/get/userVideoList') url+= `${apiUrl}/api/courses/${action.courseid}/video-list`;
 	if(action.type == 'user/get/userVideoComment') url+= `course-comments`;
 	if(action.type == 'user/get/userVideoCollection') url+= 'collection-courses';
@@ -54,7 +54,6 @@ export async function userZoneData(action) {
 	if(action.type == 'user/get/userTestList') url = `${apiUrl}/api/test-list/${action.testid}/problems`; // yihuigai
 	if(action.type == 'user/get/userTestComplete') url+= `test-record`;
 	url += `?page=${action.pagination}`
-	console.log(url)
 	return xFetch(url,{method: 'GET',});
 }
 
