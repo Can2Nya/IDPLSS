@@ -49,6 +49,13 @@ function* getUser(action) {// arg内有action参数
 					payload: jsonResult
 				});
 			}
+			if(type == 'user/set/info'){
+				message.success('成功修改资料');
+				put({
+					type: 'user/get/info',
+					user_id: action.user_id,
+				})
+			}
 		}
 	} catch (err) {
 		message.error(err);
@@ -174,17 +181,31 @@ function* getUserZoneData(action) {
 	}
 }
 
+function* getUpLoadtoken(action) {
+	try {
+		const { jsonResult } = yield call(req.UserUpLoadToken, action);
+		if (jsonResult) {
+			yield put({
+				type: 'upload/get/success/token',
+				payload: jsonResult.uptoken,
+			});
+		}
+	} catch (err) {
+		message.error(err);
+	}
+}
+
 
 
 function* watchUserLogin() {
 	yield* takeLatest('user/login', login)
 }
 function* watchUserGet() {
-	yield* takeEvery(['user/get/info','user/get/loginInfo'], getUser)
+	yield* takeEvery(['user/get/info','user/get/loginInfo','user/set/info'], getUser)
 }
-function* watchUserSet() {
-	yield* takeLatest('user/set/info', setUser)
-}
+// function* watchUserSet() {
+// 	yield* takeLatest(, setUser)
+// }
 function* watchUserRegister() {
 	yield* takeLatest('user/register', register)
 }
@@ -212,6 +233,9 @@ function* watchisFollowing() {
 function* watchisFollowedBy() {
 	yield* takeLatest('user/info/isFollowedBy', isFollowedBy)
 }
+function* watchUpLoadtoken() {
+	yield* takeLatest('upload/get/token', getUpLoadtoken)
+}
 
 
 /*function* watchUserGetJson() {
@@ -221,12 +245,13 @@ function* watchisFollowedBy() {
 export default function* () {
 	yield fork(watchUserLogin);
 	yield fork(watchUserGet);
-	yield fork(watchUserSet);
+	// yield fork(watchUserSet);
 	yield fork(watchUserRegister);
 	yield fork(watchUserRegisterConfirm);
 	yield fork(watchisFollowing);
 	yield fork(watchisFollowedBy);
-	yield fork(watchUserZoneData)
+	yield fork(watchUserZoneData);
+	yield fork(watchUpLoadtoken);
 	//yield fork(watchUserGetJson)
 	// Load user.//
 	// yield put({

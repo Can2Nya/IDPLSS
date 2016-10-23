@@ -81,8 +81,8 @@ let User = ({ user, dispatch, textStyle, form }) => {
 							</div>)
 						})*/}
 					<div className={styles.item}>{ loginUserList.name }</div>
-					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/1/' }} ><div className={styles.item}>个人中心</div></Link>
-					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/1/' }} ><div className={styles.item}>设置</div></Link>
+					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/0/' }} ><div className={styles.item}>个人中心</div></Link>
+					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/0/' }} ><div className={styles.item}>设置</div></Link>
 					<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 					</div>
 				);

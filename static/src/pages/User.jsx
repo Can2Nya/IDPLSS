@@ -12,6 +12,7 @@ import SettingPannel from '../layouts/UserPannel/SettingPannel';
 import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
+import Upload from '../components/Upload/Upload';
 
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
@@ -183,7 +184,8 @@ const User = ({ location, dispatch, user }) => {
 					<TabPannel 
 					
 					config={{'nav': ['我创建的主题','我回复的']}} 
-					title='帖子' onTabClick={handleSubTabsLink.bind(this)} 
+					title='帖子' 
+					onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -198,7 +200,8 @@ const User = ({ location, dispatch, user }) => {
 					<TabPannel 
 					
 					config={{'nav': ['课程','文本资料','测试']}} 
-					title='我参与的' onTabClick={handleSubTabsLink.bind(this)} 
+					title='我参与的' 
+					onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -211,7 +214,8 @@ const User = ({ location, dispatch, user }) => {
 				<Tabs.TabPane tab='评论' key='3'>
 					<TabPannel
 					config={{'nav': ['课程','文本资料']}} 
-					title='评论' onTabClick={handleSubTabsLink.bind(this)} 
+					title='评论' 
+					onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -228,11 +232,12 @@ const User = ({ location, dispatch, user }) => {
 						onTabClick={handleSubTabsLink.bind(this)} 
 						activeKey={isSelectSubTab}
 						>
+
 						<Row gutter={16} type="flex" align="middle" >
 						{ renderList() }
 						</Row>
 						<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
-						</TabPannel>
+					</TabPannel>
 
 					</Tabs.TabPane>,
 					<Tabs.TabPane tab='设置' key='5'>
