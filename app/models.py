@@ -234,8 +234,6 @@ class User(db.Model):
         user.name = set_model_attr(json_user, 'name')
         user.about_me = set_model_attr(json_user, 'about_me')
         user.avatar = set_model_attr(json_user, 'avatar')
-        user.subject = set_model_attr((json_user, 'subject'))
-        user.interested_field = set_model_attr(json_user, 'interested_field')
         user.sex = set_model_attr(json_user, 'sex')
         return user
 
@@ -706,6 +704,7 @@ class TextResource(db.Model):
             "description": self.description,
             "source_url": self.source_url,
             "show": self.show,
+            "download_count":self.download_sum,
             "like": self.like,
             "resource_type": self.resource_type,
             "timestamp": time_transform(self.timestamp),
@@ -822,6 +821,7 @@ class TestList(db.Model):
             "key_words": self.key_words,
             "timestamp": time_transform(self.timestamp),
             "image": self.image,
+            "test_count": self.test_sum,
             "author_id": self.author_id,
             "author_user_name": id_change_user(self.author_id).user_name,
             "author_name": id_change_user(self.author_id).name,
@@ -1052,10 +1052,7 @@ class TextResourceBehavior(db.Model):
     @staticmethod
     def generate_fake(count=200):
         random.seed()
-        user_count = User.query.count()
-        random.seed()
         for i in range(count):
-            u = User.query.offset(random.randint(0, user_count-1)).first()
             p = TextResourceBehavior(user_id=random.randint(1, 102), text_resource_id=random.randint(1,100),
                                      is_collect=random.randint(0, 1), is_like=random.randint(0, 1))
             db.session.add(p)
@@ -1078,7 +1075,7 @@ class CourseBehavior(db.Model):
     def generate_fake(count=200):
         random.seed()
         for i in range(count):
-            p = CourseBehavior(user_id=random.randint(1, 102), course_id=random.randint(1,100),
+            p = CourseBehavior(user_id=random.randint(1, 102), course_id=random.randint(1, 100),
                                      is_collect=random.randint(0, 1), is_like=random.randint(0, 1))
             db.session.add(p)
             db.session.commit()

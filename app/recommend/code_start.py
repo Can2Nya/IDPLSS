@@ -9,6 +9,7 @@ def code_start_course(user):
     :return: course_list
     """
     user = user
+    print "user interested field is %s" % user.interested_field
     interested_field = user.interested_field.split(":")
     course_list = []
     for filed in interested_field:

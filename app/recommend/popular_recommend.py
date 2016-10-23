@@ -10,15 +10,11 @@ def popular_course():
     """
     l = []
     all_course = Course.query.all()
-    # print "len course is %s" % len(all_course)
-    l.append([course.collect_sum for course in all_course])  # 将课程学习数量添加到list中
+    [l.append(course.collect_sum) for course in all_course]  # 将课程学习数量添加到list中
     if len(l) < 3:
         return l
     else:
-        print 'reverse start-----------------------------'
         collect_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
-        print '______________________________'
-        print "reserve courses is %s" % collect_sum_reverse
         result = collect_sum_reverse[:3]  # 取前3进行推荐
         if result[0] == result[1] and result[0] == result[2]:
             recommend_course = Course.query.filter_by(collect_sum=result[0]).all()
@@ -37,7 +33,7 @@ def popular_text_resource():
     """
     l = []
     all_text_resources = TextResource.query.all()
-    l.append([t_resource.download_sum for t_resource in all_text_resources])  # 将文本资料下载学习添加到list中
+    [l.append(t_resource.download_sum) for t_resource in all_text_resources]  # 将文本资料下载学习添加到list中
     if len(l) < 3:
         return l
     else:
@@ -49,7 +45,7 @@ def popular_text_resource():
         else:
             recommend = []
             for i in range(0, 3):
-                recommend.append(TextResource.query.filter_by(download=result[i]).all())
+                recommend.append(TextResource.query.filter_by(download_sum=result[i]).all())
             return recommend[:3]
 
 
@@ -60,7 +56,7 @@ def popular_test():
     """
     l = []
     all_test = TestList.query.all()
-    l.append([test.test_sum for test in all_test])  # 将课程学习数量添加到list中
+    [l.append(test.test_sum) for test in all_test]  # 将课程学习数量添加到list中
     if len(l) < 3:
         return l
     else:
@@ -73,9 +69,7 @@ def popular_test():
             recommend = []
             for i in range(0, 3):
                 recommend.append(TestList.query.filter_by(test_sum=result[i]).all())
-            return jsonify({
-                "recommend_test": [test.to_json() for test in recommed[:3]]
-            })
+            return recommend[:3]
 
 
 
