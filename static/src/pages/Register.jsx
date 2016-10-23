@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { data } from '../services/user.js';//向user传送的数据
 
-import { Steps, Row, Col, Radio, Input, Form, Icon } from 'antd';
+import { Steps, Row, Col, Select, Radio, Checkbox, Input, Form, Icon } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 
 import Layout from '../layouts/Layout/Layout';
@@ -49,11 +49,23 @@ let Register = ({ dispatch, location, form, user }) => {
 			if(errors){
 				return ;
 			}
-			// data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
-
+			//将兴趣用：连起来
+			let interested = ''
+			getFieldValue('interested_field').map((value,index) => {
+				if(index == getFieldValue('interested_field').length -1) interested += `${value}`
+				else interested += `${value}:`
+			})
 			dispatch({
 				type:'user/register',
-				body: form.getFieldsValue(['user_name','user_email','user_password'])
+				body: {
+					user_name: getFieldValue('user_name'), 
+					user_email: getFieldValue('user_email'),
+					user_password: getFieldValue('user_password'), 
+					sex: getFieldValue('sex'),
+					subject: getFieldValue('subject'),
+					interested_field: interested
+				}
+				// body: form.getFieldsValue(['user_name','user_email','user_password'])
 			})
 		});
 	}
@@ -69,6 +81,18 @@ let Register = ({ dispatch, location, form, user }) => {
 			{ required: true, min: 2, max: 15, message: ['用户名至少为 2 个字符','用户名最多为 15 个字符'] },
 			//{ validator: this.userExists },
 		],
+	});
+
+	const sexProps = getFieldProps('sex', {
+	  rules: [
+		{ required: true, message: '请选择您的性别', type: 'number'},
+	  ],
+	});
+
+	const selectProps = getFieldProps('subject', {
+	  rules: [
+		{ required: true, message: '请选择您的专业方向', type: 'number'},
+	  ],
 	});
 
 	const emailProps = getFieldProps('user_email', {
@@ -106,15 +130,21 @@ let Register = ({ dispatch, location, form, user }) => {
 				required: true,
 				whitespace: true,
 				message: '请再次输入密码',
-			 }, {
+			}, {
 				validator: function(rule, value, callback){
 					if(value && value !== getFieldValue('user_password') ){
 						callback('两次输入的密码不一致')
 					}
 					else callback();
 				},
-			  }],
-			});
+			}],
+	});
+
+	const multiSelectProps = getFieldProps('interested_field', {
+      rules: [
+        { required: true, message: '请选择您喜欢的兴趣', type: 'array' },
+      ],
+    });
 	// ---------------------end------------------------------
 	// ======================render==========================
 	const renderConfirmResult = () =>{
@@ -190,6 +220,17 @@ let Register = ({ dispatch, location, form, user }) => {
 
 						<Form.Item
 						{...formItemLayout}
+						label="性别"
+						>
+						<Radio.Group {...sexProps}>
+							<Radio value={0}>男</Radio>
+							<Radio value={1}>女</Radio>
+						</Radio.Group>
+						</Form.Item>
+
+
+						<Form.Item
+						{...formItemLayout}
 						label='邮箱'
 						hasFeedback
 						>
@@ -210,6 +251,47 @@ let Register = ({ dispatch, location, form, user }) => {
 						hasFeedback
 						>
 						<Input type='password' {...rePasswdProps} />
+						</Form.Item>
+
+						<Form.Item
+						{...formItemLayout}
+						label="请选择您的专业方向"
+						>
+						<Select {...selectProps} placeholder="请选择您的专业方向" style={{ width: '100%' }}>
+							<Select.Option value={1}>哲学</Select.Option>
+							<Select.Option value={2}>经济学</Select.Option>
+							<Select.Option value={3}>法学</Select.Option>
+							<Select.Option value={4}>教育学</Select.Option>
+							<Select.Option value={5}>文学</Select.Option>
+							<Select.Option value={6}>历史学</Select.Option>
+							<Select.Option value={7}>理学</Select.Option>
+							<Select.Option value={8}>工学</Select.Option>
+							<Select.Option value={9}>农学</Select.Option>
+							<Select.Option value={10}>医学</Select.Option>
+							<Select.Option value={11}>军事学</Select.Option>
+							<Select.Option value={12}>管理学</Select.Option>
+						</Select>
+						</Form.Item>
+
+						<Form.Item
+						{...formItemLayout}
+						label="兴趣爱好(多选)"
+						>
+						<Select {...multiSelectProps} multiple placeholder="请选择爱好范围" style={{ width: '100%' }}>
+							<Select.Option value={1}>哲学</Select.Option>
+							<Select.Option value={2}>经济</Select.Option>
+							<Select.Option value={3}>法律</Select.Option>
+							<Select.Option value={4}>教育</Select.Option>
+							<Select.Option value={5}>语言文学</Select.Option>
+							<Select.Option value={6}>历史文化</Select.Option>
+							<Select.Option value={7}>天文物理</Select.Option>
+							<Select.Option value={8}>计算机／互联网</Select.Option>
+							<Select.Option value={9}>农业</Select.Option>
+							<Select.Option value={10}>医学</Select.Option>
+							<Select.Option value={11}>军事政治</Select.Option>
+							<Select.Option value={12}>工程</Select.Option>
+							<Select.Option value={13}>基础科学</Select.Option>
+						  </Select>
 						</Form.Item>
 
 					</Col>
@@ -248,8 +330,6 @@ let Register = ({ dispatch, location, form, user }) => {
 				 
 				<li key='4'>
 				<div style={{position: 'absolute',width: '100%'}}>
-				<div onClick={handleStepDown.bind(this)}>上一页
-				</div>
 				<Row type='flex' align="middle" justify="center">
 					{ renderConfirmResult() }
 				</Row>

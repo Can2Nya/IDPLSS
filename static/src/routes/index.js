@@ -154,6 +154,12 @@ const Routes = ({ history, dispatch }) =>{
 				user_id: match[1]
 			})
 			let action = 'user/get/user';
+			if(match[2] == 'dynamic'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '0'
+				})
+			}
 			
 			if(match[2] == 'post'){
 				dispatch({
@@ -197,6 +203,15 @@ const Routes = ({ history, dispatch }) =>{
 					case '1': action += 'Text'; break;
 					case '2': action += 'Test'; break;
 				}
+			}
+			if(match[2] == 'setting'){
+				dispatch({
+					type: 'user/changeSelectTab',
+					isSelectTab: '5'
+				})
+				dispatch({
+					type: 'upload/get/token'
+				})
 			}
 			dispatch({
 				type: 'user/changeSelectSubTab',
