@@ -55,7 +55,7 @@ export async function userZoneData(action) {
 	if(action.type == 'user/get/userVideoCollection') url+= 'collection-courses';
 
 	if(action.type == 'user/get/userText') url+= `text-resources`;
-	if(action.type == 'user/get/userTextComment') url = `text-resource-comments`;
+	if(action.type == 'user/get/userTextComment') url += `text-resource-comments`;
 	if(action.type == 'user/get/userTextCollection') url+= `collection-text-resources`;
 
 	if(action.type == 'user/get/userTest') url+= `test-list`;

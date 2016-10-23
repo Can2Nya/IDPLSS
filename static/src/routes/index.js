@@ -189,8 +189,8 @@ const Routes = ({ history, dispatch }) =>{
 					isSelectTab: '3'
 				})
 				switch(match[3]){
-					case '0': action += 'VideoCollection'; break;
-					case '1': action += 'TextCollection'; break;
+					case '0': action += 'VideoComment'; break;
+					case '1': action += 'TextComment'; break;
 				}
 			}
 			if(match[2] == 'upload'){

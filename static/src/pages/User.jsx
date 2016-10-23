@@ -13,6 +13,8 @@ import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
 import Upload from '../components/Upload/Upload';
+import Comment from '../components/Comment/Comment';
+import InputForm from '../components/InputForm/InputForm';
 
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
@@ -23,7 +25,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, dispatch, user }) => {
-	const { userList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
+	const { userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
 
 	const userMenu = {
 		'0': '#!/dynamic',
@@ -52,6 +54,16 @@ const User = ({ location, dispatch, user }) => {
 			isSelectSubTab: e[0]
 		})
 		window.location.hash = `${userMenu[isSelectTab]}/${e[0]}/`;
+	}
+	const handlePostDelete = (commentid, authorid, e) =>{
+		// if ((loginUserList.user_type == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
+			// 第二道防线
+			dispatch({
+				type: `${stateName}/delete/comment`,
+				id: id,
+				comment_id: commentid,
+			})
+		// }
 	}
 	const handleChangePagination = (page) =>{
 		let action = 'user/get/user';
@@ -115,10 +127,12 @@ const User = ({ location, dispatch, user }) => {
 				return userZoneList.map((data,index) =>{
 					if(!data.show) return
 					return(
+						<Col span={24} key={index}> 
 						<Comment key={index} data={data} user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
 						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
+						</Col>
 					);
 				})
 			}
@@ -127,10 +141,12 @@ const User = ({ location, dispatch, user }) => {
 			return userZoneList.map((data,index) =>{
 				if(!data.show) return
 				return(
+					<Col span={24} key={index}> 
 						<Comment key={index} data={data} user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
 						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
+					</Col>
 					);
 				})
 		}
