@@ -20,7 +20,7 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 		},
 		{
 			id: 2,
-			pathname: ['category','detail','search','forum','register','post','manage']
+			pathname: ['category','detail','search','forum','register','post']
 		},
 		{
 			id: 3,

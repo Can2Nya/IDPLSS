@@ -12,8 +12,6 @@ import SettingPannel from '../layouts/UserPannel/SettingPannel';
 import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
-import Comment from '../components/Comment/Comment';
-import InputForm from '../components/InputForm/InputForm';
 
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
@@ -24,7 +22,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, dispatch, user }) => {
-	const { userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
+	const { userList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
 
 	const userMenu = {
 		'0': '#!/dynamic',
@@ -53,16 +51,6 @@ const User = ({ location, dispatch, user }) => {
 			isSelectSubTab: e[0]
 		})
 		window.location.hash = `${userMenu[isSelectTab]}/${e[0]}/`;
-	}
-	const handlePostDelete = (commentid, authorid, e) =>{
-		// if ((loginUserList.user_type == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
-			// 第二道防线
-			dispatch({
-				type: `${stateName}/delete/comment`,
-				id: id,
-				comment_id: commentid,
-			})
-		// }
 	}
 	const handleChangePagination = (page) =>{
 		let action = 'user/get/user';
@@ -126,12 +114,10 @@ const User = ({ location, dispatch, user }) => {
 				return userZoneList.map((data,index) =>{
 					if(!data.show) return
 					return(
-						<Col span={24} key={index}> 
 						<Comment key={index} data={data} user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
 						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
-						</Col>
 					);
 				})
 			}
@@ -140,12 +126,10 @@ const User = ({ location, dispatch, user }) => {
 			return userZoneList.map((data,index) =>{
 				if(!data.show) return
 				return(
-					<Col span={24} key={index}> 
 						<Comment key={index} data={data} user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
 						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
-					</Col>
 					);
 				})
 		}
@@ -199,8 +183,7 @@ const User = ({ location, dispatch, user }) => {
 					<TabPannel 
 					
 					config={{'nav': ['我创建的主题','我回复的']}} 
-					title='帖子' 
-					onTabClick={handleSubTabsLink.bind(this)} 
+					title='帖子' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -215,8 +198,7 @@ const User = ({ location, dispatch, user }) => {
 					<TabPannel 
 					
 					config={{'nav': ['课程','文本资料','测试']}} 
-					title='我参与的' 
-					onTabClick={handleSubTabsLink.bind(this)} 
+					title='我参与的' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -229,8 +211,7 @@ const User = ({ location, dispatch, user }) => {
 				<Tabs.TabPane tab='评论' key='3'>
 					<TabPannel
 					config={{'nav': ['课程','文本资料']}} 
-					title='评论' 
-					onTabClick={handleSubTabsLink.bind(this)} 
+					title='评论' onTabClick={handleSubTabsLink.bind(this)} 
 					activeKey={isSelectSubTab}
 					>
 					<Row gutter={16} type="flex" align="middle" >
@@ -247,12 +228,11 @@ const User = ({ location, dispatch, user }) => {
 						onTabClick={handleSubTabsLink.bind(this)} 
 						activeKey={isSelectSubTab}
 						>
-
 						<Row gutter={16} type="flex" align="middle" >
 						{ renderList() }
 						</Row>
 						<Pagination total={total} current={20} onChange={handleChangePagination.bind()} />
-					</TabPannel>
+						</TabPannel>
 
 					</Tabs.TabPane>,
 					<Tabs.TabPane tab='设置' key='5'>

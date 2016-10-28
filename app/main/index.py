@@ -6,6 +6,7 @@ from app.main.decorators import permission_required, admin_required, get_current
 from app.models import Permission
 from app.utils.responses import self_response
 from app.main.responses import test_response
+from app.utils.model_tools import have_school_permission
 
 
 @main.route('/', methods=['GET'])
@@ -27,3 +28,15 @@ def test():
 @auth.login_required
 def need_login():
     return test_response('need-login page')
+
+
+@main.route('/api/permission')
+@get_current_user
+def have_permission():
+    user = g.current_user
+    if have_school_permission(user):
+        print "user role is %s rid is %s" % (user.role, user.role_id)
+        return jsonify({"status": "yes have"})
+    else:
+        print "user role is %s rid is %s" % (user.role, user.role_id)
+        return jsonify({"status": "no does not have"})

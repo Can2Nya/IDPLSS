@@ -6,6 +6,7 @@ from app.main.responses import not_found, forbidden
 from app.main.authentication import auth
 from app.main import main
 from app.utils.responses import self_response
+from app.utils.model_tools import have_school_permission
 
 
 @main.route('/api/test-list', methods=['GET'])
@@ -29,8 +30,10 @@ def test_list():
                     })
 
 
-@main.route('/api/test-list/detail/<int:tid>', methods=['GET', 'DELETE'])
+@main.route('/api/test-list/detail/<int:tid>', methods=['GET', 'DELETE', 'PUT'])
+@user_login_info
 def test_operation(tid):
+    user = g.current_user
     test = TestList.query.get_or_404(tid)
     if request.method == 'GET':
         if test.show is not False:
@@ -38,10 +41,26 @@ def test_operation(tid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        test.show = False
-        db.session.add(test)
-        db.session.commit()
-        return self_response('delete test successfully')
+        if user.id == test.author_id or have_school_permission(user):
+            test.show = False
+            db.session.add(test)
+            db.session.commit()
+            return self_response('delete test successfully')
+        else:
+            return forbidden('does not have permission to delete this test')
+    elif request.method == 'PUT':
+        if user.id == test.author_id or have_school_permission(user):
+            modidy_info = request.json
+            test.test_title = modidy_info['title']
+            test.test_description = modidy_info['description']
+            test.test_category = modidy_info['category']
+            test.key_words = modidy_info['key_words']
+            test.image = modidy_info['image']
+            db.session.add(test)
+            db.session.commit()
+            return self_response('test information update successfully')
+        else:
+            return self_response('does not have permission to update this test')
     else:
         return self_response('invalid operation')
 

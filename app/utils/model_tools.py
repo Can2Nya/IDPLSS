@@ -45,3 +45,18 @@ def time_transform(utc_time):
 def calc_count(type):
     return len(type.query.filter_by(show=True).all())
 
+
+def have_school_permission(user):
+    from app.models import Role, User
+    if user is None:
+        return False
+    else:
+        user = User.query.filter_by(id=user.id).first()
+        admin = Role.query.filter_by(role_name='Admin').first()
+        school_admin = Role.query.filter_by(role_name='SchoolAdmin')
+        if (user.role == admin) or (user.role == school_admin):
+            return True
+        else:
+            return False
+
+

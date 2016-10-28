@@ -1,12 +1,12 @@
 # coding: utf-8
 from flask import jsonify, request, current_app, url_for, g
 from app.main import main
-from app.main.responses import not_found
+from app.main.responses import not_found, forbidden
 from app.main.authentication import auth
 from app.utils.responses import self_response
-from app.main.decorators import permission_required, get_current_user
+from app.main.decorators import permission_required, get_current_user, user_login_info
 from app.models import db, User, Follow, Post, Role, PostComment, Permission
-from app.utils.model_tools import calc_count
+from app.utils.model_tools import have_school_permission
 
 
 @main.route('/api/posts', methods=['GET'])
@@ -53,8 +53,10 @@ def posts_category(cate_id):
     })
 
 
-@main.route('/api/posts/<int:pid>', methods=['GET', 'DELETE'])
+@main.route('/api/posts/<int:pid>', methods=['GET', 'DELETE', 'PUT'])
+@user_login_info
 def post_detail(pid):
+    user = g.current_user
     if request.method == 'GET':
         post = Post.query.get_or_404(pid)
         if post.show is not False:
@@ -64,12 +66,28 @@ def post_detail(pid):
             return jsonify(post.to_json())
         else:
             return not_found()
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         post = Post.query.get_or_404(pid)
-        post.show = False
-        db.session.add(post)
-        db.session.commit()
-        return self_response('delete post successfully')
+        if user.id == post.author_id or have_school_permission(user):
+            post.show = False
+            db.session.add(post)
+            db.session.commit()
+            return self_response('delete post successfully')
+        else:
+            return forbidden('does not have permission to delete this post')
+    elif request.method == 'PUT':
+        post = Post.query.get_or_404(pid)
+        if user.id == post.author_id or have_school_permission(user):
+            modify_info = request.json
+            post.title = modify_info['title']
+            post.body = modify_info['body']
+            post.images = modify_info['images']
+            post.post_category = modify_info['category']
+            db.session.add(post)
+            db.session.commit()
+            return self_response('update post successfully')
+        else:
+            return forbidden('does not have permission to update this post')
     else:
         return self_response('invalid operation')
 

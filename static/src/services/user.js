@@ -10,27 +10,19 @@ export async function userLogin(action) {
 	});
 }
 
-export async function getUserState(action) {
-	// action为saga call() 传的参数
-	if(action.type == 'user/get/info' || action.type == 'user/get/loginInfo'){
-		return xFetch(`${apiUrl}/api/user/${action.user_id}/info`,{method: 'GET',});
-	}else{
-		return xFetch(`${apiUrl}/api/user/${action.user_id}/info`,{method: 'PUT',
-			body:JSON.stringify(action.body),
-		});
-	}
-  	
+export async function getUserState(action) {// action为saga call() 传的参数
+  	return xFetch(`${apiUrl}/api/user/${action.user_id}/info`,{method: 'GET',});
 }
 
-// export async function setUserState(action) {
-// 	return xFetch(`${apiUrl}/api/user/info`,{method: 'PUT',
-// 		body:JSON.stringify({
-// 			name: 'nya',
-// 			avatar: "jfkasjdfjasjdfa",
-//     		about_me: "hello,this is me",
-// 		}),
-// 	});
-// }
+export async function setUserState(action) {
+	return xFetch(`${apiUrl}/api/user/info`,{method: 'PUT',
+		body:JSON.stringify({
+			name: 'nya',
+			avatar: "jfkasjdfjasjdfa",
+    		about_me: "hello,this is me",
+		}),
+	});
+}
 
 export async function userRegister(action) {
 
@@ -55,7 +47,7 @@ export async function userZoneData(action) {
 	if(action.type == 'user/get/userVideoCollection') url+= 'collection-courses';
 
 	if(action.type == 'user/get/userText') url+= `text-resources`;
-	if(action.type == 'user/get/userTextComment') url += `text-resource-comments`;
+	if(action.type == 'user/get/userTextComment') url = `text-resource-comments`;
 	if(action.type == 'user/get/userTextCollection') url+= `collection-text-resources`;
 
 	if(action.type == 'user/get/userTest') url+= `test-list`;
@@ -73,23 +65,10 @@ export async function UserisFollowing(action) {
 	});
 }
 
-export async function UserisFollowedBy(action) {
+export async function UserisFollowedBy() {
 	return xFetch(`${apiUrl}/api/user/is_followed_by`,{method: 'POST',
 		body:JSON.stringify({
 			search_user_id: 2
 		}),
 	});
-}
-export async function UserUpLoadToken(action) {
-	return xFetch(`${apiUrl}/api/user/qiniu-token`,{method: 'GET',});
-}
-
-export async function UserCreateMainData(action) {
-	// 一级数据层【课程，文本，测试
-	let url = `${apiUrl}/api/`
-	if(action.type == 'upload/post/createCourse') url += 'courses/new-course'
-	if(action.type == 'upload/post/createText') url += 'text-resources/new-resource'
-	if(action.type == 'upload/post/createTest') url += 'test-list/new-test'
-	console.log(url)
-	return xFetch(url,{method: 'POST',body:JSON.stringify(action.body)});
 }

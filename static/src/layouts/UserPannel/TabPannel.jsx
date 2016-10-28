@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Tabs } from 'antd';
+import { Pagination, Spin, Row, Col, Tabs } from 'antd';
 
 // import TimeLine from '../../components/TimeLine/TimeLine';
 // import List from '../../components/List/List';
@@ -25,7 +25,7 @@ const TabPannel = ({ children, config, title, list, activeKey, onTabClick }) => 
 		</div>
 		<Tabs activeKey={activeKey} onTabClick={onTabClick}>
 		{ config.nav.map((tab,index) =><Tabs.TabPane key={ index } tab={ tab }>
-			<div style={{minHeight: '500px', padding: '10px'}}>
+			<div style={{minHeight: '500px'}}>
 			
 			{ children }
 

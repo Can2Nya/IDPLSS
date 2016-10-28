@@ -1,70 +1,38 @@
 @import (reference) '../config/config.less';
 
 :global {
-	html, body, #root {
-		
+  html, body, #root {
+    
+  }
+  /*字体调整*/
+  *{
+    -webkit-font-smoothing: antialiased;
+  }
+  @font-face {
+	  font-family: 'iconfont';
+	  src: url('//at.alicdn.com/t/font_1471351717_6371713.eot'); /* IE9*/
+	  src: url('//at.alicdn.com/t/font_1471351717_6371713.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	  url('//at.alicdn.com/t/font_1471351717_6371713.woff') format('woff'), /* chrome、firefox */
+	  url('//at.alicdn.com/t/font_1471351717_6371713.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+	  url('//at.alicdn.com/t/font_1471351717_6371713.svg#iconfont') format('svg'); /* iOS 4.1- */
 	}
-	/*字体调整*/
-	*{
-		-webkit-font-smoothing: antialiased;
-	}
-	@font-face {
-		font-family: 'iconfont';
-		src: url('//at.alicdn.com/t/font_1471351717_6371713.eot'); /* IE9*/
-		src: url('//at.alicdn.com/t/font_1471351717_6371713.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-		url('//at.alicdn.com/t/font_1471351717_6371713.woff') format('woff'), /* chrome、firefox */
-		url('//at.alicdn.com/t/font_1471351717_6371713.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-		url('//at.alicdn.com/t/font_1471351717_6371713.svg#iconfont') format('svg'); /* iOS 4.1- */
-	}
-	.queue-anim-entering,.queue-anim-leaving{
-		position: absolute !important;
-		width: 100%;
-	}
-	// 颜色调整
-	span[class~="ant-spin-dot"]{
-		&:before{
-			background-color: @yellow;
-		}
-		&:after{
-			background-color: @purple;
-		}
-	}
-	li[class~="ant-pagination-item-active"]{
-		background-color: @purple;
-		border-color: @purple;
-	}
-	div[class~="ant-steps-status-process"]{
-		div[class~="ant-steps-head-inner"]{
-			border-color: @purple !important;
-			background-color: @purple !important;
-		}
-	}
-	div[class~="ant-steps-status-finish"]{
-		div[class~="ant-steps-head-inner"]{
-			border-color: @purple !important;
-			
-		}
-		span[class~="ant-steps-icon"]{
-			color: @purple !important;
-		}
-	}
-	div[class~="ant-steps-tail"]{
-		i:after{
-			background: @purple !important;
-		}
-	}
-	// menu
-	li[class~="ant-menu-item-selected"]{
-		color: @purple;
-		border-color: @purple !important;
-	}
-	.ant-menu-item:hover,
-	.ant-menu-submenu-title:hover{
-		background-color: transparent !important;
-		color: @purple;
-	}
+  // 颜色调整
+  span[class~="ant-spin-dot"]{
+    &:before{
+      background-color: @yellow;
+    }
+    &:after{
+      background-color: @purple;
+    }
+  }
+  li[class~="ant-pagination-item-active"]{
+    background-color: @purple;
+    border-color: @purple;
+  }
+
+
 }
 #root {
-	margin: auto;
-	padding: 0 15px 0 15px;
+  margin: auto;
+  padding: 0 15px 0 15px;
 }
