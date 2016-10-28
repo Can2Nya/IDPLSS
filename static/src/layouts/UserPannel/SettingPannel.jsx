@@ -45,18 +45,17 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 			return(
 				getFieldProps('avatar', {
 					rules: [
-						{ required: true, min: 2},
+						{ required: true },
 					],
 				})
 			)
 		}
 		else{
-			console.log(JSON.parse(files[0].request.xhr.response).key)
 			return(
 				getFieldProps('avatar', {
 					initialValue: JSON.parse(files[0].request.xhr.response).key,
 					rules: [
-						{ required: true, min: 2},
+						{ required: true },
 					],
 				})
 			)
@@ -127,11 +126,11 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 			)
 		}
 		let f = files[0]
-		let res = f.request.xhr.response
-		if(res != ''){
-			let key = JSON.parse(res).key
-			// setFieldsValue('avatar',key)
-		}
+		// let res = f.request.xhr.response
+		// if(res != ''){
+		// 	let key = JSON.parse(res).key
+		// 	// setFieldsValue('avatar',key)
+		// }
 
 		return <div className={styles.uploadavatar} style={{ backgroundImage: `url(${f.preview})`}}></div>
 

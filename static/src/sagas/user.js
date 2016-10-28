@@ -195,6 +195,21 @@ function* getUpLoadtoken(action) {
 	}
 }
 
+function* postCreateMainData(action) {
+	try {
+		const { jsonResult } = yield call(req.UserCreateMainData, action);
+		if (jsonResult) {
+			message.success('创建成功')
+			// yield put({
+			// 	type: 'upload/get/success/token',
+			// 	payload: jsonResult.uptoken,
+			// });
+		}
+	} catch (err) {
+		message.error(err);
+	}
+}
+
 
 
 function* watchUserLogin() {
@@ -236,6 +251,9 @@ function* watchisFollowedBy() {
 function* watchUpLoadtoken() {
 	yield* takeLatest('upload/get/token', getUpLoadtoken)
 }
+function* watchCreateMainData() {
+	yield* takeLatest(['upload/post/createCourse','upload/post/createText','upload/post/createTest'], postCreateMainData)
+}
 
 
 /*function* watchUserGetJson() {
@@ -252,6 +270,7 @@ export default function* () {
 	yield fork(watchisFollowedBy);
 	yield fork(watchUserZoneData);
 	yield fork(watchUpLoadtoken);
+	yield fork(watchCreateMainData)
 	//yield fork(watchUserGetJson)
 	// Load user.//
 	// yield put({
