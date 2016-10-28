@@ -22,8 +22,6 @@ def register():
     user_name = reg_info['user_name']
     user_email = reg_info['user_email']
     pass_word = reg_info['user_password']
-    interested_info = reg_info['interested_field']
-    subject = reg_info['subject']
     if not user_name or not user_email or not pass_word:
         return bad_request('user_name or user_email or password cat not be empty')
     user = User.query.filter_by(user_name=user_name).first()
@@ -32,8 +30,7 @@ def register():
     user = User.query.filter_by(email=user_email).first()
     if user is not None:
         return bad_request('email can not be repeated')
-    u = User(user_name=user_name, email=user_email, pass_word=pass_word,
-             interested_field=interested_info, subject=subject)
+    u = User(user_name=user_name, email=user_email, pass_word=pass_word)
     db.session.add(u)
     db.session.commit()
     token = u.generate_confirm_token()
@@ -284,7 +281,7 @@ def user_posts_comments():
     if pagination.has_next:
         url_next = url_for('main.user_posts_comments', page=page+1, _external=True)
     return jsonify({
-        'posts_comments': [comment.to_json() for comment in all_comments],
+        'posts': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -413,7 +410,7 @@ def user_text_resource_comments():
     if pagination.has_next:
         url_next = url_for('main.user_text_resource_comments', page=page+1, _external=True)
     return jsonify({
-        'resource_comments': [comment.to_json() for comment in all_comments],
+        'video_comments': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -467,7 +464,7 @@ def user_test_list():
     if pagination.has_next:
         url_next = url_for('main.user_test_list', page=page+1, _external=True)
     return jsonify({
-        'test_list': [test.to_json() for test in all_tests],
+        'posts': [test.to_json() for test in all_tests],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -492,8 +489,56 @@ def user_test_record():
     if pagination.has_next:
         url_next = url_for('main.user_test_record', page=page+1, _external=True)
     return jsonify({
-        'test_record': [record.to_json() for record in all_tests_record],
+        'posts': [record.to_json() for record in all_tests_record],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
+    })
+
+
+@main.route('/api/user/self-courses', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_courses():
+    user = g.current_user
+    courses = Course.query.filter_by(author_id=user.id).all()
+    return jsonify({
+        "count": len(courses),
+        "courses": [course.to_json() for course in courses]
+    })
+
+
+@main.route('/api/user/self-text-resources', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_text_resources():
+    user = g.current_user
+    text_resources = TextResource.query.filter_by(author_id=user.id).all()
+    return jsonify({
+        "count": len(text_resources),
+        "text_resources": [text_resource.to_json() for text_resource in text_resources]
+    })
+
+
+@main.route('/api/user/self-posts', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_posts():
+    user = g.current_user
+    posts = Post.query.filter_by(author_id=user.id).all()
+    return jsonify({
+        "count": len(posts),
+        "posts": [post.to_json() for post in posts]
+    })
+
+
+@main.route('/api/user/self-test', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_test():
+    user = g.current_user
+    test_list = TestList.query.filter_by(author_id=user.id).all()
+    return jsonify({
+        "count": len(test_list),
+        "test_list": [test.to_json() for test in test_list]
     })

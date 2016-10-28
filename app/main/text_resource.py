@@ -6,6 +6,7 @@ from app.main.authentication import auth
 from app.main import main
 from app.main.responses import bad_request, not_found, forbidden
 from app.utils.responses import self_response
+from app.utils.model_tools import have_school_permission
 
 
 @main.route('/api/text-resources', methods=['GET'])
@@ -71,8 +72,10 @@ def text_resources_category_type(cate_id, tid):
                     })
 
 
-@main.route('/api/text-resources/<int:rid>', methods=['GET', 'DELETE'])
+@main.route('/api/text-resources/<int:rid>', methods=['GET', 'DELETE', 'PUT'])
+@user_login_info
 def text_resource_detail(rid):
+    user = g.current_user
     text_resource = TextResource.query.get_or_404(rid)
     if request.method == 'GET':
         if text_resource.show is not False:
@@ -80,10 +83,26 @@ def text_resource_detail(rid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        text_resource.show = False
-        db.session.add(text_resource)
-        db.session.commit()
-        return self_response('delete text resource successfully')
+        if user.id == text_resource.author_id or have_school_permission(user):
+            text_resource.show = False
+            db.session.add(text_resource)
+            db.session.commit()
+            return self_response('delete text resource successfully')
+        else:
+            return forbidden('does not have permission to delete this text resource')
+    elif request.method == 'PUT':
+        if user.id == text_resource.author_id or have_school_permission(user):
+            modify_info = request.json
+            text_resource.resource_name = modify_info['resource_name']
+            text_resource.description = modify_info['description']
+            text_resource.resource_category = modify_info['category']
+            text_resource.resource_type = modify_info['type']
+            text_resource.source_url = modify_info['source_url']
+            db.session.add(text_resource)
+            db.session.commit()
+            return self_response('update text resource information successfully')
+        else:
+            return forbidden('does not have permission to update this text resource')
     else:
         return self_response('invalid operation')
 
