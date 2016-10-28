@@ -12,7 +12,6 @@ import SettingPannel from '../layouts/UserPannel/SettingPannel';
 import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
-import Upload from '../components/Upload/Upload';
 import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 

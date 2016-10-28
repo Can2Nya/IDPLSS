@@ -15,6 +15,7 @@ import PlayVideo from '../pages/PlayVideo';
 // import PlayText from '../pages/PlayText';
 import PlayTest from '../pages/PlayTest';
 import NotFound from '../pages/NotFound';
+import Manage from '../pages/Manage';
 
 //import { initPageStore } from './initPageStore';
 
@@ -222,6 +223,15 @@ const Routes = ({ history, dispatch }) =>{
 				pagination: 1
 			})
 		}
+		// user zone init-----------------------
+		if(pathname.search('manage')!== -1){
+			dispatch({
+				type: 'upload/get/token'
+			})
+			dispatch({
+				type: 'upload/init'
+			})
+		}
 	})
 	return(
 	<Router history={history}>
@@ -229,8 +239,7 @@ const Routes = ({ history, dispatch }) =>{
 			<Redirect from="/" to="/index" />
 		</Route>
 		<Route path="/category/" component={Category}>
-			<Route path="video/" >
-			</Route>
+			<Route path="video/" />
 			<Route path="text/"  />
 			<Route path="test/"  />
 			<Route path="forum/" />
@@ -246,11 +255,13 @@ const Routes = ({ history, dispatch }) =>{
 		</Route>
 		<Route path="/register/" component={Register}>
 		</Route>
-		<Route path="/play/" >
+		<Route path="/play/" component={NotFound}>
 			<Route path="video/:id/" component={PlayVideo}  />
 			{/*<Route path="text/:id/" component={PlayText}  />*/}
 			<Route path="test/:testId/:recordId/" component={PlayTest}  />
 			<Route path="*" component={NotFound}  />
+		</Route>
+		<Route path="/manage/" component={Manage}>
 		</Route>
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}
