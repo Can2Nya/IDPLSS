@@ -72,3 +72,15 @@ export async function UserisFollowedBy() {
 		}),
 	});
 }
+export async function UserUpLoadToken(action) {
+	return xFetch(`${apiUrl}/api/user/qiniu-token`,{method: 'GET',});
+}
+
+export async function UserCreateMainData(action) {
+	// 一级数据层【课程，文本，测试
+	let url = `${apiUrl}/api/`
+	if(action.type == 'upload/post/createCourse') url += 'courses/new-course'
+	if(action.type == 'upload/post/createText') url += 'text-resources/new-resource'
+	if(action.type == 'upload/post/createTest') url += 'test-list/new-test'
+	return xFetch(url,{method: 'POST',body:JSON.stringify(action.body)});
+}
