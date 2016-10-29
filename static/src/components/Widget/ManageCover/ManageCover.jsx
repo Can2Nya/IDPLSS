@@ -18,10 +18,10 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 				</Col>
 				<Col span={15}>
 					<div className={styles.title}>
-					xxxxxxxxx标题
+					{ data['resource_name'] || data['course_name'] || data['test_title']}
 					</div>
 					<div className={styles.time}>
-					xxxxxxxx时间
+					{ data['timestamp'] }
 					</div>
 					<div className={styles.button}>
 					<span>

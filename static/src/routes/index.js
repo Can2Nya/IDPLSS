@@ -223,13 +223,17 @@ const Routes = ({ history, dispatch }) =>{
 				pagination: 1
 			})
 		}
-		// user zone init-----------------------
+		// user manage init-----------------------
 		if(pathname.search('manage')!== -1){
 			dispatch({
 				type: 'upload/get/token'
 			})
 			dispatch({
 				type: 'upload/init'
+			})
+			dispatch({
+				type: 'user/get/userVideo',
+				pagination: 1
 			})
 		}
 	})

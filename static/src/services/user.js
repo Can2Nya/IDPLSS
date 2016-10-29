@@ -90,6 +90,5 @@ export async function UserCreateMainData(action) {
 	if(action.type == 'upload/post/createCourse') url += 'courses/new-course'
 	if(action.type == 'upload/post/createText') url += 'text-resources/new-resource'
 	if(action.type == 'upload/post/createTest') url += 'test-list/new-test'
-	console.log(url)
 	return xFetch(url,{method: 'POST',body:JSON.stringify(action.body)});
 }

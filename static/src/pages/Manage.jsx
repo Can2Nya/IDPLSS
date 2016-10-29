@@ -19,7 +19,7 @@ import styles from './commont.less';
 import config from '../config/config.js'
 
 const Manage = ({ upload, user, dispatch, location }) => {
-	const { loginUserList } = user
+	const { loginUserList, userZoneList, total } = user
 	const { files, token, modalState, progress, isSelectMenuItem, isEdit } = upload
 
 	// ---------------action-------------------
@@ -32,6 +32,14 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		// 顺便初始化files
 		dispatch({
 			type: 'upload/init',
+		})
+		let action = 'user/get/user';
+		if(e.key == '1') action += 'Video'
+		if(e.key == '2') action += 'Text'
+		if(e.key == '3') action += 'Test'
+		dispatch({
+			type: action,
+			pagination: 1
 		})
 	}
 
@@ -48,6 +56,17 @@ const Manage = ({ upload, user, dispatch, location }) => {
 			modalState: !modalState
 		})
 	}
+	const handleChangePagination = (page) =>{
+		let action = 'user/get/user';
+		if(isSelectMenuItem == '1') action += 'Video'
+		if(isSelectMenuItem == '2') action += 'Text'
+		if(isSelectMenuItem == '3') action += 'Test'
+		dispatch({
+			type: action,
+			pagination: page
+		})
+	}
+
 	const handleDrop = (files) =>{
 		dispatch({
 			type: 'upload/drop',
@@ -110,6 +129,17 @@ const Manage = ({ upload, user, dispatch, location }) => {
 	// 	<EditPannel />
 	// 	</div>
 	// }
+	const renderList = () =>{
+		if(userZoneList.length <= 0 || !userZoneList){
+			return <div>暂时还未有内容</div>;
+		}
+		return userZoneList.map((data,index) =>{
+			if(!data.show) return
+			return (
+				<ManageCover key={index} data={data} onClickEdit={handleChangeEditState.bind(this)}/>
+			)
+		})
+	}
 
 	const renderIsEdit = ()=>{
 		return isEdit ? [
@@ -131,15 +161,15 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						onUpload={handleUpload.bind(this)}
 						onSubmit={handleSubmit.bind(this)}
 			/>
-
-		<ManageCover onClickEdit={handleChangeEditState.bind(this)}/>
+			{ renderList() }
+		
 		</div>
 
 		<Pagination 
-		/*onChange={handleChangePagination.bind(this)} 
-		total={total} current={isSelectPagination} 
+		onChange={handleChangePagination.bind(this)} 
+		total={total}
 		pageSize={12} 
-		defaultPageSize={12} */
+		defaultPageSize={12}
 		/>
 		</div>]
 	}
@@ -168,16 +198,14 @@ const Manage = ({ upload, user, dispatch, location }) => {
 					  </Menu>
 					</Col>
 					<Col span={16} offset={2}>
-					<div className={styles.margin}>
-
-					</div>
+					<div className={styles.edit}>
 						<QueueAnim
 						type={['right','left']} 
 						ease={['easeOutQuart', 'easeInOutQuart']}
 						>
 						{ renderIsEdit() }
 						</QueueAnim>
-					
+					</div>
 					</Col>
 				</Row>
 			</CommentContext>

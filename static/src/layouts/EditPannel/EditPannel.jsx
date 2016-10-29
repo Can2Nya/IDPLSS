@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
+import { connect } from 'react-redux';
 import { Row, Col, Form, Input, Select, Icon, Progress } from 'antd';
 import Sortable, { SortableContainer } from 'react-anything-sortable';
+import Qiniu from 'react-qiniu'
 
 import config from '../../config/config.js';
 import styles from './EditPannel.less';
@@ -16,12 +18,31 @@ import Button from '../../components/Button/Button';
 import UploadItem from '../../components/Widget/UploadItem/UploadItem';
 
 
-const EditPannel = ({ type, onBackClick }) => {
-
+let EditPannel = ({ upload, user, dispacth, onBackClick }) => {
+// -----------------form rule-----------------------
 	const formItemLayout = {
 		labelCol: { span: 4 },
 		wrapperCol: { span: 20 },
 	};
+	// --------------action ------------------------
+	const handleDrop = (files) =>{
+		dispatch({
+			type: 'upload/drop',
+			files: files
+		})
+	}
+	const handleUpload = (files) =>{
+		let progresses = {};
+		files.map((f) =>{
+			f.onprogress = (e) =>{
+				progresses[f.preview] = e.percent
+				dispatch({
+					type: 'upload/setProgress',
+					progress: progresses
+				})
+			}
+		})
+	}
 	const handleSort = (e) =>{
 		console.log(e)
 	}
@@ -40,8 +61,23 @@ const EditPannel = ({ type, onBackClick }) => {
 		<div className={styles.title}>课程描述</div>
 		<Row>
 			<Col span={8}>
+				<Form.Item 
+				help="仅限图片格式,尺寸尽量保持200*120"
+				hasFeedback>
+				<a>
+				<Qiniu 
+					onDrop={handleDrop.bind(this)} 
+					accept='image/*'
+					size={150} 
+					style={{border: '0'}}
+					token={token} 
+					multiple={false}
+					onUpload={handleUpload.bind(this)}>
 				<div className={styles.preview}>
 				</div>
+				</Qiniu>
+				</a>
+				</Form.Item>
 				<div className={styles.button}>
 				<Button type="ghost">保存</Button>
 				</div>
@@ -81,11 +117,6 @@ const EditPannel = ({ type, onBackClick }) => {
 
 		<div className={styles.cuttingLine}></div>
 		<div className={styles.title}>添加课程视频</div>
-
-		{/*<div className={styles.uploadarea}>
-		<Icon type='plus' />
-		<div>点击或拖拽文件到此处</div>
-		</div>*/}
 
 		<div className={styles.video}>
 		<Sortable onSort={handleSort.bind(this)}>
@@ -135,5 +166,13 @@ EditPannel.propTypes = {
 	//children: PropTypes.element.isRequired,
 };
 
+EditPannel = Form.create()(EditPannel)
 
-export default EditPannel;
+function mapStateToProp({ upload, user }){
+	return{
+		upload: upload,
+		user: user
+	};
+}
+
+export default connect(mapStateToProp)(EditPannel);

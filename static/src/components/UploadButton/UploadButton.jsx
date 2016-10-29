@@ -42,7 +42,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 						allWordType.map((value,index)=>{
 							if(value.search(wordType)!= -1) mun = index
 						})
-						body = {resource_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), category: getFieldValue(`category-${formType}`), source_url: getFieldValue(`file-${formType}`), resource_type: mun}
+						body = {resource_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), resource_category: getFieldValue(`category-${formType}`), source_url: getFieldValue(`file-${formType}`), resource_type: mun}
 						onSubmit(body)
 					});
 				}
