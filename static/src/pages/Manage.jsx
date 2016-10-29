@@ -55,11 +55,13 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		})
 	}
 	const handleUpload = (files) =>{
+		let progresses = {};
 		files.map((f) =>{
 			f.onprogress = (e) =>{
+				progresses[f.preview] = e.percent
 				dispatch({
 					type: 'upload/setProgress',
-					progress: e.percent
+					progress: progresses
 				})
 			}
 		})
@@ -122,6 +124,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						files={files}
 						qiniuUrl={config.qiniu}
 						modalState={modalState}
+						progress={progress}
 						onButtonClick={handleChangeModalState.bind(this)}
 						onCancel={handleChangeModalState.bind(this)}
 						onDrop={handleDrop.bind(this)} 
