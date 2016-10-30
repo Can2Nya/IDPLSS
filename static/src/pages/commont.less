@@ -44,6 +44,24 @@
 	.margin;
 	.divCenter;
 }
+//绝对定位
+.absolute{
+	width: 100%;
+	&:before{
+		position: absolute;
+		content: ' ';
+	}
+	&:after{
+		position: absolute;
+		content: ' ';
+	}
+}
+.relative{
+	width: 100%;
+	position: relative;
+	float: left;
+	
+}
 
 
 /*用户User*/

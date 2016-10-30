@@ -542,3 +542,16 @@ def self_test():
         "count": len(test_list),
         "test_list": [test.to_json() for test in test_list]
     })
+
+
+@main.route('/api/user/<int:tid>/self-test-problems', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_test_problems(tid):
+    user = g.current_user
+    problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid).all()
+    return jsonify({
+        "count": len(problems),
+        "problems": [problem.to_json() for problem in problems]
+    })
+
