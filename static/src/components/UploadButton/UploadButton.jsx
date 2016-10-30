@@ -3,14 +3,13 @@ import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col, Icon, Modal, Form, Input, Select, Progress } from 'antd';
 // import classnames from 'classnames';
-import pathToRegexp from 'path-to-regexp';
 import Qiniu from 'react-qiniu'
 
 import Button from '../Button/Button';
 
 import styles from './UploadButton.less';
 
-let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, onCancel, onButtonClick, onSubmit, onUpload, onDrop }) => {
+let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, onCancel, onButtonClick, onSubmit, onUpload, onDrop }) => {
 
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	// ----------------fuc--------------------------------------------
@@ -36,13 +35,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 						if(errors){
 							return ;
 						}
-						let allWordType = ['other','doc:docx', 'excel', 'pdf', 'ppt']
-						let wordType = pathToRegexp(':name.:type').exec(files[0].name)[2]
-						let mun = 0;
-						allWordType.map((value,index)=>{
-							if(value.search(wordType)!= -1) mun = index
-						})
-						body = {resource_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), category: getFieldValue(`category-${formType}`), source_url: getFieldValue(`file-${formType}`), resource_type: mun}
+						body = {resource_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), category: getFieldValue(`category-${formType}`), source_url: getFieldValue(`file-${formType}`)}
 						onSubmit(body)
 					});
 				}
@@ -61,6 +54,12 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 					});
 				}
 			});
+		
+		
+		// if(type == '1') body = {course_name: getFieldValue('title'), description: getFieldValue('detail'), category: getFieldValue('category')}
+		// if(type == '2') body = {resource_name: getFieldValue('title'), description: getFieldValue('detail'), category: getFieldValue('category')}
+		// if(type == '3') body = {test_title: getFieldValue('title'), test_description: getFieldValue('detail'), test_category: getFieldValue('category'), key_words: getFieldValue('keyword')}
+		// onSubmit.bind(body)
 	}
 	// --------------form rule----------------------------------------
 	const formItemLayout = {
@@ -116,20 +115,6 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 	const renderUploadImgCls= () =>{
 		if(files.length > 0){
 			return { backgroundImage: `url(${files[0].preview})`}
-		}
-	}
-	const renderUploadText = () =>{
-		if(files.length <= 0){
-			return (
-				<div>
-					<Icon type='plus' />
-					<div>点击上传文件</div>
-				</div>
-			)
-		}
-		else{
-			if(!files[0].request.xhr.response) return <Progress percent={progress[files[0].preview].toFixed(0)} strokeWidth={5} status="active" />
-			else return <div>{files[0].name}</div>
 		}
 	}
 	const renderForm = (formType)=>{
@@ -255,8 +240,9 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 				multiple={false}
 				onUpload={onUpload}>
 				<div className={styles.preview}>
-					{ renderUploadText() }
-					
+					<Icon type='plus' />
+					<div>点击上传文件</div>
+					<Progress percent={50} strokeWidth={5} status="active" />
 				</div>
 			</Qiniu>
 			</a>

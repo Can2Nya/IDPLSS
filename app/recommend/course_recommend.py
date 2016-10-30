@@ -37,7 +37,15 @@ def user_similarity_calc(user):
     return w_sort, target_collections
 
 
-def user_similarity_recommend(user, k, n):
+def user_index_calc():
+    """
+    优化:使用倒排表优化效率
+    :return:
+    """
+    pass
+
+
+def course_recommend(user, k, n):
     """
     对保存用户相似度的字典进行处理,得出推荐结果
     :param user: 目标用户
@@ -114,7 +122,6 @@ def course_similarity_calc(user, K):
 
 def course_similarity_recommend(user, k, n):
     course_dict, user_collect_courses = course_similarity_calc(user, k)
-    print "courses dict is %s" % course_dict
-    return "hello"
+    pass
 
 

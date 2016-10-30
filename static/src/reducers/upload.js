@@ -58,7 +58,7 @@ const upload = handleActions({
 	files: [],
 	token: '',
 	modalState: false,//modal是否被激活
-	progress: [], //可为object
+	progress: 0, //可为arayy或int
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
 });

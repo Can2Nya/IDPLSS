@@ -7,6 +7,7 @@ from app.models import Permission
 from app.utils.responses import self_response
 from app.main.responses import test_response
 from app.utils.model_tools import have_school_permission
+from app.recommend.code_start import code_start_course
 
 
 @main.route('/', methods=['GET'])
@@ -40,3 +41,12 @@ def have_permission():
     else:
         print "user role is %s rid is %s" % (user.role, user.role_id)
         return jsonify({"status": "no does not have"})
+
+
+@main.route('/api/user/test')
+@get_current_user
+def user_test():
+    courses = code_start_course(g.current_user)
+    for course in courses:
+        print course[0].to_json()
+    return self_response("ok")
