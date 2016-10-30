@@ -20,6 +20,7 @@ def user_similarity_calc(user):
     for behavior in course_behaviors:
         target_collections.append(Course.query.filter_by(id=behavior.course_id).first())
     # 计算相似度, w字典保存相相似度
+    print "user collection courses is %s" % target_collections
     w = dict()
     for u in other_users:
         other_collections = []
@@ -37,12 +38,29 @@ def user_similarity_calc(user):
     return w_sort, target_collections
 
 
-def user_index_calc():
+def user_index_calc(user):
     """
     优化:使用倒排表优化效率
+    :param user 目标用户
+    :param courses 目标用户没有正反馈的课程
     :return:
     """
-    pass
+    # 计算用户有正反馈的课程
+    target_user = user
+    target_collections = []
+    all_user = User.query.all()
+    other_users = [u for u in all_user if u != target_user]
+    user_behaviors = CourseBehavior.query.filter_by(user_id=target_user.id).all()
+    for b in user_behaviors:
+        target_collections.append(Course.query.filter_by(id=b.course_id).first())
+    print "user collect course is %s" % target_collections
+    index_dict = dict()  # 创建倒排表
+    for course in target_collections:
+        index_dict[course.id] = list()
+
+        print 'calc user %s over' % u.id
+    print "index_dict is %s " % index_dict
+    return index_dict, target_collections
 
 
 def course_recommend(user, k, n):
@@ -53,12 +71,16 @@ def course_recommend(user, k, n):
     :param n: 推荐n个结果给用户
     :return:
     """
-    similarity_result, target_courses = user_similarity_calc(user)
+    recommend_type = 'course'
+    if recommend_type == 'user':
+        similarity_result, target_courses = user_similarity_calc(user)
+    else:
+        similarity_result, target_courses = user_index_calc(user)
     k_similarity_user = similarity_result[:k]
-    k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
     all_courses = Course.query.all()
     calc = 0
     other_courses = [course for course in all_courses if course not in target_courses]
+    k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
     interested_course = dict()
     for other_c in other_courses:
         interested_course[other_c.id] = 0
@@ -122,6 +144,6 @@ def course_similarity_calc(user, K):
 
 def course_similarity_recommend(user, k, n):
     course_dict, user_collect_courses = course_similarity_calc(user, k)
-    pass
 
+    pass
 
