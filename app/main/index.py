@@ -8,6 +8,8 @@ from app.utils.responses import self_response
 from app.main.responses import test_response
 from app.utils.model_tools import have_school_permission
 from app.recommend.code_start import code_start_course
+from app.recommend.course_recommend import user_index_calc
+import datetime
 
 
 @main.route('/', methods=['GET'])
@@ -46,7 +48,17 @@ def have_permission():
 @main.route('/api/user/test')
 @get_current_user
 def user_test():
-    courses = code_start_course(g.current_user)
-    for course in courses:
-        print course[0].to_json()
-    return self_response("ok")
+    user_index_calc(g.current_user)
+    return self_response('ok')
+
+
+@main.route('/api/time')
+def long_time_def():
+    sum = 0
+    t1 = datetime.datetime.utcnow()
+    for x in range(1, 100000000):
+        pass
+    t2 = datetime.datetime.utcnow()
+    print "over time is %s" % (t2-t1).seconds
+    return self_response("time over")
+

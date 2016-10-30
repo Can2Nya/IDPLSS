@@ -39,7 +39,11 @@ def user_similarity_resource(user, k):
     w_sort = sorted(w.iteritems(), key=lambda d: d[1], reverse=True)
     return w_sort
 
+
 def resource_similarity():
     pass
 
+
+def resource_recommend(user, k, n):
+    pass
 
