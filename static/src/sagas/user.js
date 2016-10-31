@@ -197,14 +197,34 @@ function* getUpLoadtoken(action) {
 
 function* postCreateMainData(action) {
 	try {
-		const { jsonResult } = yield call(req.UserCreateMainData, action);
-		if (jsonResult) {
-			message.success('创建成功')
-			// yield put({
-			// 	type: 'upload/get/success/token',
-			// 	payload: jsonResult.uptoken,
-			// });
-		}
+		if(action.type.search('post') !== -1) {
+			const { jsonResult } = yield call(req.UserCreateMainData, action);
+			if (jsonResult) {
+				message.success('创建成功')
+			}
+			let nextAction = 'user/get/user';
+			if(action.type == 'upload/post/createCourse') nextAction += 'Video'
+			if(action.type == 'upload/post/createText') nextAction += 'Text'
+			if(action.type == 'upload/post/createTest') nextAction += 'Test'
+			yield put({
+				type: nextAction,
+				pagination: 1
+			})
+		};
+		if(action.type.search('put') !== -1) {
+			const { jsonResult } = yield call(req.UserPutMainData, action);
+			if (jsonResult) {
+				message.success('修改成功')
+			}
+			let nextAction = 'user/get/user';
+			if(action.type == 'upload/put/createCourse') nextAction += 'Video'
+			if(action.type == 'upload/put/createText') nextAction += 'Text'
+			if(action.type == 'upload/put/createTest') nextAction += 'Test'
+			yield put({
+				type: nextAction,
+				pagination: 1
+			})
+		};
 	} catch (err) {
 		message.error(err);
 	}
@@ -252,7 +272,14 @@ function* watchUpLoadtoken() {
 	yield* takeLatest('upload/get/token', getUpLoadtoken)
 }
 function* watchCreateMainData() {
-	yield* takeLatest(['upload/post/createCourse','upload/post/createText','upload/post/createTest'], postCreateMainData)
+	yield* takeLatest([
+		'upload/post/createCourse',
+		'upload/post/createText',
+		'upload/post/createTest',
+		'upload/put/createCourse',
+		'upload/put/createText',
+		'upload/put/createTest'
+		], postCreateMainData)
 }
 
 

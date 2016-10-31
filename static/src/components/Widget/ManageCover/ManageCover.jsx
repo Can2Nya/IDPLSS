@@ -25,7 +25,7 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 					</div>
 					<div className={styles.button}>
 					<span>
-					<Button type='primary' onClick={onClickEdit}>编辑</Button>
+					<Button type='primary' onClick={onClickEdit.bind(this,data['id'])}>编辑</Button>
 					</span>
 					<span>
 					<Button type='ghost' onClick={onDelete}>删除</Button>

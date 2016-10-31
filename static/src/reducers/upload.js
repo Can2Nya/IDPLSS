@@ -38,6 +38,21 @@ const upload = handleActions({
 	['upload/post/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
+	['upload/put/createCourse'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/put/createVideo'](state, action) {// 二级数据
+		return { ...state, };
+	},
+	['upload/put/createText'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/put/createTest'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/put/createProblem'](state, action) {// 二级数据
+		return { ...state, };
+	},
 	// --------------状态-------------------
 	['upload/init'](state, action) {
 		return { ...state, files: [] };
@@ -48,8 +63,8 @@ const upload = handleActions({
 	['upload/changeMenuItem'](state, action) {
 		return { ...state, isSelectMenuItem: action.item };
 	},
-	['upload/changeEditState'](state, action) {
-		return { ...state, isEdit: action.isEdit };
+	['upload/changeEditState'](state, action) {// 顺便带上选择内容的id
+		return { ...state, isEdit: action.isEdit, isSelectContextId: action.isSelectContextId };
 	},
 	['upload/changeModalState'](state, action) {
 		return { ...state, modalState: action.modalState };
@@ -61,6 +76,9 @@ const upload = handleActions({
 	progress: 0, //可为arayy或int
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
+	isSelectContextId: 0,// 选择的内容【课程／资料／测试】的id
+	isSelectContext: {},// 选择的内容
+	isSelectContextList: [],// 视频，问题
 });
 
 export default upload;
