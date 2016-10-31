@@ -181,14 +181,34 @@ function* getUserZoneData(action) {
 	}
 }
 
-function* getUpLoadtoken(action) {
+function* getUpLoadInfo(action) {
 	try {
-		const { jsonResult } = yield call(req.UserUpLoadToken, action);
+		const { jsonResult } = yield call(req.UserUpLoadInfo, action);
 		if (jsonResult) {
-			yield put({
-				type: 'upload/get/success/token',
-				payload: jsonResult.uptoken,
-			});
+			if (action.type == 'upload/get/token') {
+				yield put({
+					type: 'upload/get/success/token',
+					payload: jsonResult.uptoken,
+				});
+			}else{
+				if (action.type.search('List') !== -1) {
+					yield put({
+						type: 'upload/get/success/isSelectContextList',
+						payload: '咱这里没api呢！'
+					})	
+				}else{
+					yield put({
+						type: 'upload/get/success/isSelectContext',
+						payload: jsonResult
+					})
+				}
+				yield put({
+					type: 'upload/changeEditState',
+					isEdit: true,
+					isSelectContextId: action.id,
+				})
+			}
+
 		}
 	} catch (err) {
 		message.error(err);
@@ -268,8 +288,13 @@ function* watchisFollowing() {
 function* watchisFollowedBy() {
 	yield* takeLatest('user/info/isFollowedBy', isFollowedBy)
 }
-function* watchUpLoadtoken() {
-	yield* takeLatest('upload/get/token', getUpLoadtoken)
+function* watchUpLoadInfo() {
+	yield* takeLatest([
+		'upload/get/token',
+		'upload/get/userVideo',
+		'upload/get/userText',
+		'upload/get/userTest'
+		], getUpLoadInfo)
 }
 function* watchCreateMainData() {
 	yield* takeLatest([
@@ -296,7 +321,7 @@ export default function* () {
 	yield fork(watchisFollowing);
 	yield fork(watchisFollowedBy);
 	yield fork(watchUserZoneData);
-	yield fork(watchUpLoadtoken);
+	yield fork(watchUpLoadInfo);
 	yield fork(watchCreateMainData)
 	//yield fork(watchUserGetJson)
 	// Load user.//

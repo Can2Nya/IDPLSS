@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Row, Col, Icon, Tabs, Menu, Pagination, Modal } from 'antd';
+import { Row, Col, Icon, Tabs, Menu, Pagination, Modal, Spin } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 import merged from 'obj-merged'
 
@@ -20,7 +20,7 @@ import config from '../config/config.js'
 
 const Manage = ({ upload, user, dispatch, location }) => {
 	const { loginUserList, userZoneList, total } = user
-	const { files, token, modalState, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
+	const { files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
 
 	// ---------------action-------------------
 	// 切换菜单
@@ -44,11 +44,32 @@ const Manage = ({ upload, user, dispatch, location }) => {
 	}
 
 	const handleChangeEditState = (id) =>{
+		let action = 'upload/get/user';
+		if(isSelectMenuItem == '1') {
+			action += 'Video'
+			// dispatch({
+			// 	type:'upload/get/userVideoList',
+			// 	id: id
+			// })
+		}
+		if(isSelectMenuItem == '2') action += 'Text'
+		if(isSelectMenuItem == '3') {
+			action += 'Test'
+			// dispatch({
+			// 	type:'upload/get/userTextList',
+			// 	id: id
+			// })
+		}
 		dispatch({
-			type: 'upload/changeEditState',
-			isEdit: !isEdit,
-			isSelectContextId: id
+			type: action,//zheli yaogai
+			id: id
 		})
+		// 该action以在saga处理，具体见user-saga
+		// dispatch({
+		// 	type: 'upload/changeEditState',
+		// 	isEdit: !isEdit,
+		// 	isSelectContextId: id
+		// })
 		
 	}
 
@@ -200,6 +221,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 					  </Menu>
 					</Col>
 					<Col span={16} offset={2}>
+					<Spin spinning={loading}>
 					<div className={styles.edit}>
 						<QueueAnim
 						type={['right','left']} 
@@ -208,6 +230,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						{ renderIsEdit() }
 						</QueueAnim>
 					</div>
+					</Spin>
 					</Col>
 				</Row>
 			</CommentContext>

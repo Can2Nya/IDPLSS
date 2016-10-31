@@ -117,7 +117,7 @@ const user = handleActions({
 		return { ...state, loading: true, userZoneList: [] }
 	},
 	['user/get/userVideoList'](state, action){
-		return { ...state, loading: true, userZoneList: [] }
+		return { ...state, loading: true, userZoneSubList: [] }
 	},
 	['user/get/userVideoComment'](state, action){
 		return { ...state, loading: true, userZoneList: [] }
@@ -140,7 +140,7 @@ const user = handleActions({
 		return { ...state, loading: true, userZoneList: [] }
 	},
 	['user/get/userTestList'](state, action){
-		return { ...state, loading: true, userZoneList: [] }
+		return { ...state, loading: true, userZoneSubList: [] }
 	},
 	['user/get/userTestComplete'](state, action){
 		return { ...state, loading: true, userZoneList: [] }
