@@ -81,11 +81,11 @@ const Category = ({ location, dispatch, context }) => {
 	}
 
 	const renderList = () =>{
-		if(context.categorySource.loading){
-			return <Col span={1}>
-			<Spin />
-			</Col>;
-		}
+		// if(context.categorySource.loading){
+		// 	return <Col span={1}>
+		// 	<Spin />
+		// 	</Col>;
+		// }
 		if(context.categorySource.list <=0 || !context.categorySource.list){
 			return;
 		}
@@ -166,7 +166,7 @@ const Category = ({ location, dispatch, context }) => {
 		<Layout location={location} type={2}>
 			<div className={styles.contain}>
 		<Row>
-		<Spin spinning={ loading } >
+		
 
 		<Col span={8} lg={6}>
 		{ forumExetend() }
@@ -193,7 +193,8 @@ const Category = ({ location, dispatch, context }) => {
 			
 		</div>
 		{ textExetend() }
-		<div style={{ minHeight: "850px" }}>
+		<Spin spinning={ context.categorySource.loading } >
+		<div style={{ minHeight: "850px", }}>
 			<Row gutter={16} type="flex" align="middle" >
 			{/**<TestCover type='big' />
 			<TestCover type='small' />
@@ -206,6 +207,7 @@ const Category = ({ location, dispatch, context }) => {
 
 			</Row>
 		</div>
+		</Spin>
 		<div className={styles.margin}>
 			<Pagination 
 			onChange={handleChangePagination.bind(this)} 
@@ -216,7 +218,7 @@ const Category = ({ location, dispatch, context }) => {
 		</div>
 
 		</Col>
-		</Spin>
+		
 
 		</Row>
 		</div>

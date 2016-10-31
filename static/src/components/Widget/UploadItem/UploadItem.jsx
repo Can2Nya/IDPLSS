@@ -12,7 +12,7 @@ const UploadItem = ({ data }) => {
 		<Row type='flex' align='middle'>
 		<Col span={22}>
 		<div className={styles.title}>
-		{ data['title'] }
+		{ data['resource_name'] || data['course_name'] || data['test_title']}
 		</div>
 		</Col>
 		<Col span={2}>

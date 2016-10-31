@@ -87,9 +87,16 @@ export async function UserUpLoadToken(action) {
 export async function UserCreateMainData(action) {
 	// 一级数据层【课程，文本，测试
 	let url = `${apiUrl}/api/`
-	if(action.type == 'upload/post/createCourse') url += 'courses/new-course'
-	if(action.type == 'upload/post/createText') url += 'text-resources/new-resource'
-	if(action.type == 'upload/post/createTest') url += 'test-list/new-test'
-	console.log(url)
-	return xFetch(url,{method: 'POST',body:JSON.stringify(action.body)});
+	if(action.type.search('createCourse') !== -1) url += 'courses/new-course'
+	if(action.type.search('createText') !== -1) url += 'text-resources/new-resource'
+	if(action.type.search('createTest') !== -1) url += 'test-list/new-test'
+	return xFetch(url,{method: 'POST' ,body:JSON.stringify(action.body)});
+}
+export async function UserPutMainData(action) {
+	let url = `${apiUrl}/api/`
+	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
+	if(action.type.search('createText') !== -1) url += 'text-resources/'
+	if(action.type.search('createTest') !== -1) url += 'test-list/detail/'
+	url += `${action.id}`
+	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
 }
