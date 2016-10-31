@@ -54,7 +54,6 @@ def user_test():
 
 @main.route('/api/time')
 def long_time_def():
-    sum = 0
     t1 = datetime.datetime.utcnow()
     for x in range(1, 100000000):
         pass

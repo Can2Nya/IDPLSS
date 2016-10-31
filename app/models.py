@@ -695,7 +695,7 @@ class TextResource(db.Model):
             db.session.commit()
 
     def __repr__(self):
-        return '<TextResource file_name %r>' % self.file_name
+        return '<TextResource file_name %r>' % self.id
 
     def to_json(self):
         json_text_resource = {
