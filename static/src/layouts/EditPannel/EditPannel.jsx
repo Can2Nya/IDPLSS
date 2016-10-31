@@ -20,11 +20,11 @@ import Button from '../../components/Button/Button';
 import UploadItem from '../../components/Widget/UploadItem/UploadItem';
 
 
-let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
+let EditPannel = ({ upload, user, form, dispatch }) => {
 
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
-	const { files, token, modalState, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
+	const { files, token, modalState, progress, isSelectMenuItem, isSelectContextId, isSelectContext, isEdit } = upload
 // -----------------form rule-----------------------
 	const formItemLayout = {
 		labelCol: { span: 4 },
@@ -131,6 +131,12 @@ let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
 			})
 		}
 	}
+	const handleChangeEditState = () =>{
+		dispatch({
+			type: 'upload/changeEditState',
+			isEdit: false,
+		})
+	}
 	const handleSort = (e) =>{
 		console.log(e)
 	}
@@ -165,6 +171,7 @@ let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
 			hasFeedback
 			>
 				<Input {...getFieldProps(`title-${formType}-${isSelectContextId}`, {
+					initialValue: isSelectContext.test_title || isSelectContext.resource_name || isSelectContext.course_name,
 					rules: [
 						{ required: true, min: 2, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
 					],
@@ -176,6 +183,7 @@ let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
 			hasFeedback
 			>
 				<Input {...getFieldProps(`detail-${formType}-${isSelectContextId}`, {
+					initialValue: isSelectContext.test_description || isSelectContext.description,
 					rules: [
 						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
@@ -335,7 +343,7 @@ let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
 		<Form>
 		<div className={styles.cuttingLine}>
 		<a>
-		<span onClick={onBackClick}>
+		<span onClick={handleChangeEditState}>
 		<Icon type="arrow-left" /> 
 		 返回
 		</span>
@@ -447,6 +455,12 @@ let EditPannel = ({ upload, user, form, dispatch, onBackClick }) => {
 EditPannel.propTypes = {
 	//children: PropTypes.element.isRequired,
 };
+// function mapPropToFields(upload){
+// 	console.log(upload)
+// 	return{
+
+// 	}
+// }
 
 EditPannel = Form.create()(EditPannel)
 

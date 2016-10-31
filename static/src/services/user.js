@@ -59,7 +59,7 @@ export async function userZoneData(action) {
 	if(action.type == 'user/get/userTextCollection') url+= `collection-text-resources`;
 
 	if(action.type == 'user/get/userTest') url+= `test-list`;
-	if(action.type == 'user/get/userTestList') url = `${apiUrl}/api/test-list/${action.testid}/problems`; // yihuigai
+	if(action.type == 'user/get/userTestList') url = `${apiUrl}/api/test-list/${action.testid}/problems`; 
 	if(action.type == 'user/get/userTestComplete') url+= `test-record`;
 	url += `?page=${action.pagination}`
 	return xFetch(url,{method: 'GET',});
@@ -80,8 +80,16 @@ export async function UserisFollowedBy(action) {
 		}),
 	});
 }
-export async function UserUpLoadToken(action) {
-	return xFetch(`${apiUrl}/api/user/qiniu-token`,{method: 'GET',});
+export async function UserUpLoadInfo(action) {
+	let url = `${apiUrl}/api/`
+	if(action.type == 'upload/get/token') url += 'user/qiniu-token'
+	else{
+		if(action.type == 'upload/get/userVideo') url+= `courses/detail/`;
+		if(action.type == 'upload/get/userText') url += `text-resources/`; 
+		if(action.type == 'upload/get/userTest') url+= `test-list/detail/`;
+		url += `${action.id}`
+	}
+	return xFetch(url,{method: 'GET',});
 }
 
 export async function UserCreateMainData(action) {

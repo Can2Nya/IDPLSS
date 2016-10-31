@@ -23,6 +23,33 @@ const upload = handleActions({
 	['upload/get/success/token'](state, action) {
 		return { ...state, token: action.payload };
 	},
+
+	['upload/get/userVideo'](state, action) {
+	  return { ...state, loading: true, isSelectContext: {} };
+	},
+	['upload/get/userText'](state, action) {
+	  return { ...state, loading: true, isSelectContext: {} };
+	},
+	['upload/get/userTest'](state, action) {
+	  return { ...state, loading: true, isSelectContext: {} };
+	},
+	['upload/get/success/isSelectContext'](state, action) {
+		return { ...state, isSelectContext: action.payload, loading: false };
+	},
+
+	['upload/get/userVideoList'](state, action) {
+	  return { ...state, loading: true, isSelectContextList: [] };
+	},
+	['upload/get/userTextList'](state, action) {
+	  return { ...state, loading: true, isSelectContextList: [] };
+	},
+	['upload/get/userTestList'](state, action) {
+	  return { ...state, loading: true, isSelectContextList: [] };
+	},
+	['upload/get/success/isSelectContextList'](state, action) {
+		return { ...state, isSelectContextList: action.payload, loading: false };
+	},
+
 	['upload/post/createCourse'](state, action) {// 一级数据
 		return { ...state, };
 	},
@@ -73,6 +100,7 @@ const upload = handleActions({
 	files: [],
 	token: '',
 	modalState: false,//modal是否被激活
+	loading: false,
 	progress: 0, //可为arayy或int
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
