@@ -8,23 +8,29 @@ from app.recommend.course_recommend import user_similarity_recommend, course_sim
 from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
-import datetime
+from app.main.create_celery import celery
+from manage import redis_conn
+
+redis_timeout = 600
+recommend_count = 3
 
 
 @main.route('/api/recommend/courses/<int:type_id>')
 @user_login_info
-def recommend_course(type_id):
+def recommend_courses(type_id):
     """
     推荐方式:未登录采用热度推荐,登录但是行为很少采用冷启动推荐,登录数据多采用算法(用户相似或者课程相似)推荐
     :param: type_id(采用的推荐算法的类型ItemCf或者UserCf)
     :return: course(json)
     """
+    # 命名 UserCf(id_num_user_course),ItemCf(id_num_item_course)
     user = g.current_user
-    if user is None:
+    if user is None:   # 如果用户未登录、则根据热度推荐
         courses = popular_course()
         return jsonify({
             "count": len(courses),
-            "recommend_courses": [course[0].to_json() for course in courses]
+            "recommend_courses": [course[0].to_json() for course in courses],
+            "status": "successfully"
         })
     else:
         user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
@@ -33,31 +39,55 @@ def recommend_course(type_id):
             courses = code_start_course(user)
             return jsonify({
                 "count": len(courses),
-                "recommend_courses": [course[0].to_json() for course in courses]
+                "recommend_courses": [course[0].to_json() for course in courses],
+                "status": "successfully"
             })
-        else:
+        else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
-                print "user similarity start"
-                t1 = datetime.datetime.utcnow()
-                courses = user_similarity_recommend(user, 10, 3)
-                t2 = datetime.datetime.utcnow()
-                print "speed time %s s" % (t2-t1).seconds
-                return jsonify({
-                    "count": len(courses),
-                    "recommend_courses": [course.to_json() for course in courses]
 
-                })
+                if redis_conn.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
+                    get_course.delay(user, type_id=0)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_courses": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
+
+                else:                                           # 如果缓存中有数据,则直接获取返回
+                    courses = []
+                    for x in range(1, recommend_count+1):
+                        course_name = str(user.id)+"_"+str(x)+"_user_course"
+                        cid = redis_conn.get(course_name)
+                        if cid is not None:
+                            courses.append(Course.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(courses),
+                        "recommend_courses": [course.to_json() for course in courses],
+                        "status": "successfully"
+
+                    })
             else:
-                print "course similarity start"
-                t1 = datetime.datetime.utcnow()
-                courses = course_similarity_recommend(user, 10, 3)
-                t2 = datetime.datetime.utcnow()
-                print "speed time %s s" % (t2-t1).seconds
-                return jsonify({
-                    "count": len(courses),
-                    "recommend_courses": [course.to_json() for course in courses]
+                if redis_conn.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
+                    get_course.delay(user, type_id=1)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_courses": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
 
-                })
+                else:                                           # 如果缓存中有数据,则直接获取返回
+                    courses = []
+                    for x in range(1, recommend_count+1):
+                        course_name = str(user.id)+"_"+str(x)+"_item_course"
+                        cid = redis_conn.get(course_name)
+                        if cid is not None:
+                            courses.append(Course.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(courses),
+                        "recommend_courses": [course.to_json() for course in courses],
+                        "status": "successfully"
+
+                    })
 
 
 @main.route('/api/recommend/text-resources/<int:type_id>')
@@ -68,6 +98,7 @@ def recommend_text_resources(type_id):
     :param: type_id(采用的推荐算法的类型)
     :return: course(json)
     """
+    # 命名 UserCf(id_num_user_resource),ItemCf(id_num_item_resource)
     user = g.current_user
     if user is None:
         resources = popular_text_resource()
@@ -84,63 +115,177 @@ def recommend_text_resources(type_id):
                 "count": len(resources),
                 "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources]
             })
-        else:
+        else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
-                print "t_resources user similarity start"
-                text_resources = text_resources_user_recommend(user, 10, 3)
-                return jsonify({
-                    "count": len(text_resources),
-                    "text_resources_recommend": [t_resource.to_json() for t_resource in text_resources]
-                })
+
+                if redis_conn.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
+                    get_text_resources.delay(user, type_id=0)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_text_resources": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
+
+                else:                                           # 如果缓存中有文本数据,则直接获取返回
+                    resources_list = []
+                    for x in range(1, recommend_count+1):
+                        resource_name = str(user.id)+"_"+str(x)+"_user_resource"
+                        cid = redis_conn.get(resource_name)
+                        if cid is not None:
+                            resources_list.append(TextResource.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(resources_list),
+                        "recommend_text_resources": [t_resource.to_json() for t_resource in resources_list],
+                        "status": "successfully"
+
+                    })
             else:
-                print "t_resources_similarity start"
-                text_resources = text_resources_recommend(user, 10, 3)
-                return jsonify({
-                    "count": len(text_resources),
-                    "text_resources_recommend": [t_resource.to_json() for t_resource in text_resources]
-                })
+                if redis_conn.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
+                    get_text_resources.delay(user, type_id=1)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_text_resources": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
+
+                else:                                           # 如果缓存中有数据,则直接获取返回
+                    resources_list = []
+                    for x in range(1, recommend_count+1):
+                        resource_name = str(user.id)+"_"+str(x)+"_item_resource"
+                        cid = redis_conn.get(resource_name)
+                        if cid is not None:
+                            resources_list.append(Course.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(resources_list),
+                        "recommend_text_resources": [t_resource.to_json() for t_resource in resources_list],
+                        "status": "successfully"
+
+                    })
 
 
 @main.route('/api/recommend/tests/<int:type_id>')
 @user_login_info
 def recommend_test(type_id):
-
     """
     推荐方式:未登录采用热度推荐,登录但是行为很少采用冷启动推荐,登录数据多采用算法(用户相似或者课程相似)推荐
     :param: type_id(采用的推荐算法的类型)
     :return: course(json)
     """
+    # 命名 UserCf(id_num_user_test),ItemCf(id_num_item_test)
     user = g.current_user
     if user is None:
         all_test = popular_test()
         return jsonify({
             "count": len(all_test),
-            "recommend_tests": [test[0].to_json() for test in all_test]
+            "recommend_tests": [test[0].to_json() for test in all_test],
+            "status": "successfully"
         })
     else:
-        user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
+        user_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
         if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             all_test = code_start_test(user)
             return jsonify({
                 "count": len(all_test),
-                "recommend_tests": [test[0].to_json() for test in all_test]
+                "recommend_tests": [test[0].to_json() for test in all_test],
+                "status": "successfully"
             })
         else:
             if type_id == 0:
-                print "test user similarity start"
-                all_tests = test_user_similarity_recommend(user, 10, 3)
-                return jsonify({
-                    "count": len(all_tests),
-                    "recommend_tests": [test.to_json() for test in all_tests]
+                if redis_conn.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
+                    get_tests.delay(user, type_id=0)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_tests": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
 
-                })
+                else:                                           # 如果缓存中有数据,则直接获取返回
+                    tests = []
+                    for x in range(1, recommend_count+1):
+                        test_name = str(user.id)+"_"+str(x)+"_user_test"
+                        cid = redis_conn.get(test_name)
+                        if cid is not None:
+                            tests.append(TestList.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(tests),
+                        "recommend_tests": [test.to_json() for test in tests],
+                        "status": "successfully"
+
+                    })
             else:
-                print "test similarity start"
-                all_tests = test_similarity_recommend(user, 10, 3)
-                return jsonify({
-                    "count": len(all_tests),
-                    "recommend_tests": [test.to_json() for test in all_tests]
+                if redis_conn.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
+                    get_tests.delay(user, type_id=1)
+                    return jsonify({
+                         "count": 0,
+                         "recommend_tests": 0,
+                         "status": 'calc...ing, wait for an hour'
+                    })
 
-                })
+                else:                                           # 如果缓存中有数据,则直接获取返回
+                    tests = []
+                    for x in range(1, recommend_count+1):
+                        test_name = str(user.id)+"_"+str(x)+"_item_test"
+                        cid = redis_conn.get(test_name)
+                        if cid is not None:
+                            tests.append(TestList.query.filter_by(id=cid).first())
+                    return jsonify({
+                        "count": len(tests),
+                        "recommend_tests": [test.to_json() for test in tests],
+                        "status": "successfully"
 
+                    })
+
+
+@celery.task
+def get_tests(user, type_id):
+    user = user
+    type_id = type_id
+    if type_id == 0:  # 根据UserCf计算
+        tests = test_user_similarity_recommend(user, 10, 3)
+        for x in range(1, len(tests)+1):
+            test_name = str(user.id)+"_"+str(x)+"_user_test"
+            redis_conn.set(test_name, tests[x-1].id, redis_timeout)
+        print "test UserCf calc finish"
+    else:     # 根据ItemCf计算
+        tests = test_similarity_recommend(user, 10, 3)
+        for x in range(1, len(tests)+1):
+            test_name = str(user.id)+"_"+str(x)+"_item_test"
+            redis_conn.set(test_name, tests[x-1].id, redis_timeout)
+        print "test ItemCf calc finish"
+
+
+@celery.task
+def get_course(user, type_id):
+    user = user
+    type_id = type_id
+    if type_id == 0:  # 根据UserCf计算
+        courses = user_similarity_recommend(user, 10, 3)
+        for x in range(1, len(courses)+1):
+            course_name = str(user.id)+"_"+str(x)+"_user_course"
+            redis_conn.set(course_name, courses[x-1].id, redis_timeout)
+        print "course UserCf calc finish"
+    else:
+        courses = course_similarity_recommend(user, 10, 3)
+        for x in range(1, len(courses)+1):
+            course_name = str(user.id)+"_"+str(x)+"_item_course"
+            redis_conn.set(course_name, courses[x-1].id, redis_timeout)
+        print "course  ItemCf calc finish"
+
+
+@celery.task
+def get_text_resources(user, type_id):
+    user = user
+    type_id = type_id
+    if type_id == 0:  # 根据UserCf计算
+        text_resources = text_resources_user_recommend(user, 10, 3)
+        for x in range(1, len(text_resources)+1):
+            resource_name = str(user.id)+"_"+str(x)+"_user_resource"
+            redis_conn.set(resource_name, text_resources[x-1].id, redis_timeout)
+        print "resource UserCf calc finish"
+    else:
+        text_resources = text_resources_recommend(user, 10, 3)
+        for x in range(1, len(text_resources)+1):
+            resource_name = str(user.id)+"_"+str(x)+"_item_resource"
+            redis_conn.set(resource_name, text_resources[x-1].id, redis_timeout)
+        print "resource ItemCf calc finish"

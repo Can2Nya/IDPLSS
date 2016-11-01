@@ -34,7 +34,7 @@ def user_similarity_calc(user):
                 if item_target == item_other:
                     repeat_sum += 1
         if repeat_sum != 0:
-            print "user id is %s count is %s " % (u.id, repeat_sum)
+            # print "user id is %s count is %s " % (u.id, repeat_sum)
             w[u.id] = repeat_sum
             w[u.id] /= math.sqrt(len(target_collections)*len(other_collections)*1.0)
     w_sort = sorted(w.iteritems(), key=lambda d: d[1], reverse=True)
@@ -67,21 +67,20 @@ def user_index_calc(user):
             if CourseBehavior.query.filter_by(user_id=u.id, course_id=course.id).first():
                 index_dict[course.id].append(u.id)
                 # continue
-        print 'calc user %s over' % u.id
-    print "index_dict is %s " % index_dict
+        # print 'calc user %s over' % u.id
+    # print "index_dict is %s " % index_dict
     for cid, user_list in index_dict.items():
         for uid in user_list:
             if user_count_dict.get(uid) is None:
                 user_count_dict[uid] = 1
             else:
                 user_count_dict[uid] += 1
-    print "user count dict is %s" % user_count_dict
+    # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
-
         result_dict[uid] = count
         result_dict[uid] /= math.sqrt(len(target_collections*len(CourseBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    print "result dict is %s" % w_sort
+    # print "result dict is %s" % w_sort
     return w_sort, target_collections
 
 
@@ -98,8 +97,8 @@ def user_similarity_recommend(user, k, n):
         similarity_result, target_courses = user_similarity_calc(user)
     else:
         similarity_result, target_courses = user_index_calc(user)
-    print "user collect course is %s" % target_courses
-    print "end result is %s" % similarity_result
+    # print "user collect course is %s" % target_courses
+    # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
     all_courses = Course.query.all()
     calc = 0
@@ -147,7 +146,7 @@ def course_index_pandas_calc(user_courses, _other_users):
         for b in u_behaviors:
             c = Course.query.filter_by(id=b.course_id).first()
             index_dict[u.id].append(c.id)
-        print 'u %s over' % u.id
+        # print 'u %s over' % u.id
     for course in target_user_courses:
         for uid, u_courses_id in index_dict.items():  # 利用倒排表进行数据处理,遍历其它用户有正反馈的课程
             if course.id in u_courses_id:
@@ -188,26 +187,26 @@ def course_similarity_recommend(user, k, n):
     result_dict = dict()
     similarity_data_frame = course_index_pandas_calc(target_collections, other_users)
     for index, course in enumerate(target_collections):
-        print similarity_data_frame.sort_values(by=course.id, ascending=False)
+        # print similarity_data_frame.sort_values(by=course.id, ascending=False)
         no_repeate_list = []
         for y in range(0, k):
             cid = course.id
             r = similarity_data_frame.sort_values(by=cid, ascending=False).iloc[y, index]
-            print r
+            # print r
             if r > 0:
                 result_list = similarity_data_frame[cid][similarity_data_frame[cid] == r].index.tolist()
-                print "result list is %s" % result_list
+                # print "result list is %s" % result_list
                 for i in result_list:  # 数据过滤,清楚重复的索引
                     if i not in no_repeate_list:
                         no_repeate_list.append(i)
-        print "no repe list is %s" % no_repeate_list
+        # print "no repe list is %s" % no_repeate_list
         for r_index in no_repeate_list:     # 根据公式计算每门课程的相似度
             if result_dict.get(r_index) is None:
                 result_dict[r_index] = similarity_data_frame.loc[r_index, course.id]
             else:
                 result_dict[r_index] += similarity_data_frame.loc[r_index, course.id]
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    print w_sort   # 保存排好序的各个课程相似度
+    # print w_sort   # 保存排好序的各个课程相似度
     recommend_courses = []
     for x in w_sort[:n]:
         recommend_courses.append(Course.query.filter_by(id=x[0]).first())
