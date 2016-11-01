@@ -6,8 +6,7 @@ from app.models import User, Role, Follow, Post, PostComment, Course, CourseComm
     TextResourceBehavior
 from tests import CreateDate
 
-
-app = create_app()
+app, redis_conn = create_app()
 manager = Manager(app)
 
 
@@ -17,7 +16,7 @@ def make_shell_context():
                 TextResourceComment=TextResourceComment, TextResource=TextResource,
                 TestList=TestList, TestProblem=TestProblem, AnswerRecord=AnswerRecord,
                 TestRecord=TestRecord, CourseBehavior=CourseBehavior, TestBehavior=TestBehavior,
-                TextResourceBehavior=TextResourceBehavior)
+                TextResourceBehavior=TextResourceBehavior, redis_conn=redis_conn)
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("create_data", CreateDate())

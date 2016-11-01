@@ -10,6 +10,7 @@ from app.utils.model_tools import have_school_permission
 from app.recommend.code_start import code_start_course
 from app.recommend.course_recommend import user_index_calc
 import datetime
+from app.main.create_celery import celery
 
 
 @main.route('/', methods=['GET'])
@@ -18,8 +19,13 @@ def index():
     主页:返回主页需要的一些动态信息,包括视频信息,文本信息,学习方法等
     :return:response
     """
+    # print celery
     # print g.current_user.user_name
-    pass
+    # result = long_time_method.apply_async()
+    long_time_method()
+    return jsonify({
+        "status": 'long time task give to celery'
+    })
 
 
 @main.route('/api/test', methods=['GET'])
@@ -52,12 +58,11 @@ def user_test():
     return self_response('ok')
 
 
-@main.route('/api/time')
-def long_time_def():
+# @celery.task
+def long_time_method():
     t1 = datetime.datetime.utcnow()
     for x in range(1, 100000000):
         pass
     t2 = datetime.datetime.utcnow()
     print "over time is %s" % (t2-t1).seconds
-    return self_response("time over")
 

@@ -2,7 +2,7 @@
 from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
 from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
-    TextResource, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord
+    TextResource, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, CourseBehavior, TextResourceBehavior, TestBehavior
 from app.main.authentication import auth
 from app.main.decorators import permission_required, get_current_user
 from app.utils.responses import self_response
@@ -555,3 +555,39 @@ def self_test_problems(tid):
         "problems": [problem.to_json() for problem in problems]
     })
 
+
+@main.route('/api/user/time-frequency', methods=['GET'])
+@auth.login_required
+@get_current_user
+def time_frequency():
+    """
+    用户学生的集中时间
+    :return:
+    """
+    user = g.current_user
+    w = dict()
+    time_hour_part_1 = ['0']
+    time_hour_part_2 = []
+    for x in range(0, 10):
+        front = '0'
+        time_hour_part_1.append(front+str(x))
+    for t in range(10, 24):
+        time_hour_part_2.append(str(t))
+    time_hour = time_hour_part_1 + time_hour_part_2
+    frequency_dict = w.fromkeys(time_hour, 0)  # 时间频率字典
+    course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
+    resource_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
+    test_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
+    for c_b in course_behaviors:
+        log_time = c_b.timestamp
+        t = log_time.strftime("%H")
+        frequency_dict[t] += 1
+    for r_b in resource_behaviors:
+        log_time = r_b.timestamp
+        t = log_time.strftime("%H")
+        frequency_dict[t] += 1
+    for t_b in test_behaviors:
+        log_time = t_b.timestamp
+        t = log_time.strftime("%H")
+        frequency_dict[t] += 1
+    return jsonify(frequency_dict)
