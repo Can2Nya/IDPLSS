@@ -8,7 +8,7 @@ from app.recommend.course_recommend import user_similarity_recommend, course_sim
 from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
-from manage import redis_conn
+from app import redis_store
 from app import celery
 
 # local val
@@ -73,7 +73,7 @@ def recommend_courses(type_id):
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
 
-                if redis_conn.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
+                if redis_store.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
                     get_course.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
@@ -85,7 +85,7 @@ def recommend_courses(type_id):
                     courses = []
                     for x in range(1, recommend_count+1):
                         course_name = str(user.id)+"_"+str(x)+"_user_course"
-                        cid = redis_conn.get(course_name)
+                        cid = redis_store.get(course_name)
                         if cid is not None:
                             courses.append(Course.query.filter_by(id=cid).first())
                     return jsonify({
@@ -95,7 +95,7 @@ def recommend_courses(type_id):
 
                     })
             else:
-                if redis_conn.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
+                if redis_store.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
                     get_course.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
@@ -107,7 +107,7 @@ def recommend_courses(type_id):
                     courses = []
                     for x in range(1, recommend_count+1):
                         course_name = str(user.id)+"_"+str(x)+"_item_course"
-                        cid = redis_conn.get(course_name)
+                        cid = redis_store.get(course_name)
                         if cid is not None:
                             courses.append(Course.query.filter_by(id=cid).first())
                     return jsonify({
@@ -146,7 +146,7 @@ def recommend_text_resources(type_id):
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
 
-                if redis_conn.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
+                if redis_store.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
                     get_text_resources.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
@@ -158,7 +158,7 @@ def recommend_text_resources(type_id):
                     resources_list = []
                     for x in range(1, recommend_count+1):
                         resource_name = str(user.id)+"_"+str(x)+"_user_resource"
-                        cid = redis_conn.get(resource_name)
+                        cid = redis_store.get(resource_name)
                         if cid is not None:
                             resources_list.append(TextResource.query.filter_by(id=cid).first())
                     return jsonify({
@@ -168,7 +168,7 @@ def recommend_text_resources(type_id):
 
                     })
             else:
-                if redis_conn.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
+                if redis_store.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
                     get_text_resources.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
@@ -180,7 +180,7 @@ def recommend_text_resources(type_id):
                     resources_list = []
                     for x in range(1, recommend_count+1):
                         resource_name = str(user.id)+"_"+str(x)+"_item_resource"
-                        cid = redis_conn.get(resource_name)
+                        cid = redis_store.get(resource_name)
                         if cid is not None:
                             resources_list.append(Course.query.filter_by(id=cid).first())
                     return jsonify({
@@ -220,7 +220,7 @@ def recommend_test(type_id):
             })
         else:
             if type_id == 0:
-                if redis_conn.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
+                if redis_store.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
                     get_tests.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
@@ -232,7 +232,7 @@ def recommend_test(type_id):
                     tests = []
                     for x in range(1, recommend_count+1):
                         test_name = str(user.id)+"_"+str(x)+"_user_test"
-                        cid = redis_conn.get(test_name)
+                        cid = redis_store.get(test_name)
                         if cid is not None:
                             tests.append(TestList.query.filter_by(id=cid).first())
                     return jsonify({
@@ -242,7 +242,7 @@ def recommend_test(type_id):
 
                     })
             else:
-                if redis_conn.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
+                if redis_store.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
                     get_tests.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
@@ -254,7 +254,7 @@ def recommend_test(type_id):
                     tests = []
                     for x in range(1, recommend_count+1):
                         test_name = str(user.id)+"_"+str(x)+"_item_test"
-                        cid = redis_conn.get(test_name)
+                        cid = redis_store.get(test_name)
                         if cid is not None:
                             tests.append(TestList.query.filter_by(id=cid).first())
                     return jsonify({
@@ -273,13 +273,13 @@ def get_tests(user, type_id):
         tests = test_user_similarity_recommend(user, 10, 3)
         for x in range(1, len(tests)+1):
             test_name = str(user.id)+"_"+str(x)+"_user_test"
-            redis_conn.set(test_name, tests[x-1].id, redis_timeout)
+            redis_store.set(test_name, tests[x-1].id, redis_timeout)
         print "test UserCf calc finish"
     else:     # 根据ItemCf计算
         tests = test_similarity_recommend(user, 10, 3)
         for x in range(1, len(tests)+1):
             test_name = str(user.id)+"_"+str(x)+"_item_test"
-            redis_conn.set(test_name, tests[x-1].id, redis_timeout)
+            redis_store.set(test_name, tests[x-1].id, redis_timeout)
         print "test ItemCf calc finish"
 
 
@@ -291,13 +291,13 @@ def get_course(user, type_id):
         courses = user_similarity_recommend(user, 10, 3)
         for x in range(1, len(courses)+1):
             course_name = str(user.id)+"_"+str(x)+"_user_course"
-            redis_conn.set(course_name, courses[x-1].id, redis_timeout)
+            redis_store.set(course_name, courses[x-1].id, redis_timeout)
         print "course UserCf calc finish"
     else:
         courses = course_similarity_recommend(user, 10, 3)
         for x in range(1, len(courses)+1):
             course_name = str(user.id)+"_"+str(x)+"_item_course"
-            redis_conn.set(course_name, courses[x-1].id, redis_timeout)
+            redis_store.set(course_name, courses[x-1].id, redis_timeout)
         print "course  ItemCf calc finish"
 
 
@@ -309,13 +309,13 @@ def get_text_resources(user, type_id):
         text_resources = text_resources_user_recommend(user, 10, 3)
         for x in range(1, len(text_resources)+1):
             resource_name = str(user.id)+"_"+str(x)+"_user_resource"
-            redis_conn.set(resource_name, text_resources[x-1].id, redis_timeout)
+            redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
         print "resource UserCf calc finish"
     else:
         text_resources = text_resources_recommend(user, 10, 3)
         for x in range(1, len(text_resources)+1):
             resource_name = str(user.id)+"_"+str(x)+"_item_resource"
-            redis_conn.set(resource_name, text_resources[x-1].id, redis_timeout)
+            redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
         print "resource ItemCf calc finish"
 
 
