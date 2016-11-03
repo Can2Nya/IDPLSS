@@ -2,7 +2,7 @@
 from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
 from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
-    TextResource, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, CourseBehavior, TextResourceBehavior, TestBehavior
+    TextResource, VideoList, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, CourseBehavior, TextResourceBehavior, TestBehavior
 from app.main.authentication import auth
 from app.main.decorators import permission_required, get_current_user
 from app.utils.responses import self_response
@@ -541,6 +541,20 @@ def self_test():
     return jsonify({
         "count": len(test_list),
         "test_list": [test.to_json() for test in test_list]
+
+    })
+
+
+@main.route('/api/user/self-course/<int:cid>/video', methods=['GET'])
+@auth.login_required
+@get_current_user
+def self_courses_video_list(cid):
+    user = g.current_user
+    course = Course.query.filter_by(id=cid).first()
+    course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id).all()
+    return jsonify({
+        "count": len(course_video),
+        "course_video": [video.to_json() for video in course_video]
     })
 
 
