@@ -15,6 +15,33 @@ redis_timeout = 600
 recommend_count = 3
 
 
+@main.route('/api/recommend/popular-courses', methods=['GET'])
+def popular_courses_recommend():
+    courses = popular_course()
+    return jsonify({
+        "count": len(courses),
+        "recommend_courses": [course[0].to_json() for course in courses]
+    })
+
+
+@main.route('/api/recommend/popular-text-resources', methods=['GET'])
+def popular_resources_recommend():
+    resources = popular_text_resource()
+    return jsonify({
+        "count": len(resources),
+        "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources]
+    })
+
+
+@main.route('/api/recommend/popular-tests', methods=['GET'])
+def popular_tests_recommend():
+    tests = popular_test()
+    return jsonify({
+        "count": len(tests),
+        "recommend_tests": [test[0].to_json() for test in tests]
+    })
+
+
 @main.route('/api/recommend/courses/<int:type_id>')
 @user_login_info
 def recommend_courses(type_id):
@@ -289,3 +316,6 @@ def get_text_resources(user, type_id):
             resource_name = str(user.id)+"_"+str(x)+"_item_resource"
             redis_conn.set(resource_name, text_resources[x-1].id, redis_timeout)
         print "resource ItemCf calc finish"
+
+
+

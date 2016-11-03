@@ -19,12 +19,8 @@ def index():
     主页:返回主页需要的一些动态信息,包括视频信息,文本信息,学习方法等
     :return:response
     """
-    # print celery
-    # print g.current_user.user_name
-    # result = long_time_method.apply_async()
-    long_time_method()
     return jsonify({
-        "status": 'long time task give to celery'
+        "status": 'lindex page'
     })
 
 
@@ -39,30 +35,5 @@ def need_login():
     return test_response('need-login page')
 
 
-@main.route('/api/permission')
-@get_current_user
-def have_permission():
-    user = g.current_user
-    if have_school_permission(user):
-        print "user role is %s rid is %s" % (user.role, user.role_id)
-        return jsonify({"status": "yes have"})
-    else:
-        print "user role is %s rid is %s" % (user.role, user.role_id)
-        return jsonify({"status": "no does not have"})
 
-
-@main.route('/api/user/test')
-@get_current_user
-def user_test():
-    user_index_calc(g.current_user)
-    return self_response('ok')
-
-
-# @celery.task
-def long_time_method():
-    t1 = datetime.datetime.utcnow()
-    for x in range(1, 100000000):
-        pass
-    t2 = datetime.datetime.utcnow()
-    print "over time is %s" % (t2-t1).seconds
 
