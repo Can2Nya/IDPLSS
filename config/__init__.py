@@ -30,6 +30,7 @@ class Config(object):
     CELERY_ACCEPT_CONTENT = CELERY['CELERY_ACCEPT_CONTENT']
     REDIS_IP_ADDRESS = REDIS['REDIS_IP_ADDRESS']
     REDIS_ADDRESS_POST = REDIS['REDIS_ADDRESS_POST']
+    REDIS_URL = REDIS['REDIS_URL']
 
     @staticmethod
     def init_app(app):
