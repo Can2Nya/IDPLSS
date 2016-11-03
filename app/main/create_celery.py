@@ -1,5 +1,4 @@
 # coding:utf-8
-from manage import app
 from celery import Celery
 
 
@@ -21,4 +20,5 @@ def make_celery(app):
     return celery
 
 
+from manage import app
 celery = make_celery(app)
