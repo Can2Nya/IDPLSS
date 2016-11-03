@@ -1,5 +1,5 @@
 # coding:utf-8
-from flask import current_app
+from app import create_app
 from celery import Celery
 
 
@@ -20,5 +20,6 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
+c_app, x = create_app()
 
-celery = make_celery(current_app)
+celery = make_celery(c_app)
