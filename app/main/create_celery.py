@@ -1,4 +1,5 @@
 # coding:utf-8
+from flask import current_app
 from celery import Celery
 
 
@@ -20,5 +21,4 @@ def make_celery(app):
     return celery
 
 
-from manage import app
-celery = make_celery(app)
+celery = make_celery(current_app)
