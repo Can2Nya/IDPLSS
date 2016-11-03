@@ -6,12 +6,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import configs, ENV
 import redis
+from flask_celery import Celery
 
 
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 cors = CORS()
+celery = Celery()
 
 
 def create_app():
@@ -26,6 +28,7 @@ def create_app():
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)
+    celery.init_app(app)
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     redis_pool = redis.ConnectionPool(host=app.config['REDIS_IP_ADDRESS'], port=app.config['REDIS_ADDRESS_POST'], db=0)

@@ -20,6 +20,3 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
-c_app, x = create_app()
-
-celery = make_celery(c_app)
