@@ -10,7 +10,6 @@ from app.utils.model_tools import have_school_permission
 from app.recommend.code_start import code_start_course
 from app.recommend.course_recommend import user_index_calc
 import datetime
-from app.main.create_celery import celery
 
 
 @main.route('/', methods=['GET'])

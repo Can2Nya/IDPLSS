@@ -1,5 +1,5 @@
 # coding:utf-8
-from flask import jsonify, g
+from flask import jsonify, g, current_app
 from app.main import main
 from app.main.decorators import user_login_info
 from app.models import User, Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
@@ -8,11 +8,12 @@ from app.recommend.course_recommend import user_similarity_recommend, course_sim
 from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
-from app.main.create_celery import celery
 from manage import redis_conn
+from app import celery
 
-redis_timeout = 600
-recommend_count = 3
+# local val
+redis_timeout = 600  # 缓存的过期时间
+recommend_count = 3  # 推荐的数量
 
 
 @main.route('/api/recommend/popular-courses', methods=['GET'])
