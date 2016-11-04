@@ -9,7 +9,6 @@ from app.recommend.resource_recommend import text_resources_user_recommend,  tex
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
 from app import redis_store
-from app import celery
 
 # local val
 redis_timeout = 600  # 缓存的过期时间
@@ -74,7 +73,7 @@ def recommend_courses(type_id):
             if type_id == 0:
 
                 if redis_store.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course.delay(user, type_id=0)
+                    get_course(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -96,7 +95,7 @@ def recommend_courses(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course.delay(user, type_id=1)
+                    get_course(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -147,7 +146,7 @@ def recommend_text_resources(type_id):
             if type_id == 0:
 
                 if redis_store.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
-                    get_text_resources.delay(user, type_id=0)
+                    get_text_resources(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -169,7 +168,7 @@ def recommend_text_resources(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
-                    get_text_resources.delay(user, type_id=1)
+                    get_text_resources(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -221,7 +220,7 @@ def recommend_test(type_id):
         else:
             if type_id == 0:
                 if redis_store.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests.delay(user, type_id=0)
+                    get_tests(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -243,7 +242,7 @@ def recommend_test(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests.delay(user, type_id=1)
+                    get_tests(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -265,7 +264,7 @@ def recommend_test(type_id):
                     })
 
 
-@celery.task
+# @celery.task
 def get_tests(user, type_id):
     user = user
     type_id = type_id
@@ -283,7 +282,7 @@ def get_tests(user, type_id):
         print "test ItemCf calc finish"
 
 
-@celery.task
+# @celery.task
 def get_course(user, type_id):
     user = user
     type_id = type_id
@@ -301,7 +300,7 @@ def get_course(user, type_id):
         print "course  ItemCf calc finish"
 
 
-@celery.task
+# @celery.task
 def get_text_resources(user, type_id):
     user = user
     type_id = type_id

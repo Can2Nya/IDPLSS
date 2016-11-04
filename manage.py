@@ -1,6 +1,7 @@
 # coding: utf-8
 from flask_script import Manager, Shell
-from app import create_app, db
+from app import create_app
+from app import db
 from app.models import User, Role, Follow, Post, PostComment, Course, CourseComment, VideoList,  TextResource, \
     TextResourceComment, TestList, TestProblem, AnswerRecord, TestRecord, CourseBehavior, TestBehavior,\
     TextResourceBehavior
