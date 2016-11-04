@@ -1,5 +1,5 @@
 import React, { Compont,PropTypes } from 'react';
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col, Progress } from 'antd';
 import QueueAnim from 'rc-queue-anim';//动画效果
@@ -150,7 +150,11 @@ PlayTest.PropTypes = {
 
 };
 
-function mapStateToProp({ test }){
+function mapStateToProp({ test, user }){
+	const { loginUserList } = user
+	if(loginUserList.length <= 0){
+		browserHistory.push('/login/')
+	}
 	return{
 		test: test,
 	}

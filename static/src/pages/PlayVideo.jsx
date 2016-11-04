@@ -1,5 +1,5 @@
 import React, { Compont,PropTypes } from 'react';
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col } from 'antd';
 import classNames from 'classnames';
@@ -79,7 +79,11 @@ PlayVideo.PropTypes = {
 
 };
 
-function mapStateToProp({ video }){
+function mapStateToProp({ video, user }){
+	const { loginUserList } = user
+	if(loginUserList.length <= 0){
+		browserHistory.push('/login/')
+	}
 	return{
 		video: video,
 	}

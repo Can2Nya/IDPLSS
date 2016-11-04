@@ -10,6 +10,7 @@ import Category from '../pages/Category';
 import Detail from '../pages/Detail';
 import PostDetail from '../pages/PostDetail';
 import Register from '../pages/Register';
+import Login from '../pages/Login';
 import User from '../pages/User';
 import PlayVideo from '../pages/PlayVideo';
 // import PlayText from '../pages/PlayText';
@@ -259,7 +260,9 @@ const Routes = ({ history, dispatch }) =>{
 		</Route>
 		<Route path="/register/" component={Register}>
 		</Route>
-		<Route path="/play/" component={NotFound}>
+		<Route path="/login/" component={Login}>
+		</Route>
+		<Route path="/play/">
 			<Route path="video/:id/" component={PlayVideo}  />
 			{/*<Route path="text/:id/" component={PlayText}  />*/}
 			<Route path="test/:testId/:recordId/" component={PlayTest}  />

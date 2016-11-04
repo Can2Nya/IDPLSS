@@ -194,7 +194,7 @@ function* getUpLoadInfo(action) {
 				if (action.type.search('List') !== -1) {
 					yield put({
 						type: 'upload/get/success/isSelectContextList',
-						payload: '咱这里没api呢！'
+						payload: jsonResult.problems || jsonResult.course_video
 					})	
 				}else{
 					yield put({
@@ -293,7 +293,9 @@ function* watchUpLoadInfo() {
 		'upload/get/token',
 		'upload/get/userVideo',
 		'upload/get/userText',
-		'upload/get/userTest'
+		'upload/get/userTest',
+		'upload/get/userVideoList',
+		'upload/get/userTestList'
 		], getUpLoadInfo)
 }
 function* watchCreateMainData() {

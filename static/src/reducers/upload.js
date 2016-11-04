@@ -8,12 +8,20 @@ const upload = handleActions({
 		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/multiplyPlus'](state, action) {
-		return { ...state, files: [ ...state.files, action.files] };
+		return { ...state, uploadListFiles: [ ...state.uploadListFiles, action.uploadListFiles] };
+		// return { ...state, files: [action.file, ...state.files ] };
+	},
+	['upload/multiplyPlusUploadList'](state, action) {
+		return { ...state, uploadList: [ ...state.uploadList, action.uploadList] };
+		// return { ...state, files: [action.file, ...state.files ] };
+	},
+	['upload/tmpPlus'](state, action) {
+		return { ...state, tmpFile: action.tmpFile };
 		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/multiplyDelete'](state, action) {
-		const newList = state.files.filter(file => file.lastModified != action.lastModified)
-		return { ...state, files: newList };
+		const newList = state.uploadListFiles.filter(file => file.lastModified != action.lastModified)
+		return { ...state, uploadListFiles: newList };
 	},
 	// ------------saga---------------------
 	// redux-saga返回的数据 在user中处理
@@ -40,9 +48,9 @@ const upload = handleActions({
 	['upload/get/userVideoList'](state, action) {
 	  return { ...state, loading: true, isSelectContextList: [] };
 	},
-	['upload/get/userTextList'](state, action) {
-	  return { ...state, loading: true, isSelectContextList: [] };
-	},
+	// ['upload/get/userTextList'](state, action) {
+	//   return { ...state, loading: true, isSelectContextList: [] };
+	// },
 	['upload/get/userTestList'](state, action) {
 	  return { ...state, loading: true, isSelectContextList: [] };
 	},
@@ -87,6 +95,9 @@ const upload = handleActions({
 	['upload/setProgress'](state, action) {
 		return { ...state, progress: action.progress };
 	},
+	['upload/setMultiplyProgress'](state, action) {
+		return { ...state, uploadListProgress: action.uploadListProgress };
+	},
 	['upload/changeMenuItem'](state, action) {
 		return { ...state, isSelectMenuItem: action.item };
 	},
@@ -96,16 +107,29 @@ const upload = handleActions({
 	['upload/changeModalState'](state, action) {
 		return { ...state, modalState: action.modalState };
 	},
+	['upload/changeTime'](state, action) {
+		return { ...state, time: Date.now() };
+	},
 }, {
-	files: [],
+	// 单文件【瞎jb起错名（复数是什么鬼！
+	files: [], //0位置为一级数据，1位为二级数据单文件？？？？【用于修改视频文件作用
+	progress: 0, //可为array或int
 	token: '',
 	modalState: false,//modal是否被激活
 	loading: false,
-	progress: 0, //可为arayy或int
+	
+	// 多文件模式
+	tmpFile:[],//不知道怎么解释了。。。创建时临时存放的文件，事后再添加到列表
+	uploadList: [],// 上传列表的一个包含除了文件还有其他参数
+	uploadListFiles: [],// 文件列表
+	uploadListProgress: [],//可为array或int
+	time: 10010000,// 用时间确定唯一的表单【在uploadqueue中使用，
+	// upload/post/createVideo或problem被触发都更新时间以保证表单被更新
+
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
 	isSelectContextId: 0,// 选择的内容【课程／资料／测试】的id
-	isSelectContext: {},// 选择的内容
+	isSelectContext: {},// 选择的内容[课程／资料／测试]
 	isSelectContextList: [],// 视频，问题
 });
 

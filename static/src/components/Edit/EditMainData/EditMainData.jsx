@@ -2,28 +2,21 @@ import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col, Form, Input, Select, Icon, Progress } from 'antd';
-import Sortable, { SortableContainer } from 'react-anything-sortable';
+import classnames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
-import merged from 'obj-merged'
+import Qiniu from 'react-qiniu'
 
-import config from '../../config/config.js';
-import styles from './EditPannel.less';
-import 'react-anything-sortable/sortable.css';
+import Button from '../../Button/Button';
 
-import Button from '../../components/Button/Button';
+import styles from './EditMainData.less';
 
-import UploadItem from '../../components/Widget/UploadItem/UploadItem';
-import EditMainData from '../../components/Edit/EditMainData/EditMainData';
-import UploadQueue from '../../components/Edit/UploadQueue/UploadQueue';
-
-
-let EditPannel = ({ upload, user, form, dispatch }) => {
-
+let EditMainData = ({ upload, user, form, dispatch }) => {
+	// edit编辑一级数据
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
 	const { files, token, modalState, progress, isSelectMenuItem, isSelectContextId, isSelectContext, isEdit } = upload
 // -----------------form rule-----------------------
-	/*const formItemLayout = {
+	const formItemLayout = {
 		labelCol: { span: 4 },
 		wrapperCol: { span: 20 },
 	};
@@ -127,14 +120,13 @@ let EditPannel = ({ upload, user, form, dispatch }) => {
 				body: body
 			})
 		}
-	}*/
-	const handleChangeEditState = () =>{
-		dispatch({
-			type: 'upload/changeEditState',
-			isEdit: false,
-		})
 	}
-	/*
+	// const handleChangeEditState = () =>{
+	// 	dispatch({
+	// 		type: 'upload/changeEditState',
+	// 		isEdit: false,
+	// 	})
+	// }
 	// --------------render------------------------
 
 	// const renderUploadImgCls= () =>{
@@ -331,53 +323,11 @@ let EditPannel = ({ upload, user, form, dispatch }) => {
 			case '2': return renderText();
 			case '3': return renderTest();
 		}
-	}*/
-	
-	return (
-		<div className={styles.block}>
-		<div className={styles.cuttingLine}>
-		<a>
-		<span onClick={handleChangeEditState}>
-		<Icon type="arrow-left" /> 
-		 返回
-		</span>
-		</a>
-		</div>
+	}
+	return renderUploadPannel()
+}
 
-		<EditMainData />
-		{/*<div className={styles.contain}>
-		<Sortable onSort={handleSort.bind(this)}>
-		<SortableContainer sortData="1" key='1'>
-		<div>
-		<UploadItem data={{title: '这里是1'}} />
-		</div>
-		</SortableContainer>
-		<SortableContainer sortData="2" key='2'>
-		<div>
-		<UploadItem data={{title: '这里是2'}} />
-		</div>
-		</SortableContainer>
-		</Sortable>
-		</div>
-		<Button type='ghost'>添加</Button>
-		<Button type='ghost'>保存列表</Button>*/}
-		{ isSelectMenuItem == 2 ? null : <UploadQueue />}
-		
-		</div>
-	);
-};
-
-EditPannel.propTypes = {
-	//children: PropTypes.element.isRequired,
-};
-// function mapPropToFields(upload){
-// 	console.log(upload)
-// 	return{
-
-// 	}
-// }
-
-EditPannel = Form.create()(EditPannel)
+EditMainData = Form.create()(EditMainData);
 
 function mapStateToProp({ upload, user }){
 	return{
@@ -386,4 +336,4 @@ function mapStateToProp({ upload, user }){
 	};
 }
 
-export default connect(mapStateToProp)(EditPannel);
+export default connect(mapStateToProp)(EditMainData);
