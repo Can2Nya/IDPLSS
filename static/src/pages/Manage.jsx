@@ -1,5 +1,5 @@
 import React, { Compont,PropTypes } from 'react';
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col, Icon, Tabs, Menu, Pagination, Modal, Spin } from 'antd';
 import QueueAnim from 'rc-queue-anim';
@@ -41,24 +41,28 @@ const Manage = ({ upload, user, dispatch, location }) => {
 			type: action,
 			pagination: 1
 		})
+		dispatch({
+			type: 'upload/changeEditState',
+			isEdit: false,
+		})
 	}
 
 	const handleChangeEditState = (id) =>{
 		let action = 'upload/get/user';
 		if(isSelectMenuItem == '1') {
 			action += 'Video'
-			// dispatch({
-			// 	type:'upload/get/userVideoList',
-			// 	id: id
-			// })
+			dispatch({
+				type:'upload/get/userVideoList',
+				id: id
+			})
 		}
 		if(isSelectMenuItem == '2') action += 'Text'
 		if(isSelectMenuItem == '3') {
 			action += 'Test'
-			// dispatch({
-			// 	type:'upload/get/userTextList',
-			// 	id: id
-			// })
+			dispatch({
+				type:'upload/get/userTestList',
+				id: id
+			})
 		}
 		dispatch({
 			type: action,//zheli yaogai
@@ -167,10 +171,12 @@ const Manage = ({ upload, user, dispatch, location }) => {
 	const renderIsEdit = ()=>{
 		return isEdit ? [
 		<div className={styles.relative} key='2'>
+		<div className={styles.displayBlock}>
 		<EditPannel onBackClick={handleChangeEditState.bind(this)}/>
+		</div>
 		</div> ] : [
 		<div className={styles.relative} key='1'>
-		<div style={{minHeight: "500px"}}>
+		<div className={styles.displayBlock}>
 			<UploadButton 
 						type={isSelectMenuItem}
 						token={token}
@@ -243,6 +249,10 @@ Manage.PropTypes = {
 };
 
 function mapStateToProp({ upload, user }){
+	// const { loginUserList } = user
+	// if(loginUserList.length <= 0){
+	// 	browserHistory.push('/login/')
+	// }
 	return{
 		upload: upload,
 		user: user

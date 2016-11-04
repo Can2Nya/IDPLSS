@@ -84,10 +84,12 @@ export async function UserUpLoadInfo(action) {
 	let url = `${apiUrl}/api/`
 	if(action.type == 'upload/get/token') url += 'user/qiniu-token'
 	else{
-		if(action.type == 'upload/get/userVideo') url+= `courses/detail/`;
-		if(action.type == 'upload/get/userText') url += `text-resources/`; 
-		if(action.type == 'upload/get/userTest') url+= `test-list/detail/`;
-		url += `${action.id}`
+		if(action.type == 'upload/get/userVideo') url+= `courses/detail/${action.id}`;
+		if(action.type == 'upload/get/userText') url += `text-resources/${action.id}`; 
+		if(action.type == 'upload/get/userTest') url+= `test-list/detail/${action.id}`;
+		if(action.type == 'upload/get/userVideoList') url+= `user/self-course/${action.id}/video`;
+		if(action.type == 'upload/get/userTestList') url+= `user/${action.id}/self-test-problems`;
+		// url += `${action.id}`
 	}
 	return xFetch(url,{method: 'GET',});
 }

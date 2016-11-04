@@ -1,44 +1,35 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Input } from 'antd';
 import classNames from 'classnames';
 
-import styles from './TestCover.less';
+import styles from './SubjectivityTest.less';
 
-const TestCover = ({ type, data }) => {
-	const coverCls = () =>{
-		/*if(type == 'small') return styles.small;
-		if(type == 'big') return styles.big;*/
-		return classNames({
-			[styles[type]]:true,
-		})
-	};
-
-	const renderTestCover = () =>{
-		if (type == 'small') return <div className={styles.title}>试题题目</div>
-			;
-		if (type == 'big') return <Row>
-			<Col lg={21} span={18}>
-			<div className={styles.title}>{data.test_title}</div>
-			<div className={styles.subtitle}>{data.author_name}</div>
-			</Col>
-			<Col lg={3} span={6}>
-			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/comment/'}}>
-			<Button className={styles.button}>开始测试</Button>
-			</Link>
-			</Col>
-			</Row>
-		;
+const SubjectivityTest = ({ status, data, onChange, value }) => {
+	const renderProblemStatus = () =>{
+		if(status !== undefined){
+			return status ? (
+				<Icon type="check-circle" />
+			):(
+				<Icon type="cross-circle" />
+			)
+		}
 	}
 	return (
-		<div className={coverCls()}>
-			{renderTestCover()}
+		<div className={styles.selectTest}>
+			<div className={styles.title}>
+			Q1: xxxxxxxxxxwendiwenti
+			<span>
+			{ renderProblemStatus() }
+			</span>
+			</div>
+			<Input type='textarea' />
 		</div>
 	);
 };
 
-TestCover.propTypes = {  
+SubjectivityTest.propTypes = {  
 	
 };
 
-export default TestCover;
+export default SubjectivityTest;

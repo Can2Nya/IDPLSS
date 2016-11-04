@@ -24,7 +24,7 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 		},
 		{
 			id: 3,
-			pathname: ['play','user']
+			pathname: ['play','user','login']
 		},]
 
 	const layoutId = () =>{
