@@ -60,6 +60,12 @@ const forum = handleActions({
 	// 	isSelectContext: { ...state.isSelectContext, id: action.id, loading: true, },
 	// 	};
 	// },
+	// ['forum/post/detail'](state, action) {
+	// 	// 触发此action需要body
+	// 	return { 
+	// 	...state, 
+	// 	};
+	// },
 	['forum/get/detail'](state, action) {
 		// 触发此action需要id
 		return { 
@@ -164,6 +170,7 @@ const forum = handleActions({
 		comment: [],//课程评论列表
 	},//选定的内容
 	loading: false,//加载中
+	// time: Date.now(),//表单惟一
 });
 
 export default forum;

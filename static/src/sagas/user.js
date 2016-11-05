@@ -226,6 +226,7 @@ function* postCreateMainData(action) {
 			if(action.type == 'upload/post/createCourse') nextAction += 'Video'
 			if(action.type == 'upload/post/createText') nextAction += 'Text'
 			if(action.type == 'upload/post/createTest') nextAction += 'Test'
+			if(action.type == 'upload/post/createPost') nextAction =  `forum/get/categorySource`
 			yield put({
 				type: nextAction,
 				pagination: 1
@@ -303,6 +304,7 @@ function* watchCreateMainData() {
 		'upload/post/createCourse',
 		'upload/post/createText',
 		'upload/post/createTest',
+		'upload/post/createPost',
 		'upload/put/createCourse',
 		'upload/put/createText',
 		'upload/put/createTest'

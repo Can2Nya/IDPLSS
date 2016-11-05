@@ -23,7 +23,7 @@ const MidNav = () => {
 							<Button><Link to="/">首页</Link></Button>
 							</Col>
 							<Col span={3}>
-							<Button><Link to={{ pathname:`/category/text/`}}>文库</Link></Button>
+							<Button><Link to={{ pathname:`/category/text/`}}>文库中心</Link></Button>
 							</Col>
 							<Col span={3}>
 							<Button><Link to={{ pathname:`/category/test/`}}>在线测试</Link></Button>

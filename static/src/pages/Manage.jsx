@@ -205,7 +205,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 
 	return (
 		<Layout location={location}>
-			<CommentContext title="稿件管理中心">
+			<CommentContext title="资源管理中心">
 				<Row gutter={16}>
 					<Col span={4}>
 						<Menu onClick={handleChangeMenuItem.bind(this)}
@@ -219,11 +219,11 @@ const Manage = ({ upload, user, dispatch, location }) => {
 							<Menu.Item key="2">文本资料管理</Menu.Item>
 							<Menu.Item key="3">试题测验管理</Menu.Item>
 						</Menu.SubMenu>
-						<Menu.SubMenu key="sub2" title={<span><Icon type="appstore" /><span>评论管理</span></span>}>
+						{/*<Menu.SubMenu key="sub2" title={<span><Icon type="appstore" /><span>评论管理</span></span>}>
 							<Menu.Item key="5">课程视频</Menu.Item>
 							<Menu.Item key="6">文本资料</Menu.Item>
 							<Menu.Item key="7">试题测验</Menu.Item>
-						</Menu.SubMenu>
+						</Menu.SubMenu>*/}
 					  </Menu>
 					</Col>
 					<Col span={16} offset={2}>

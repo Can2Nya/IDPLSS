@@ -27,7 +27,7 @@ const TopNav = ({ config }) => {
 				</div>
 				<div className={styles.col}
 				>
-				<Link to={{ pathname:`/category/text/`}} activeClassName={styles.active}><Button>文库</Button></Link>
+				<Link to={{ pathname:`/category/text/`}} activeClassName={styles.active}><Button>文库中心</Button></Link>
 				</div>
 				<div className={styles.col}
 				>
@@ -44,9 +44,9 @@ const TopNav = ({ config }) => {
 				<div className={styles.col}>
 					<Search />
 				</div>
-				<div className={styles.col}  style={{marginLeft:'30px'}}>
+				{/*<div className={styles.col}  style={{marginLeft:'30px'}}>
 					<Massage />
-				</div>
+				</div>*/}
 				<div className={styles.col}>
 					<User />
 				</div>

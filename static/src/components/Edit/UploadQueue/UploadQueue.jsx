@@ -92,6 +92,9 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				tmpFile: []
 			})
 			dispatch({
+				type: 'upload/changeTime',
+			})
+			dispatch({
 			type: 'upload/changeModalState',
 			modalState: false
 		})
@@ -207,7 +210,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					rules: [
 						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
-				})} type="textarea" />
+				})} type="textarea" rows={6}/>
 			</Form.Item>
 			</div>
 		)
@@ -215,7 +218,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 	const renderCourse = ()=>{
 		return(
 			<Modal title="添加视频" 
-			width={700}
+			width={900}
 			visible={modalState} 
 			onOk={handleAdd.bind(this)} onCancel={handleChangeModalState.bind(this)}
 			>
@@ -241,7 +244,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				</Qiniu>
 				</a>
 				<Input type='text' 
-				{...getFieldProps('file-Course-${time}', {
+				{...getFieldProps(`file-Course-${time}`, {
 						// initialValue: fileValue(),
 						rules: [
 							{ required: true },
@@ -262,7 +265,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 	const renderTest = ()=>{
 		return(
 			<Modal title="添加问题" 
-			width={700}
+			width={900}
 			visible={modalState} 
 			onOk={handleAdd.bind(this)} onCancel={handleChangeModalState.bind(this)}
 			>
@@ -288,7 +291,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				</Qiniu>
 				</a>
 				<Input type='text' 
-				{...getFieldProps('file-Test-${time}', {
+				{...getFieldProps(`file-Test-${time}`, {
 						// initialValue: fileValue(),
 						rules: [
 							{ required: true },

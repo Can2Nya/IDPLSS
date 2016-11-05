@@ -155,7 +155,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 					rules: [
 						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
-				})} type="textarea" />
+				})} type="textarea" rows={6}/>
 			</Form.Item>
 			<Form.Item
 			{...formItemLayout}
@@ -184,7 +184,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 		<div>
 		<Button type='ghost' onClick={onButtonClick}>创建课程</Button>
 		<Modal title="创建课程" 
-		width={700}
+		width={900}
 		visible={modalState} 
 		onOk={handlePreSubmitData.bind(this,"Course")} onCancel={onCancel}
 		>
@@ -235,7 +235,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 		<div>
 		<Button type='ghost' onClick={onButtonClick}>上传资料</Button>
 		<Modal title="上传资料" 
-		width={700}
+		width={900}
 		visible={modalState} 
 		onOk={handlePreSubmitData.bind(this,"Text")} onCancel={onCancel}
 		>
@@ -285,7 +285,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 		<div>
 		<Button type='ghost' onClick={onButtonClick}>创建测试</Button>
 		<Modal title="创建测试" 
-		width={700}
+		width={900}
 		visible={modalState} 
 		onOk={handlePreSubmitData.bind(this,"Test")} onCancel={onCancel}
 		>
