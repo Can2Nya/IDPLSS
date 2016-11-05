@@ -24,11 +24,11 @@ function* getTestCategorySource(action) {
 }
 function* getTestRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTestCategory, action);
+		const { jsonResult } = yield call(req.getTestRecommend, action);
 		if (jsonResult) {
 			yield put({
 				type: 'test/get/success/recommend',
-				payload: jsonResult,
+				payload: jsonResult.recommend_tests || jsonResult.recommend_tests,
 			});
 		}
 	} catch (err) {

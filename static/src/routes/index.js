@@ -23,6 +23,19 @@ import Manage from '../pages/Manage';
 const Routes = ({ history, dispatch }) =>{
 	//initPageStore(history,dispatch);
 	history.listen(({ pathname, hash }) =>{
+
+		// index init-----------------
+		if(pathname.search('index')!== -1){
+			dispatch({
+				type: 'video/get/recommend'
+			})
+			dispatch({
+				type: 'test/get/recommend'
+			})
+			dispatch({
+				type: 'text/get/recommend'
+			})
+		}
 		
 		// 注册初始化------------------
 		if(pathname.search('register')!== -1){

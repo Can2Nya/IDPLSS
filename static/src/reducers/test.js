@@ -41,8 +41,7 @@ const test = handleActions({
 	['test/get/success/recommend'](state, action) {
 		return { 
 			...state,
-			recommend: { ...state.recommend, list: action.payload.test_list, loading: false },
-			total: action.payload.count,
+			recommend: { ...state.recommend, list: action.payload, loading: false },
 		}
 	},
 	['test/get/failed/recommend'](state, action) {

@@ -10,6 +10,9 @@ export async function getTestCategory(action) {
 	else url = apiUrl+'/api/test-list?page='+data['pagination']
   	return xFetch(url,{method: 'GET',});
 }
+export async function getTestRecommend(action) {
+	return xFetch(`${apiUrl}/api/recommend/popular-tests`,{method: 'GET',});
+}
 export async function getTestDetail(action) {
 	return xFetch(`${apiUrl}/api/test-list/detail/${action.id}`,{method: 'GET',});
 }

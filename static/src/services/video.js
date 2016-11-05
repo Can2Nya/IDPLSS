@@ -10,6 +10,9 @@ export async function getVideoCategory(action) {
 	else url = apiUrl+'/api/courses?page='+data['pagination']
   	return xFetch(url,{method: 'GET',});
 }
+export async function getVideoRecommend(action) {
+	return xFetch(`${apiUrl}/api/recommend/popular-courses`,{method: 'GET',});
+}
 export async function getVideoDetail(action) {
 	return xFetch(`${apiUrl}/api/courses/detail/${action.id}`,{method: 'GET',});
 }
