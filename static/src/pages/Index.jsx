@@ -21,7 +21,9 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
-				return <VideoCover data={data} key={index} />
+				return <Col span={6} lg={4} key={index}>
+				<VideoCover data={data}  type='small'/>
+				</Col>
 			})
 		}
 	}
@@ -31,7 +33,9 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
-				return <TextCover data={data} type='big' key={index} />
+				return <Col span={6} lg={4} key={index}>
+				<TextCover wordtype={data.resource_type} data={data} type='big' />
+				</Col>
 			})
 		}
 	}
@@ -41,7 +45,9 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
-				return <TestCover data={data} type='big' key={index} />
+				return <Col span={24} key={index}>
+				<TestCover data={data} type='big' />
+				</Col>
 			})
 		}
 	}
@@ -53,19 +59,25 @@ const Index = ({ video, text, test, location }) => {
 			<Title type='big'  title='推荐课程' />
 			</div>
 			<div className={styles.margin}>
+			<Row gutter={16} type="flex" align="middle">
 			{ renderVideoList() }
+			</Row>
 			</div>
 			<div className={styles.marginCenter}>
 			<Title type='big'  title='推荐文档' />
 			</div>
 			<div className={styles.margin}>
+			<Row gutter={16} type="flex" align="middle">
 			{ renderTextList() }
+			</Row>
 			</div>
 			<div className={styles.marginCenter}>
 			<Title type='big'  title='真题测试' />
 			</div>
 			<div className={styles.margin}>
+			<Row gutter={16} type="flex" align="middle">
 			{ renderTestList() }
+			</Row>
 			</div>
 		</div>
 		</Layout>

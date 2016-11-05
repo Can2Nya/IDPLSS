@@ -42,8 +42,7 @@ const video = handleActions({
 	['video/get/success/recommend'](state, action) {
 		return { 
 			...state,
-			recommend: { ...state.recommend, list: action.payload.courses, loading: false },
-			total: action.payload.count,
+			recommend: { ...state.recommend, list: action.payload, loading: false },
 		}
 	},
 	['video/get/failed/recommend'](state, action) {
