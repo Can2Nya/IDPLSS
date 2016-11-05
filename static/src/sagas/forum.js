@@ -75,7 +75,7 @@ function* getForumDetailCommentSource(action) {
 		const { jsonResult } = yield call(req.getForumDetailList, action);
 		if (jsonResult) {
 			yield put({
-				type: 'forum/get/success/recommend',
+				type: 'forum/get/success/comment',
 				payload: jsonResult,
 			});
 		}

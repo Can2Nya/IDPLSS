@@ -33,12 +33,14 @@ const forum = handleActions({
 	},
 
 	['forum/get/recommend'](state, action) {
+		console.log('1')
 		return { 
 		...state, 
 		recommend: { ...state.recommend, loading: true, },
 		};
 	},
 	['forum/get/success/recommend'](state, action) {
+		console.log(action)
 		return { 
 			...state,
 			recommend: { ...state.recommend, list: action.payload.posts, loading: false },
@@ -104,6 +106,7 @@ const forum = handleActions({
 		};
 	},
 	['forum/get/success/comment'](state, action) {
+		console.log('2')
 		return { 
 			...state,
 			isSelectContext: { 

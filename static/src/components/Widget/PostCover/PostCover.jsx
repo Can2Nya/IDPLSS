@@ -4,6 +4,7 @@ import { Row, Col } from 'antd';
 import classNames from 'classnames';
 
 import styles from './PostCover.less';
+import config from '../../../config/config.js'
 
 const PostCover = ({ type, commenttype, data }) => {
 	const coverCls = () =>{
@@ -33,7 +34,7 @@ const PostCover = ({ type, commenttype, data }) => {
 			<div className={styles.title}>{ data.title }</div>
 			</Link>
 			<div style={{ margin: '15px 0 0 0'}}>
-				<div className={styles.avatar}></div>
+				<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} ><div className={styles.avatar} style={{backgroundImage: `url(${config.qiniu}/${data.author_avatar})`}}></div></Link>
 				<span className={styles.username}>{ data.author_name } at { data.timestamp }</span>
 			</div>
 			</Col>

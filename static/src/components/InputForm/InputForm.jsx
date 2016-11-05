@@ -4,6 +4,7 @@ import { Row, Col, Button, Form, Input } from 'antd';
 import classNames from 'classnames';
 
 import styles from './InputForm.less';
+import config from '../../config/config.js'
 
 let InputForm = ({ form, user, onSubmit }) => {
 	const { getFieldProps, validateFields, getFieldValue, getFieldsValue } = form;
@@ -14,7 +15,7 @@ let InputForm = ({ form, user, onSubmit }) => {
 		],
 	});
 	const renderUserAvatar = ()=> {
-		if(user.loginUserList['user_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${user.loginUserList['user_avatar']})`}}></div>
+		if(user.loginUserList['user_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${config.qiniu}/${user.loginUserList['user_avatar']})`}}></div>
 		else return <div className={styles.avatar}></div>
 	}
 

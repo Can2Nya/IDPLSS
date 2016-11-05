@@ -11,7 +11,7 @@ const test = handleActions({
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false}
 	},
 	['test/get/categorySource'](state, action) {
-		data['category'] = state.isSelectCategory;
+		data['category'] = state.isSelectCategory - 1;
 		data['pagination'] = state.isSelectPagination;
 		return { 
 		...state, 

@@ -23,11 +23,10 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 	}
 
 	const handleSubmitPost = () =>{//post表单发送
-		validateFields([`title-${time}`,`postCategory-${time}`,`detail-${time}`,`file-${time}`],(errors, values) =>{
+		validateFields([`title-${time}`,`postCategory-${time}`,`detail-${time}`],(errors, values) =>{
 			if(errors){
 				return ;
 			}
-			console.log(getFieldValue(`file-${time}`))
 			let images = ''
 			if(getFieldValue(`file-${time}`).length > 0){
 				getFieldValue(`file-${time}`).map((value,index) => {
