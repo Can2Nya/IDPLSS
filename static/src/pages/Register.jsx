@@ -190,8 +190,8 @@ let Register = ({ dispatch, location, form, user }) => {
 					</Col>
 					<Col span={4}>
 					<Radio.Group onChange={handleIsAllowStepChange.bind(this)} defaultValue='false' className={styles.float} style={{display:'block'}}>
-						<Radio key='1' value={false} style={{ display: 'block',height: '30px',lineHeight: '30px',}}>咱不同意</Radio>
-						<Radio key='2' value={true} style={{ display: 'block',height: '30px',lineHeight: '30px',}}>咱同意</Radio>
+						<Radio key='1' value={false} style={{ display: 'block',height: '30px',lineHeight: '30px',}}>我不同意</Radio>
+						<Radio key='2' value={true} style={{ display: 'block',height: '30px',lineHeight: '30px',}}>我同意</Radio>
 					</Radio.Group>
 					<Button type='ghost' onClick={handleStepUp.bind(this)} >
 					下一步

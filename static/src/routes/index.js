@@ -59,6 +59,11 @@ const Routes = ({ history, dispatch }) =>{
 					pagination: 1,
 				})
 			}
+			if(context == 'forum'){
+				dispatch({
+					type: 'upload/get/token'
+				})
+			}
 			dispatch({
 				type: `${context}/get/categorySource`
 			})
@@ -98,32 +103,6 @@ const Routes = ({ history, dispatch }) =>{
 					pagination: match[2]
 				})
 			}
-			
-			// dispatch({
-			// 	type: `${context}/init/detail`,
-			// 	id: id,
-			// })
-			// if(hash){
-			// 	// 除了论坛都有hash
-			// 	const matchHash = pathToRegexp('#!/:fuc/:pagination').exec(hash)
-			// 	const fuc = matchHash[1]
-			// 	// dispatch({
-			// 	// 	type: `${context}/init/detail`,
-			// 	// 	id: id,
-			// 	// 	fuc: fuc,
-			// 	// })
-			// 	dispatch({
-			// 		type: `${context}/get/${fuc}`,
-			// 		id: id,
-			// 		pagination: matchHash[2]
-			// 	})
-			// }else{
-			// 	dispatch({
-			// 		type: 'forum/get/comment',
-			// 		id: id,
-			// 		pagination: match[2]
-			// 	})
-			// }
 		}
 		// -------------end--------------------
 		// -test problem init------------------

@@ -50,19 +50,20 @@ const Category = ({ location, dispatch, context }) => {
 	}
 	//end----------------------------------------
 	//forum表单------------------------------------
-	const handleToggleForumModal = () =>{//表单modal显示
-		const { modalState } = context;
-		dispatch({
-			type: `forum/ToggleForumModal`,
-			modalState: modalState
-		})
-	}
+	// const handleToggleForumModal = () =>{//表单modal显示
+	// 	const { modalState } = context;
+	// 	dispatch({
+	// 		type: `forum/ToggleForumModal`,
+	// 		modalState: modalState
+	// 	})
+	// }
 
-	const handleSubmitPost = () =>{//post表单发送
-		dispatch({
-			type: `forum/SubmitPost`
-		})
-	}
+	// const handleSubmitPost = () =>{//post表单发送
+	// 	dispatch({
+	// 		type: 'forum/post/detail',
+	// 		body: {body: }
+	// 	})
+	// }
 	//end----------------------------------------
 	//text---------------------------------------
 	const handleToggleTextType = (value) =>{
@@ -132,13 +133,7 @@ const Category = ({ location, dispatch, context }) => {
 	const forumExetend = () =>{
 		if(stateName == 'forum') return (
 			<div className={styles.margin}>
-			<PostForm 
-			onClick={handleToggleForumModal.bind(this)}
-			onCancel={handleToggleForumModal.bind(this)} 
-			onOk={handleSubmitPost.bind(this)}
-			 confirmLoading={context.isPostForm}
-			  visible={context.modalState}
-			  />
+			<PostForm />
 			 </div>
 			 );
 	}

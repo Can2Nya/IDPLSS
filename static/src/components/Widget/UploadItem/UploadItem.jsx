@@ -11,6 +11,7 @@ let UploadItem = ({ upload, user, dispatch, data }) => {
 	// data为editpannel传入的数据【不然咱自己有要遍历列表
 	const { loginUserList, userZoneList, total } = user
 	const { uploadListProgress, uploadListFiles, token, modalState, progress, isSelectMenuItem } = upload
+	console.log(data)
 	// -----------form rule-----------------
 	const formItemLayout = {
 		labelCol: { span: 4 },

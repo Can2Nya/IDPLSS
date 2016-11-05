@@ -100,6 +100,7 @@ export async function UserCreateMainData(action) {
 	if(action.type.search('createCourse') !== -1) url += 'courses/new-course'
 	if(action.type.search('createText') !== -1) url += 'text-resources/new-resource'
 	if(action.type.search('createTest') !== -1) url += 'test-list/new-test'
+	if(action.type.search('createPost') !== -1)	url += 'posts/new-post'
 	return xFetch(url,{method: 'POST' ,body:JSON.stringify(action.body)});
 }
 export async function UserPutMainData(action) {

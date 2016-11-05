@@ -8,7 +8,8 @@ const upload = handleActions({
 		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/multiplyPlus'](state, action) {
-		return { ...state, uploadListFiles: [ ...state.uploadListFiles, action.uploadListFiles] };
+		let newList = state.uploadListFiles.concat(action.uploadListFiles)
+		return { ...state, uploadListFiles: newList };
 		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/multiplyPlusUploadList'](state, action) {
@@ -73,6 +74,10 @@ const upload = handleActions({
 	['upload/post/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
+	['upload/post/createPost'](state, action) {// 一级数据
+		return { ...state, };
+	},
+
 	['upload/put/createCourse'](state, action) {// 一级数据
 		return { ...state, };
 	},
@@ -88,6 +93,7 @@ const upload = handleActions({
 	['upload/put/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
+
 	// --------------状态-------------------
 	['upload/init'](state, action) {
 		return { ...state, files: [] };
@@ -123,7 +129,7 @@ const upload = handleActions({
 	uploadList: [],// 上传列表的一个包含除了文件还有其他参数
 	uploadListFiles: [],// 文件列表
 	uploadListProgress: [],//可为array或int
-	time: 10010000,// 用时间确定唯一的表单【在uploadqueue中使用，
+	time: Date.now(),// 用时间确定唯一的表单【在uploadqueue中使用，
 	// upload/post/createVideo或problem被触发都更新时间以保证表单被更新
 
 	isSelectMenuItem: '1',

@@ -10,13 +10,20 @@ export async function getForumCategory(action) {
 }
 
 export async function getForumDetail(action) {
-	return xFetch(`${apiUrl}/api/posts/${action.id}`,{method: 'GET',});
+	let url = `${apiUrl}/api/posts/` + action.id
+	return xFetch(url,{method: 'GET',});
 }
 
 export async function getForumDetailList(action) {//获取所有评论
 	let url = `${apiUrl}/api/posts/${action.id}/comments?page=${action.pagination}`;
 	return xFetch(url,{method: 'GET',});
 }
+
+// export async function postForumDetail(action) {//发布帖子
+// 	return xFetch(`${apiUrl}/api/posts/new-post`,{method: 'POST',
+// 		body: JSON.stringify(action.body),
+// 	});
+// }
 
 export async function postForumDetailComment(action) {//对帖子评论
 	return xFetch(`${apiUrl}/api/posts/${action.id}/new-comment`,{method: 'POST',

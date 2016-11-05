@@ -57,12 +57,25 @@ function* getForumDetailSource(action) {
 	}
 }
 
+// function* postForumDetailSource(action) {
+// 	try {
+// 		const { jsonResult } = yield call(req.postForumDetail, action);
+// 		if (jsonResult) {
+// 			yield put({
+// 				type: 'forum/get/categorySource',
+// 			});
+// 		}
+// 	} catch (err) {
+// 		message.error('创建失败');
+// 	}
+// }
+
 function* getForumDetailCommentSource(action) {
 	try {
 		const { jsonResult } = yield call(req.getForumDetailList, action);
 		if (jsonResult) {
 			yield put({
-				type: 'forum/get/success/comment',
+				type: 'forum/get/success/recommend',
 				payload: jsonResult,
 			});
 		}
@@ -117,6 +130,9 @@ function* watchForumRecommendGet() {
 function* watchForumDetailGet() {
 	yield takeLatest('forum/get/detail', getForumDetailSource)
 }
+// function* watchForumDetailPost() {
+// 	yield takeLatest('forum/post/detail', postForumDetailSource)
+// }
 function* watchForumDetailListGet() {
 	yield takeLatest('forum/get/comment', getForumDetailCommentSource)
 }
@@ -131,6 +147,7 @@ export default function* () {
 	yield fork(watchForumCategorySourceGet);
 	yield fork(watchForumRecommendGet)
 	yield fork(watchForumDetailGet)
+	// yield fork(watchForumDetailPost)
 	yield fork(watchForumDetailListGet)
 	yield fork(watchForumDetailCommentPost)
 	yield fork(watchForumDetailCommentDelete)
