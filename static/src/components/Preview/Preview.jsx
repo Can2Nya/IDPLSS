@@ -4,6 +4,7 @@ import { Row, Col, Button } from 'antd';
 import classNames from 'classnames';
 
 import styles from './Preview.less';
+import config from '../../config/config.js'
 
 const Preview = ({ type, data }) => {
 	const PreviewCls = () =>{
@@ -30,15 +31,20 @@ const Preview = ({ type, data }) => {
 
 	const renderButton = () =>{
 		if(type == 'text'){
+			if(data.resource_type == 3){
+				return (
+					<Row gutter={8}>
+					<Col span={16}>
+						<a href={`${data.source_url}`}><Button className={styles.button}>预览</Button></a>
+					</Col>
+					<Col span={8}>
+						<a href={`${data.source_url}`} download={`${data.source_url}`}><Button className={styles.button}>下载</Button></a>
+					</Col>
+					</Row>
+				)
+			}
 			return (
-				<Row gutter={8}>
-				<Col span={16}>
-					<Button className={styles.button}>立即参加</Button>
-				</Col>
-				<Col span={8}>
-					<Button className={styles.button}>下载</Button>
-				</Col>
-				</Row>
+				<a href={`${data.source_url}`} download={`${data.source_url}`}><Button className={styles.button}>下载</Button></a>
 			)
 		}
 		else return(

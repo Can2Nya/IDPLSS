@@ -4,11 +4,12 @@ import { Row, Col } from 'antd';
 import classNames from 'classnames';
 
 import styles from './Comment.less';
+import config from '../../config/config.js'
 
 const Comment = ({ user, data, onDelete }) => {
 	// user={authorid,loginid,logintype}
 	const renderUserAvatar = ()=> {
-		if(data['author_avatar']) return <div className={styles.avatar} style={{ backgroundImage: `url(${data['author_avatar']})`}}></div>
+		if(data['author_avatar']) return <Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} ><div className={styles.avatar} style={{ backgroundImage: `url(${config.qiniu}/${data.author_avatar})`}}></div></Link>
 		else return <div className={styles.avatar}></div>
 	}
 	const renderDeleteButton = () =>{
@@ -24,8 +25,12 @@ const Comment = ({ user, data, onDelete }) => {
 					{ renderUserAvatar() }
 					</Col>
 					<Col span={21} lg={22}>
-					<div className={styles.username}>{data['author_name']} <span>{data['timestamp']}</span>
+					<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >
+					<div className={styles.username}>
+					{data['author_name']}
 					</div>
+					</Link>
+					<span>{data['timestamp']}</span>
 					<div className={styles.context}>
 					<p>
 					{ data['body'] }

@@ -1,51 +1,49 @@
 @import (reference) '../../config/config.less';
-
-.comment{
-	width: 100%;
-	.main{
-		padding: 15px 0;
-	}
-	.avatar{
-		width: 50px;
-		height: 50px;
-		background-color: @gray;
-		border-radius: 50%;
-	}
-	.username{
-		color: @purple;
-		font-size: 18px;
-		span{
-			color: @gray;
-			font-size: 14px;
-		}
-	}
-	.context{
-		font-size: 12px;
-	}
-	.tool{
-		padding: 10px 0;
-		&:before{
-			clear: both;
-		}
-		&:after{
-			clear: both;
-			content: '.';
-			display: block;
-		}
-	}
-	.icon{
-		.iconfont;
-		font-size: 10px;
-		
-		float: right;
-		& span{
-			color: @gray;
-			padding: 0 10px;
-			.transition;
-			&:hover{
-				color: @purple
-			}
-		}
-
-	}
+.comment {
+    width: 100%;
+    .main {
+        padding: 15px 0;
+    }
+    .avatar {
+        width: 50px;
+        height: 50px;
+        background-color: @gray;
+        border-radius: 50%;
+        background-size: cover;
+    }
+    .username {
+        color: @purple;
+        font-size: 18px;
+    }
+    span {
+        color: @gray;
+        font-size: 14px;
+    }
+    .context {
+        font-size: 12px;
+    }
+    .tool {
+        padding: 10px 0;
+        &:before {
+            clear: both;
+        }
+        &:after {
+            clear: both;
+            content: '.';
+            display: block;
+        }
+    }
+    .icon {
+        .iconfont;
+        font-size: 10px;
+        float: right;
+        & span {
+            color: @gray;
+            padding: 0 10px;
+            .transition;
+            &:hover {
+                color: @purple
+            }
+        }
+    }
 }

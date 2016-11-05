@@ -23,11 +23,10 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 	}
 
 	const handleSubmitPost = () =>{//post表单发送
-		validateFields([`title-${time}`,`postCategory-${time}`,`detail-${time}`,`file-${time}`],(errors, values) =>{
+		validateFields([`title-${time}`,`postCategory-${time}`,`detail-${time}`],(errors, values) =>{
 			if(errors){
 				return ;
 			}
-			console.log(getFieldValue(`file-${time}`))
 			let images = ''
 			if(getFieldValue(`file-${time}`).length > 0){
 				getFieldValue(`file-${time}`).map((value,index) => {
@@ -113,7 +112,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			>
 				<Input {...getFieldProps(`title-${time}`, {
 					rules: [
-						{ required: true, min: 2, max: 15, message: ['至少为 2 个字符','最多为 15 个字符'] },
+						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
 				})}/>
 			</Form.Item>
@@ -174,7 +173,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 					<div className={styles.preview}>
 						<div>
 							<Icon type='plus' />
-							<div>点击上传文件</div>
+							<div>点击上传图片</div>
 						</div>
 					</div>
 				</Qiniu>

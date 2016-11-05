@@ -89,7 +89,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 				);
 			}
 			const renderUserAvator = {
-				backgroundImage: "url("+config.qiniu+'/'+loginUserList.user_avatar+")"
+				backgroundImage: `url(${config.qiniu}/${loginUserList.user_avatar})`
 			}
 			return (
 			<Popover placement="bottomRight" content={renderList()} overlayStyle={{padding:0}}>
