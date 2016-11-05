@@ -30,8 +30,6 @@ def create_app():
     redis_store.init_app(app)
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
-# redis_pool = redis.ConnectionPool(host=app.config['REDIS_IP_ADDRESS'], port=app.config['REDIS_ADDRESS_POST'], db=0)
-# redis_conn = redis.StrictRedis(connection_pool=redis_pool)
     return app
 
 
