@@ -112,7 +112,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			>
 				<Input {...getFieldProps(`title-${time}`, {
 					rules: [
-						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
+						{ required: true, min: 2, max: 30, message: ['至少为 2 个字符','最多为 30 个字符'] },
 					],
 				})}/>
 			</Form.Item>
@@ -146,7 +146,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 				<Input type='textarea' rows={6} placeholder="编辑想说的内容" 
 					{...getFieldProps(`detail-${time}`, {
 						rules: [
-							{ required: true, min: 2, max: 15, message: ['至少为 2 个字符','最多为 15 个字符'] },
+							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
