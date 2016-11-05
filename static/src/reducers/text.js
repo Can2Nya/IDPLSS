@@ -42,8 +42,8 @@ const text = handleActions({
 	['text/get/success/recommend'](state, action) {
 		return { 
 			...state,
-			recommend: { ...state.recommend, list: action.payload.text_resources, loading: false },
-			total: action.payload.count,
+			recommend: { ...state.recommend, list: action.payload, loading: false },
+			// total: action.payload.count,
 		}
 	},
 	['text/get/failed/recommend'](state, action) {

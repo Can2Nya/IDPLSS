@@ -13,8 +13,12 @@ export async function getTextCategory(action) {
 		// if (data['type']!= -1 ) return xFetch(apiUrl+'/api/text-resources/type/'+data['type']+'?page='+data['pagination'],{method: 'GET',})
 		return xFetch(apiUrl+'/api/text-resources?page='+data['pagination'],{method: 'GET',});
 	}
-  	
 }
+
+export async function getTextRecommend(action) {
+	return xFetch(`${apiUrl}/api/recommend/popular-text-resources`,{method: 'GET',});
+}
+
 export async function getTextDetail(action) {
 	return xFetch(`${apiUrl}/api/text-resources/${action.id}`,{method: 'GET',});
 }

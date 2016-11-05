@@ -22,11 +22,11 @@ function* getTextCategorySource(action) {
 }
 function* getTextRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getTextCategory, action);
+		const { jsonResult } = yield call(req.getTextRecommend, action);
 		if (jsonResult) {
 			yield put({
 				type: 'text/get/success/recommend',
-				payload: jsonResult,
+				payload: jsonResult.recommend_tests || jsonResult.recommend_text_resources,
 			});
 		}
 	} catch (err) {

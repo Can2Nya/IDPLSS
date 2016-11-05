@@ -27,11 +27,11 @@ function* getVideoCategorySource(action) {
 }
 function* getVideoRecommendSource(action) {
 	try {
-		const { jsonResult } = yield call(req.getVideoCategory, action);
+		const { jsonResult } = yield call(req.getVideoRecommend, action);
 		if (jsonResult) {
 			yield put({
 				type: 'video/get/success/recommend',
-				payload: jsonResult,
+				payload: jsonResult.recommend_courses,
 			});
 		}
 	} catch (err) {
