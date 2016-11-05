@@ -1,5 +1,5 @@
 # coding:utf-8
-from flask import jsonify, g, current_app
+from flask import jsonify, g
 from app.main import main
 from app.main.decorators import user_login_info
 from app.models import User, Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
@@ -9,10 +9,14 @@ from app.recommend.resource_recommend import text_resources_user_recommend,  tex
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
 from app import redis_store
+from celery import current_app
 
 # local val
 redis_timeout = 600  # 缓存的过期时间
 recommend_count = 3  # 推荐的数量
+
+
+current_celery = current_app
 
 
 @main.route('/api/recommend/popular-courses', methods=['GET'])
@@ -264,7 +268,7 @@ def recommend_test(type_id):
                     })
 
 
-# @celery.task
+#  @celery.task
 def get_tests(user, type_id):
     user = user
     type_id = type_id
@@ -316,6 +320,7 @@ def get_text_resources(user, type_id):
             resource_name = str(user.id)+"_"+str(x)+"_item_resource"
             redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
         print "resource ItemCf calc finish"
+
 
 
 

@@ -52,3 +52,12 @@ class CeleryInstance(object):
         celery.Task = ContextTask
 
 
+
+
+
+
+
+
+
+
+
