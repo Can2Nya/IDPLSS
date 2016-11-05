@@ -23,27 +23,30 @@ current_celery = current_app
 def popular_courses_recommend():
     courses = popular_course()
     return jsonify({
-        "count": len(courses),
-        "recommend_courses": [course[0].to_json() for course in courses]
-    })
+                "count": len(courses),
+                "recommend_courses": [course.to_json() for course in courses],
+                "status": "successfully"
+            })
 
 
 @main.route('/api/recommend/popular-text-resources', methods=['GET'])
 def popular_resources_recommend():
     resources = popular_text_resource()
     return jsonify({
-        "count": len(resources),
-        "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources]
-    })
+                "count": len(resources),
+                "recommend_text_resources": [t_resource.to_json() for t_resource in resources],
+                "status": "successfully"
+            })
 
 
 @main.route('/api/recommend/popular-tests', methods=['GET'])
 def popular_tests_recommend():
     tests = popular_test()
     return jsonify({
-        "count": len(tests),
-        "recommend_tests": [test[0].to_json() for test in tests]
-    })
+                "count": len(tests),
+                "recommend_tests": [test.to_json() for test in tests],
+                "status": "successfully"
+                })
 
 
 @main.route('/api/recommend/courses/<int:type_id>')
@@ -58,11 +61,18 @@ def recommend_courses(type_id):
     user = g.current_user
     if user is None:   # 如果用户未登录、则根据热度推荐
         courses = popular_course()
-        return jsonify({
-            "count": len(courses),
-            "recommend_courses": [course[0].to_json() for course in courses],
-            "status": "successfully"
-        })
+        if len(courses) < 3:
+            return jsonify({
+                "count": len(courses),
+                "recommend_courses": [course.to_json() for course in courses],
+                "status": "successfully"
+            })
+        else:
+            return jsonify({
+                "count": len(courses),
+                "recommend_courses": [course[0].to_json() for course in courses],
+                "status": "successfully"
+            })
     else:
         user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
         if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
@@ -133,10 +143,18 @@ def recommend_text_resources(type_id):
     user = g.current_user
     if user is None:
         resources = popular_text_resource()
-        return jsonify({
-            "count": len(resources),
-            "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources]
-        })
+        if len(resources) < 3:
+            return jsonify({
+                "count": len(resources),
+                "recommend_text_resources": [t_resource.to_json() for t_resource in resources],
+                "status": "successfully"
+            })
+        else:
+            return jsonify({
+                "count": len(resources),
+                "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources],
+                "status": "successfully"
+            })
     else:
         user_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
         if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
@@ -206,11 +224,18 @@ def recommend_test(type_id):
     user = g.current_user
     if user is None:
         all_test = popular_test()
-        return jsonify({
-            "count": len(all_test),
-            "recommend_tests": [test[0].to_json() for test in all_test],
-            "status": "successfully"
-        })
+        if len(all_test) < 3:
+            return jsonify({
+                "count": len(all_test),
+                "recommend_tests": [test.to_json() for test in all_test],
+                "status": "successfully"
+            })
+        else:
+            return jsonify({
+                "count": len(all_test),
+                "recommend_tests": [test[0].to_json() for test in all_test],
+                "status": "successfully"
+                })
     else:
         user_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
         if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
