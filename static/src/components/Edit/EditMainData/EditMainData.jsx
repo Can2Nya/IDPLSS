@@ -9,6 +9,7 @@ import Qiniu from 'react-qiniu'
 import Button from '../../Button/Button';
 
 import styles from './EditMainData.less';
+import config from '../../../config/config.js'
 
 let EditMainData = ({ upload, user, form, dispatch }) => {
 	// edit编辑一级数据
@@ -174,7 +175,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 					rules: [
 						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
-				})} type="textarea" />
+				})} type="textarea" rows={8}/>
 			</Form.Item>
 			<Form.Item
 			{...formItemLayout}

@@ -80,10 +80,10 @@ PlayVideo.PropTypes = {
 };
 
 function mapStateToProp({ video, user }){
-	const { loginUserList } = user
-	if(loginUserList.length <= 0){
-		browserHistory.push('/login/')
-	}
+	// const { loginUserList } = user
+	// if(loginUserList.length <= 0){
+	// 	browserHistory.push('/login/')
+	// }
 	return{
 		video: video,
 	}
