@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Card } from 'antd';
 import classNames from 'classnames';
 
 import styles from './TestCover.less';
@@ -15,12 +15,21 @@ const TestCover = ({ type, data }) => {
 	};
 
 	const renderTestCover = () =>{
-		if (type == 'small') return <div className={styles.title}>试题题目</div>
+		if (type == 'small') return <Card >
+			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/series/1/'}}>
+			<p className={styles.title}>{data.test_title}</p>
+			</Link>
+			<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >
+			<p>{data.author_name}</p>
+			</Link>
+			</Card>
 			;
 		if (type == 'big') return <Row>
 			<Col lg={21} span={18}>
 			<div className={styles.title}>{data.test_title}</div>
+			<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >
 			<div className={styles.subtitle}>{data.author_name}</div>
+			</Link>
 			</Col>
 			<Col lg={3} span={6}>
 			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/series/1/'}}>

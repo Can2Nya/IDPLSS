@@ -21,8 +21,8 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
-				return <Col span={6} lg={4} key={index}>
-				<VideoCover data={data}  type='small'/>
+				return <Col span={8} lg={6} key={index}>
+				<VideoCover data={data}  type='big'/>
 				</Col>
 			})
 		}
@@ -33,14 +33,14 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
-				return <Col span={6} lg={4} key={index}>
+				return <Col span={6} lg={5} key={index}>
 				<TextCover wordtype={data.resource_type} data={data} type='big' />
 				</Col>
 			})
 		}
 	}
 	const renderTestList = () =>{
-		const { recommend, loading } = text
+		const { recommend, loading } = test
 		if(loading) return <div className={styles.divCenter}><Spin /></div>
 		if(recommend.list <= 0) return;
 		else{

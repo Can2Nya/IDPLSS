@@ -111,3 +111,11 @@ export async function UserPutMainData(action) {
 	url += `${action.id}`
 	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
 }
+
+export async function UserRecommend(action) {
+	let url = `${apiUrl}/api/recommend/`
+	if(action.type.search('video') !== -1) url += 'courses/1'
+	if(action.type.search('text') !== -1) url += 'text-resources/1'
+	if(action.type.search('test') !== -1) url += 'tests/1'
+	return xFetch(url,{method: 'GET',});
+}

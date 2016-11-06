@@ -18,12 +18,16 @@ const VideoCover = ({ type, data, }) => {
 			<div className={styles.img} style={{backgroundImage: `url(${data['images']})`}}>
 				<div className={styles.showmun}>
 					<span>&#xe60e; </span>
-					<span>1111</span>
+					<span>{ data.like }</span>
 				</div>
 			</div>
 			</Link>
+			<Link to={{ pathname: `/detail/video/${data.id}/`, hash: '#!/series/1/'}} >
 			<div className={styles.title}>{ data.course_name }</div>
+			</Link>
+			<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >
 			<div className={styles.user}>{ data.author_name }</div>
+			</Link>
 		</div>
 	);
 };

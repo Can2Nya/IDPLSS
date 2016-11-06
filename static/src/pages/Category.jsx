@@ -8,6 +8,7 @@ import Layout from '../layouts/Layout/Layout';
 import Title from '../components/Title/Title';
 import Menu from '../components/Menu/Menu';
 import PostForm from '../components/PostForm/PostForm';
+import Recommend from '../components/Recommend/Recommend';
 
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
@@ -170,6 +171,9 @@ const Category = ({ location, dispatch, context }) => {
 		isSelect={isSelectCategory}
 		changeCategory={handleChangeCategory.bind(this)}
 		/>
+		<div className={styles.margin}>
+		<Recommend type={stateName} />
+		</div>
 		</Col>
 
 		<Col span={16} lg={18}>

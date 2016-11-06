@@ -164,6 +164,19 @@ const user = handleActions({
 	['user/changeSelectSubTab'](state, action){
 		return { ...state, isSelectSubTab: action.isSelectSubTab }
 	},
+	// ---用户推荐----------------
+	['user/get/videoRecommend'](state, action){
+		return { ...state }
+	},
+	['user/get/textRecommend'](state, action){
+		return { ...state }
+	},
+	['user/get/testRecommend'](state, action){
+		return { ...state }
+	},
+	['user/get/recommend/success'](state, action){
+		return { ...state, recommend: action.payload }
+	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
@@ -178,6 +191,7 @@ const user = handleActions({
 	total: 0,// 下面两个列表的中内容的总数【不是两个列表加起来的
 	userZoneList: [],// 通用存放数据list
 	userZoneSubList: [], // 二级数据存放【例如videolist，problemlist
+	recommend: [],// 用户自己接收的推荐
 });
 
 export default user;

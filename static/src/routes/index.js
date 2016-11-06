@@ -54,7 +54,9 @@ const Routes = ({ history, dispatch }) =>{
 			dispatch({
 				type: `${context}/init/categorySource`
 			})
-
+			dispatch({
+				type: `user/get/${context}Recommend`
+			})
 			if(hash){
 				const match = pathToRegexp('#!/:category/:pagination').exec(hash);
 				const category = parseInt(match[1]);
@@ -100,6 +102,9 @@ const Routes = ({ history, dispatch }) =>{
 					id: id,
 					pagination: match[4]
 				})
+				dispatch({
+					type: `user/get/${context}Recommend`
+				})
 			}
 			// post detail
 			if(pathname.search('post')!== -1){
@@ -133,11 +138,19 @@ const Routes = ({ history, dispatch }) =>{
 
 		// login listen----------------------
 		if(cookie.get('user_id') && cookie.get('authorization')){
-
 			dispatch({
 				type: 'user/get/loginInfo',
 				user_id: cookie.get('user_id')
 			})
+			// dispatch({
+			// 	type: 'user/get/videoRecommend'
+			// })
+			// dispatch({
+			// 	type: 'user/get/textRecommend'
+			// })
+			// dispatch({
+			// 	type: 'user/get/testRecommend'
+			// })
 		}
 		// user zone init-----------------------
 		if(pathname.search('user')!== -1){
