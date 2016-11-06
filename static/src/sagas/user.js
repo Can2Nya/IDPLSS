@@ -251,6 +251,23 @@ function* postCreateMainData(action) {
 	}
 }
 
+function* getUserRecommend(action) {
+	try {
+		const { jsonResult } = yield call(req.UserRecommend, action);
+		if (jsonResult) {
+			if(jsonResult.count){
+				yield put({
+					type: 'user/get/recommend/success',
+					payload: jsonResult.recommend_courses || jsonResult.recommend_text_resources || jsonResult.recommend_tests,
+				});
+			}
+			
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
 
 
 function* watchUserLogin() {
@@ -310,6 +327,13 @@ function* watchCreateMainData() {
 		'upload/put/createTest'
 		], postCreateMainData)
 }
+function* watchUserRecommend() {
+	yield* takeLatest([
+		'user/get/videoRecommend',
+		'user/get/textRecommend',
+		'user/get/testRecommend'
+		], getUserRecommend)
+}
 
 
 /*function* watchUserGetJson() {
@@ -327,6 +351,7 @@ export default function* () {
 	yield fork(watchUserZoneData);
 	yield fork(watchUpLoadInfo);
 	yield fork(watchCreateMainData)
+	yield fork(watchUserRecommend)
 	//yield fork(watchUserGetJson)
 	// Load user.//
 	// yield put({

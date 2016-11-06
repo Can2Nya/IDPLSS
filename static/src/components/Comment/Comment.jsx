@@ -14,7 +14,7 @@ const Comment = ({ user, data, onDelete }) => {
 	}
 	const renderDeleteButton = () =>{
 		if ((user.loginid == user.authorid) || (user.logintype >= 3) || (user.loginid == data['author_id'])){
-			return <a onClick={onDelete.bind(this, data['comment_id'], data['author_id'])}><span>&#xe602; 删除</span></a>
+			return <a onClick={onDelete.bind(this, data['comment_id'] || data['id'], data['author_id'])}><span>&#xe602; 删除</span></a>
 		}
 	}
 	return (

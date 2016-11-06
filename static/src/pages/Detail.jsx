@@ -11,6 +11,7 @@ import List from '../components/List/List';
 import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 import Preview from '../components/Preview/Preview';
+import Recommend from '../components/Recommend/Recommend';
 
 import DetailPannel from '../layouts/DetailPannel/DetailPannel';
 
@@ -147,6 +148,9 @@ const Detail = ({ context, user, dispatch, location }) => {
 			</div>
 			<Col span={8} lg={7}>
 			<Preview type={`${stateName}`} data={ isSelectContext.context } />
+			<div className={styles.margin}>
+			<Recommend type={stateName} />
+			</div>
 			</Col>
 
 			<Col span={16} lg={17} >
