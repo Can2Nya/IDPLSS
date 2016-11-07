@@ -5,20 +5,22 @@ const upload = handleActions({
 	
 	['upload/drop'](state, action) {
 		return { ...state, files: action.files };
-		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/multiplyPlus'](state, action) {
-		let newList = state.uploadListFiles.concat(action.uploadListFiles)
-		return { ...state, uploadListFiles: newList };
-		// return { ...state, files: [action.file, ...state.files ] };
+		// let newList = state.uploadListFiles.concat(action.uploadListFiles)
+		return { ...state, uploadListFiles: action.uploadListFiles };
 	},
 	['upload/multiplyPlusUploadList'](state, action) {
 		return { ...state, uploadList: [ ...state.uploadList, action.uploadList] };
-		// return { ...state, files: [action.file, ...state.files ] };
 	},
 	['upload/tmpPlus'](state, action) {
 		return { ...state, tmpFile: action.tmpFile };
-		// return { ...state, files: [action.file, ...state.files ] };
+	},
+	['upload/itemDataPlus'](state, action) {
+		return { ...state, itemData: action.itemData, itemIndex: action.itemIndex };
+	},
+	['upload/uploadFileOrder'](state, action) {
+		return { ...state, order: action.order };
 	},
 	['upload/multiplyDelete'](state, action) {
 		const newList = state.uploadListFiles.filter(file => file.lastModified != action.lastModified)
@@ -47,13 +49,13 @@ const upload = handleActions({
 	},
 
 	['upload/get/userVideoList'](state, action) {
-	  return { ...state, loading: true, isSelectContextList: [] };
+		return { ...state, loading: true, isSelectContextList: [] };
 	},
 	// ['upload/get/userTextList'](state, action) {
 	//   return { ...state, loading: true, isSelectContextList: [] };
 	// },
 	['upload/get/userTestList'](state, action) {
-	  return { ...state, loading: true, isSelectContextList: [] };
+	  	return { ...state, loading: true, isSelectContextList: [] };
 	},
 	['upload/get/success/isSelectContextList'](state, action) {
 		return { ...state, isSelectContextList: action.payload, loading: false };
@@ -111,6 +113,7 @@ const upload = handleActions({
 		return { ...state, isEdit: action.isEdit, isSelectContextId: action.isSelectContextId };
 	},
 	['upload/changeModalState'](state, action) {
+		if(action.model == 'item') return { ...state, itemModalState: action.itemModalState };
 		return { ...state, modalState: action.modalState };
 	},
 	['upload/changeTime'](state, action) {
@@ -122,15 +125,19 @@ const upload = handleActions({
 	progress: 0, //可为array或int
 	token: '',
 	modalState: false,//modal是否被激活
+	itemModalState: false,//item的modal是否被激活
 	loading: false,
 	
 	// 多文件模式
-	tmpFile:[],//不知道怎么解释了。。。创建时临时存放的文件，事后再添加到列表
+	tmpFile:[],//不知道怎么解释了。。。创建时临时存放的文件，事后再添加到列表（测试图片不需要）
 	uploadList: [],// 上传列表的一个包含除了文件还有其他参数
-	uploadListFiles: [],// 文件列表
+	uploadListFiles: [],// 文件列表(一个测试一个列表,一个测试添加到列表后清除这个)
 	uploadListProgress: [],//可为array或int
 	time: Date.now(),// 用时间确定唯一的表单【在uploadqueue中使用，
 	// upload/post/createVideo或problem被触发都更新时间以保证表单被更新
+	itemData: {},//uploaditem 传上来的数据
+	itemIndex: 0,
+	order:{ isOrder: false },//uploadList 中文件排序
 
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面

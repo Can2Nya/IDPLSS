@@ -103,6 +103,15 @@ export async function UserCreateMainData(action) {
 	if(action.type.search('createPost') !== -1)	url += 'posts/new-post'
 	return xFetch(url,{method: 'POST' ,body:JSON.stringify(action.body)});
 }
+
+export async function UserCreateSubData(action) {
+	// 二级数据层【课程，文本，测试
+	let url = `${apiUrl}/api/`
+	if(action.type.search('createProblem') !== -1) url += `test-list/${action.test_id}/new-problem`
+	if(action.type.search('createVideo') !== -1) url += `courses/${action.course_id}/new-video`
+	
+	return xFetch(url,{method: 'POST' ,body:JSON.stringify(action.body)});
+}
 export async function UserPutMainData(action) {
 	let url = `${apiUrl}/api/`
 	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
