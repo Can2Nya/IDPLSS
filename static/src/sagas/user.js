@@ -215,22 +215,36 @@ function* getUpLoadInfo(action) {
 	}
 }
 
-function* postCreateMainData(action) {
+function* postCreateData(action) {
 	try {
 		if(action.type.search('post') !== -1) {
-			const { jsonResult } = yield call(req.UserCreateMainData, action);
-			if (jsonResult) {
-				message.success('创建成功')
+			if(action.type == 'upload/post/createProblem' || action.type == 'upload/post/createVideo'){
+				const { jsonResult } = yield call(req.UserCreateSubData, action);
+				if (jsonResult) {
+					message.success('创建成功')
+				}
+				let nextAction = 'user/get/user';
+				if(action.type == 'upload/post/createVideo') nextAction += 'VideoList'
+				if(action.type == 'upload/post/createProblem') nextAction += 'TestList'
+				yield put({
+					type: nextAction,
+				})
+			}else{
+				const { jsonResult } = yield call(req.UserCreateMainData, action);
+				if (jsonResult) {
+					message.success('创建成功')
+				}
+				let nextAction = 'user/get/user';
+				if(action.type == 'upload/post/createCourse') nextAction += 'Video'
+				if(action.type == 'upload/post/createText') nextAction += 'Text'
+				if(action.type == 'upload/post/createTest') nextAction += 'Test'
+				if(action.type == 'upload/post/createPost') nextAction =  `forum/get/categorySource`
+				yield put({
+					type: nextAction,
+					pagination: 1
+				})
 			}
-			let nextAction = 'user/get/user';
-			if(action.type == 'upload/post/createCourse') nextAction += 'Video'
-			if(action.type == 'upload/post/createText') nextAction += 'Text'
-			if(action.type == 'upload/post/createTest') nextAction += 'Test'
-			if(action.type == 'upload/post/createPost') nextAction =  `forum/get/categorySource`
-			yield put({
-				type: nextAction,
-				pagination: 1
-			})
+			
 		};
 		if(action.type.search('put') !== -1) {
 			const { jsonResult } = yield call(req.UserPutMainData, action);
@@ -307,7 +321,7 @@ function* watchisFollowedBy() {
 	yield* takeLatest('user/info/isFollowedBy', isFollowedBy)
 }
 function* watchUpLoadInfo() {
-	yield* takeLatest([
+	yield* takeEvery([
 		'upload/get/token',
 		'upload/get/userVideo',
 		'upload/get/userText',
@@ -316,19 +330,21 @@ function* watchUpLoadInfo() {
 		'upload/get/userTestList'
 		], getUpLoadInfo)
 }
-function* watchCreateMainData() {
-	yield* takeLatest([
+function* watchCreateData() {
+	yield* takeEvery([
 		'upload/post/createCourse',
 		'upload/post/createText',
 		'upload/post/createTest',
 		'upload/post/createPost',
 		'upload/put/createCourse',
 		'upload/put/createText',
-		'upload/put/createTest'
-		], postCreateMainData)
+		'upload/put/createTest',
+		'upload/post/createProblem',
+		'upload/post/createVideo'
+		], postCreateData)
 }
 function* watchUserRecommend() {
-	yield* takeLatest([
+	yield* takeEvery([
 		'user/get/videoRecommend',
 		'user/get/textRecommend',
 		'user/get/testRecommend'
@@ -350,7 +366,7 @@ export default function* () {
 	yield fork(watchisFollowedBy);
 	yield fork(watchUserZoneData);
 	yield fork(watchUpLoadInfo);
-	yield fork(watchCreateMainData)
+	yield fork(watchCreateData)
 	yield fork(watchUserRecommend)
 	//yield fork(watchUserGetJson)
 	// Load user.//
