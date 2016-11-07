@@ -9,14 +9,12 @@ from app.recommend.resource_recommend import text_resources_user_recommend,  tex
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
 from app import redis_store
-from celery import current_app
-
+from app.create_celery import celery_instance
 # local val
-redis_timeout = 600  # 缓存的过期时间
+redis_timeout = 60000  # 缓存的过期时间
 recommend_count = 3  # 推荐的数量
 
-
-current_celery = current_app
+celery = celery_instance()
 
 
 @main.route('/api/recommend/popular-courses', methods=['GET'])
@@ -58,24 +56,19 @@ def recommend_courses(type_id):
     :return: course(json)
     """
     # 命名 UserCf(id_num_user_course),ItemCf(id_num_item_course)
+    print "type id is %s " % type_id
     user = g.current_user
     if user is None:   # 如果用户未登录、则根据热度推荐
         courses = popular_course()
-        if len(courses) < 3:
-            return jsonify({
+        return jsonify({
                 "count": len(courses),
                 "recommend_courses": [course.to_json() for course in courses],
                 "status": "successfully"
             })
-        else:
-            return jsonify({
-                "count": len(courses),
-                "recommend_courses": [course[0].to_json() for course in courses],
-                "status": "successfully"
-            })
+
     else:
         user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
-        if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
+        if len(user_behaviors) != 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             courses = code_start_course(user)
             return jsonify({
@@ -85,9 +78,8 @@ def recommend_courses(type_id):
             })
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
-
                 if redis_store.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course(user, type_id=0)
+                    get_course.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -109,7 +101,7 @@ def recommend_courses(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course(user, type_id=1)
+                    get_course.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -143,21 +135,14 @@ def recommend_text_resources(type_id):
     user = g.current_user
     if user is None:
         resources = popular_text_resource()
-        if len(resources) < 3:
-            return jsonify({
-                "count": len(resources),
-                "recommend_text_resources": [t_resource.to_json() for t_resource in resources],
-                "status": "successfully"
-            })
-        else:
-            return jsonify({
-                "count": len(resources),
-                "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources],
-                "status": "successfully"
-            })
+        return jsonify({
+                    "count": len(resources),
+                    "recommend_text_resources": [t_resource.to_json() for t_resource in resources],
+                    "status": "successfully"
+                })
     else:
         user_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
-        if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
+        if len(user_behaviors) != 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             resources = code_start_text_resource(user)
             return jsonify({
@@ -168,7 +153,7 @@ def recommend_text_resources(type_id):
             if type_id == 0:
 
                 if redis_store.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
-                    get_text_resources(user, type_id=0)
+                    get_text_resources.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -190,7 +175,7 @@ def recommend_text_resources(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
-                    get_text_resources(user, type_id=1)
+                    get_text_resources.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -224,21 +209,14 @@ def recommend_test(type_id):
     user = g.current_user
     if user is None:
         all_test = popular_test()
-        if len(all_test) < 3:
-            return jsonify({
+        return jsonify({
                 "count": len(all_test),
                 "recommend_tests": [test.to_json() for test in all_test],
-                "status": "successfully"
-            })
-        else:
-            return jsonify({
-                "count": len(all_test),
-                "recommend_tests": [test[0].to_json() for test in all_test],
                 "status": "successfully"
                 })
     else:
         user_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
-        if len(user_behaviors) == 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
+        if len(user_behaviors) != 0:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             all_test = code_start_test(user)
             return jsonify({
@@ -249,7 +227,7 @@ def recommend_test(type_id):
         else:
             if type_id == 0:
                 if redis_store.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests(user, type_id=0)
+                    get_tests.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -271,7 +249,7 @@ def recommend_test(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests(user, type_id=1)
+                    get_tests.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -293,7 +271,7 @@ def recommend_test(type_id):
                     })
 
 
-#  @celery.task
+@celery.task
 def get_tests(user, type_id):
     user = user
     type_id = type_id
@@ -311,7 +289,7 @@ def get_tests(user, type_id):
         print "test ItemCf calc finish"
 
 
-# @celery.task
+@celery.task
 def get_course(user, type_id):
     user = user
     type_id = type_id
@@ -329,7 +307,7 @@ def get_course(user, type_id):
         print "course  ItemCf calc finish"
 
 
-# @celery.task
+@celery.task
 def get_text_resources(user, type_id):
     user = user
     type_id = type_id
@@ -344,6 +322,7 @@ def get_text_resources(user, type_id):
         for x in range(1, len(text_resources)+1):
             resource_name = str(user.id)+"_"+str(x)+"_item_resource"
             redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
+            print redis_store.get(resource_name)
         print "resource ItemCf calc finish"
 
 
