@@ -10,9 +10,9 @@ def popular_course():
     """
     l = []
     all_course = Course.query.all()
-    [l.append(course.collect_sum) for course in all_course]  # 将课程学习数量添加到list中
+    [l.append(course.collect_sum) for course in all_course if course is not None]  # 将课程学习数量添加到list中:
     if len(l) < 3:
-        return l
+        return all_course
     else:
         collect_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = collect_sum_reverse[:3]  # 取前3进行推荐
@@ -33,9 +33,9 @@ def popular_text_resource():
     """
     l = []
     all_text_resources = TextResource.query.all()
-    [l.append(t_resource.download_sum) for t_resource in all_text_resources]  # 将文本资料下载学习添加到list中
+    [l.append(t_resource.download_sum) for t_resource in all_text_resources if t_resource is not None]  # 将文本资料下载学习添加到list中
     if len(l) < 3:
-        return l
+        return all_text_resources
     else:
         download_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = download_sum_reverse[:3]  # 取前3进行推荐
@@ -56,9 +56,9 @@ def popular_test():
     """
     l = []
     all_test = TestList.query.all()
-    [l.append(test.test_sum) for test in all_test]  # 将课程学习数量添加到list中
+    [l.append(test.test_sum) for test in all_test if test is not None]  # 将课程学习数量添加到list中
     if len(l) < 3:
-        return l
+        return all_test
     else:
         test_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = test_sum_reverse[:3]  # 取前3进行推荐

@@ -9,15 +9,16 @@ def code_start_course(user):
     :return: course_list
     """
     user = user
-    print "user interested field is %s" % user.interested_field
-    str_interested_field = str(user.interested_field)
-    interested_field = str_interested_field.split(":")
+    interested_field = user.interested_field.split(":")
+    print "interested field is %s" % interested_field
     course_list = []
-    print 'interested list is %s' % course_list
     for filed in interested_field:
-        course_list.append(Course.query.filter_by(course_category=int(filed)).all())
-    print "course len is %s" % len(course_list)
+        c = Course.query.filter_by(course_category=int(filed)).order_by(Course.timestamp.desc()).first()
+        if c is not None:
+            course_list.append(c)
+    print "course is %s" % course_list
     if len(course_list) < 3:
+        print "course count is %s" % len(course_list)
         return course_list
     else:
         return course_list[:3]
@@ -30,11 +31,12 @@ def code_start_text_resource(user):
     :return: text_resource_list
     """
     user = user
-    str_interested_field = str(user.interested_field)
-    interested_filed = str_interested_field.split(":")
+    interested_filed = user.interested_field.split(":")
     text_resource_list = []
     for field in interested_filed:
-        text_resource_list.append(TextResource.query.filter_by(resource_category=int(field)).all())
+        t_resource = TextResource.query.filter_by(resource_category=int(field)).order_by(TextResource.timestamp.desc()).first()
+        if t_resource is not None:
+            text_resource_list.append(t_resource)
     if len(text_resource_list) < 3:
         return text_resource_list
     else:
@@ -48,12 +50,12 @@ def code_start_test(user):
     :return: test_list
     """
     user = user
-    str_interested_field = str(user.interested_field)
-    interested_filed = str_interested_field.split(":")
-    print "user interested is %s" % str_interested_field
+    interested_filed = user.interested_field.split(":")
     test_list = []
     for field in interested_filed:
-        test_list.append(TestList.query.filter_by(test_category=int(field)).all())
+        test = TestList.query.filter_by(test_category=int(field)).order_by(TestList.timestamp.desc()).first()
+        if test is not None:
+            test_list.append(test)
     if len(test_list) < 3:
         return test_list
     else:
