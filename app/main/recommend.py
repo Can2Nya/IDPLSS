@@ -17,6 +17,7 @@ recommend_count = 3  # 推荐的数量
 @main.route('/api/recommend/popular-courses', methods=['GET'])
 def popular_courses_recommend():
     courses = popular_course()
+    print "recommend courses is %s" % courses
     return jsonify({
                 "count": len(courses),
                 "recommend_courses": [course.to_json() for course in courses],
@@ -53,7 +54,6 @@ def recommend_courses(type_id):
     :return: course(json)
     """
     # 命名 UserCf(id_num_user_course),ItemCf(id_num_item_course)
-    print "type id is %s " % type_id
     user = g.current_user
     if user is None:   # 如果用户未登录、则根据热度推荐
         courses = popular_course()
@@ -68,9 +68,10 @@ def recommend_courses(type_id):
         if len(user_behaviors) < 5:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             courses = code_start_course(user)
+
             return jsonify({
                 "count": len(courses),
-                "recommend_courses": [course[0].to_json() for course in courses],
+                "recommend_courses": [course.to_json() for course in courses],
                 "status": "successfully"
             })
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
@@ -144,7 +145,7 @@ def recommend_text_resources(type_id):
             resources = code_start_text_resource(user)
             return jsonify({
                 "count": len(resources),
-                "recommend_text_resources": [t_resource[0].to_json() for t_resource in resources]
+                "recommend_text_resources": [t_resource.to_json() for t_resource in resources]
             })
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
             if type_id == 0:
@@ -218,7 +219,7 @@ def recommend_test(type_id):
             all_test = code_start_test(user)
             return jsonify({
                 "count": len(all_test),
-                "recommend_tests": [test[0].to_json() for test in all_test],
+                "recommend_tests": [test.to_json() for test in all_test],
                 "status": "successfully"
             })
         else:
