@@ -11,7 +11,7 @@ const upload = handleActions({
 		return { ...state, uploadListFiles: action.uploadListFiles };
 	},
 	['upload/multiplyPlusUploadList'](state, action) {
-		return { ...state, uploadList: [ ...state.uploadList, action.uploadList] };
+		return { ...state, uploadList: action.uploadList };
 	},
 	['upload/tmpPlus'](state, action) {
 		return { ...state, tmpFile: action.tmpFile };

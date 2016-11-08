@@ -48,13 +48,13 @@ let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, prog
 					});
 				}
 				if(type == '3'){
-					validateFields(['keyword'],(errors, values) =>{
+					validateFields([`keyword-${time}`],(errors, values) =>{
 						if(errors){
 							return ;
 						}
 						let keyword = '';
-						getFieldValue('keyword').map((value,index) => {
-							if(index == getFieldValue('keyword').length -1) keyword += `${value}`
+						getFieldValue(`keyword-${time}`).map((value,index) => {
+							if(index == getFieldValue(`keyword-${time}`).length -1) keyword += `${value}`
 							else keyword += `${value}:`
 						})
 						body = {test_title: getFieldValue(`title-${formType}-${time}`), test_description: getFieldValue(`detail-${formType}-${time}`), test_category: getFieldValue(`category-${formType}-${time}`), key_words: keyword}
@@ -68,12 +68,7 @@ let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, prog
 		labelCol: { span: 4 },
 		wrapperCol: { span: 20 },
 	};
-	
-	const keywordProps = getFieldProps(`keyword-${time}`, {
-		rules: [
-			{ required: true, message:'请输入至少一个关键字', type: 'array'},
-		],
-	});
+
 	const fileValue = () =>{
 		if(files.length <= 0 || !files[0].request.xhr.response) {
 			return null
@@ -268,7 +263,11 @@ let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, prog
 			>
 			<Select tags
 			style={{ width: '100%' }}
-			{...keywordProps}
+			{...getFieldProps(`keyword-${time}`, {
+				rules: [
+					{ required: true, message:'请输入至少一个关键字', type: 'array'},
+				],
+			})}
 			>
 			</Select>
 			</Form.Item>
