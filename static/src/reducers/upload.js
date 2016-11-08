@@ -153,7 +153,8 @@ const upload = handleActions({
 	// upload/post/createVideo或problem被触发都更新时间以保证表单被更新
 	itemData: {},//uploaditem 传上来的数据
 	itemIndex: 0,
-	order:{ isOrder: false },//uploadList 中文件排序
+	// order:{ isOrder: false },//uploadList 中文件排序
+	order: [],
 
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
