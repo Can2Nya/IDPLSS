@@ -74,11 +74,11 @@ const Routes = ({ history, dispatch }) =>{
 					pagination: 1,
 				})
 			}
-			if(context == 'forum'){
-				dispatch({
-					type: 'upload/get/token'
-				})
-			}
+			// if(context == 'forum'){
+			// 	dispatch({
+			// 		type: 'upload/get/token'
+			// 	})
+			// }
 			dispatch({
 				type: `${context}/get/categorySource`
 			})

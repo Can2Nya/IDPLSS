@@ -1,10 +1,5 @@
 @import (reference) '../../config/config.less';
 
-.block{
-	width: 80%;
-	padding: 30px 15px;
-	box-shadow: 0 0 2px @gray;
-}
 .preview{
 	width: 120px;
 	height: 120px;
@@ -15,4 +10,17 @@
 	display: inline-block;
 	text-align: center;
 	padding-top: 45px;
+}
+.enterButton{
+	width: 75%;
+	padding: 10px 15px;
+	color: @purple;
+	box-shadow: 0 0 2px @gray;
+	font-size: 36px;
+	font-weight: lighter;
+	&:hover{
+		background-color: @purple;
+		color: @white;
+	}
+	transition: all ease .5s;
 }

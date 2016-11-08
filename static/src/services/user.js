@@ -120,6 +120,14 @@ export async function UserPutMainData(action) {
 	url += `${action.id}`
 	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
 }
+export async function UserDelMainData(action) {
+	let url = `${apiUrl}/api/`
+	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
+	if(action.type.search('createText') !== -1) url += 'text-resources/'
+	if(action.type.search('createTest') !== -1) url += 'test-list/detail/'
+	url += `${action.id}`
+	return xFetch(url,{method: 'DELETE' });
+}
 
 export async function UserRecommend(action) {
 	let url = `${apiUrl}/api/recommend/`

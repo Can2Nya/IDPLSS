@@ -33,7 +33,7 @@ const TestCover = ({ type, data }) => {
 			</Col>
 			<Col lg={3} span={6}>
 			<Link to={{ pathname: `/detail/test/${data.id}/`, hash: '#!/series/1/'}}>
-			<Button className={styles.button}>开始测试</Button>
+			<Button className={styles.button}>详情</Button>
 			</Link>
 			</Col>
 			</Row>

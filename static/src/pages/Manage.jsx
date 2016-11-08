@@ -20,7 +20,7 @@ import config from '../config/config.js'
 
 const Manage = ({ upload, user, dispatch, location }) => {
 	const { loginUserList, userZoneList, total } = user
-	const { files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
+	const { time,files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
 
 	// ---------------action-------------------
 	// 切换菜单
@@ -65,7 +65,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 			})
 		}
 		dispatch({
-			type: action,//zheli yaogai
+			type: action,
 			id: id
 		})
 		// 该action以在saga处理，具体见user-saga
@@ -75,6 +75,25 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		// 	isSelectContextId: id
 		// })
 		
+	}
+	const handleDelete = (id) =>{
+		let action = 'upload/del/create';
+		if(isSelectMenuItem == '1') action += 'Course'
+		if(isSelectMenuItem == '2') action += 'Text'
+		if(isSelectMenuItem == '3') action += 'Test'
+		Modal.confirm({
+			title: '确认是否删除',
+			content: '该操作无法恢复',
+			okText: '删除',
+			cancelText: '取消',
+			onOk: (onOk) =>{
+				dispatch({
+					type: action,
+					id: id
+				})
+				onOk()
+			},
+		})
 	}
 
 	const handleChangeModalState = () =>{
@@ -132,6 +151,13 @@ const Manage = ({ upload, user, dispatch, location }) => {
 				body: body
 			})
 		}
+		dispatch({
+			type: 'upload/changeTime',
+		})
+		dispatch({
+			type: 'upload/drop',
+			files: []
+		})
 	}
 	// --------------render-------------------
 
@@ -163,7 +189,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		return userZoneList.map((data,index) =>{
 			if(!data.show) return
 			return (
-				<ManageCover key={index} data={data} onClickEdit={handleChangeEditState.bind(this)}/>
+				<ManageCover key={index} data={data} onClickEdit={handleChangeEditState.bind(this)}  onDelete={handleDelete.bind(this)}/>
 			)
 		})
 	}
@@ -178,6 +204,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		<div className={styles.relative} key='1'>
 		<div className={styles.displayBlock}>
 			<UploadButton 
+						time={time}
 						type={isSelectMenuItem}
 						token={token}
 						files={files}

@@ -9,8 +9,9 @@ import Qiniu from 'react-qiniu'
 import Button from '../Button/Button';
 
 import styles from './UploadButton.less';
+// import config from '../config/config.js'
 
-let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, onCancel, onButtonClick, onSubmit, onUpload, onDrop }) => {
+let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, progress, onCancel, onButtonClick, onSubmit, onUpload, onDrop }) => {
 
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	// ----------------fuc--------------------------------------------
@@ -18,21 +19,21 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 		// event.preventDefault();
 		let body = {};
 			
-			validateFields([`title-${formType}`,`detail-${formType}`,`category-${formType}`],(errors, values) =>{
+			validateFields([`title-${formType}-${time}`,`detail-${formType}-${time}`,`category-${formType}-${time}`],(errors, values) =>{
 				if(errors){
 					return ;
 				}
 				if(type == '1'){
-					validateFields([`file-${formType}`],(errors, values) =>{
+					validateFields([`file-${formType}-${time}`],(errors, values) =>{
 						if(errors){
 							return ;
 						}
-						body = {course_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), category: getFieldValue(`category-${formType}`), images: getFieldValue(`file-${formType}`)}
+						body = {course_name: getFieldValue(`title-${formType}-${time}`), description: getFieldValue(`detail-${formType}-${time}`), category: getFieldValue(`category-${formType}-${time}`), images: getFieldValue(`file-${formType}-${time}`)}
 						onSubmit(body)
 					});
 				}
 				if(type == '2'){
-					validateFields([`file-${formType}`],(errors, values) =>{
+					validateFields([`file-${formType}-${time}`],(errors, values) =>{
 						if(errors){
 							return ;
 						}
@@ -42,7 +43,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 						allWordType.map((value,index)=>{
 							if(value.search(wordType)!= -1) mun = index
 						})
-						body = {resource_name: getFieldValue(`title-${formType}`), description: getFieldValue(`detail-${formType}`), resource_category: getFieldValue(`category-${formType}`), source_url: getFieldValue(`file-${formType}`), resource_type: mun}
+						body = {resource_name: getFieldValue(`title-${formType}-${time}`), description: getFieldValue(`detail-${formType}-${time}`), resource_category: getFieldValue(`category-${formType}-${time}`), source_url: getFieldValue(`file-${formType}-${time}`), resource_type: mun}
 						onSubmit(body)
 					});
 				}
@@ -56,7 +57,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 							if(index == getFieldValue('keyword').length -1) keyword += `${value}`
 							else keyword += `${value}:`
 						})
-						body = {test_title: getFieldValue(`title-${formType}`), test_description: getFieldValue(`detail-${formType}`), test_category: getFieldValue(`category-${formType}`), key_words: keyword}
+						body = {test_title: getFieldValue(`title-${formType}-${time}`), test_description: getFieldValue(`detail-${formType}-${time}`), test_category: getFieldValue(`category-${formType}-${time}`), key_words: keyword}
 						onSubmit(body)
 					});
 				}
@@ -67,50 +68,17 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 		labelCol: { span: 4 },
 		wrapperCol: { span: 20 },
 	};
-	// const titleProps = getFieldProps('title', {
-	// 	rules: [
-	// 		{ required: true, min: 2, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
-	// 	],
-	// });
-	// const detailProps = getFieldProps('detail', {
-	// 	rules: [
-	// 		{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
-	// 	],
-	// });
-	// const selectProps = getFieldProps('category', {
-	// 	rules: [
-	// 	{ required: true, message: '请选择分类', type: 'number'},
-	// 	],
-	// });
-	const keywordProps = getFieldProps('keyword', {
+	
+	const keywordProps = getFieldProps(`keyword-${time}`, {
 		rules: [
 			{ required: true, message:'请输入至少一个关键字', type: 'array'},
 		],
 	});
-	// const fileProps = () =>{
-	// 	if(files.length <= 0 || !files[0].request.xhr.response){
-	// 		return(
-	// 			getFieldProps('file', {
-	// 				rules: [
-	// 					{ required: true },
-	// 				],
-	// 			})
-	// 		)
-	// 	}
-	// 	else{
-	// 		return(
-	// 			getFieldProps('file', {
-	// 				initialValue: `${qiniuUrl}/${JSON.parse(files[0].request.xhr.response).key}`,
-	// 				rules: [
-	// 					{ required: true },
-	// 				],
-	// 			})
-	// 		)
-	// 	}
-	// }
 	const fileValue = () =>{
-		if(files.length <= 0 || !files[0].request.xhr.response) return '';
-		else return `${qiniuUrl}/${JSON.parse(files[0].request.xhr.response).key}`
+		if(files.length <= 0 || !files[0].request.xhr.response) {
+			return null
+		}
+		else return `${JSON.parse(files[0].request.xhr.response).key}`
 	}
 	// -------------------------render---------------------------
 	const renderUploadImgCls= () =>{
@@ -140,7 +108,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 			label='标题'
 			hasFeedback
 			>
-				<Input {...getFieldProps(`title-${formType}`, {
+				<Input {...getFieldProps(`title-${formType}-${time}`, {
 					rules: [
 						{ required: true, min: 2, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
 					],
@@ -151,7 +119,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 			label='描述'
 			hasFeedback
 			>
-				<Input {...getFieldProps(`detail-${formType}`, {
+				<Input {...getFieldProps(`detail-${formType}-${time}`, {
 					rules: [
 						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
@@ -161,7 +129,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 			{...formItemLayout}
 			label="分类"
 			>
-			<Select {...getFieldProps(`category-${formType}`, {
+			<Select {...getFieldProps(`category-${formType}-${time}`, {
 				rules: [
 					{ required: true, message: '请选择分类', type: 'number'},
 				],
@@ -211,7 +179,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 			</Qiniu>
 			</a>
 			<Input type='text' 
-			{...getFieldProps('file-Course', {
+			{...getFieldProps(`file-Course-${time}`, {
 					initialValue: fileValue(),
 					rules: [
 						{ required: true },
@@ -261,7 +229,7 @@ let UploadButton = ({ form, files, type, modalState, token, qiniuUrl, progress, 
 			</Qiniu>
 			</a>
 			<Input type='text' 
-			{...getFieldProps('file-Text', {
+			{...getFieldProps(`file-Text-${time}`, {
 					initialValue: fileValue(),
 					rules: [
 						{ required: true },

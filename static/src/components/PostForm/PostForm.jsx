@@ -15,11 +15,22 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 	const { tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, modalState, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
 	// -------------action------------------
 
-	const handleToggleForumModal = () =>{//表单modal显
-		dispatch({
-			type: 'upload/changeModalState',
-			modalState: !modalState
-		})
+	const handleToggleForumModal = () =>{//表单modal显示
+		if(!loginUserList.user_id) {
+			dispatch({
+				type: 'user/login/modal/toggle',
+				modalState: true,
+			})
+		}
+		else{
+			dispatch({
+				type: 'upload/changeModalState',
+				modalState: !modalState
+			})
+			dispatch({
+				type: 'upload/get/token'
+			})
+		}
 	}
 
 	const handleSubmitPost = () =>{//post表单发送
@@ -37,6 +48,9 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			dispatch({
 				type: 'upload/post/createPost',
 				body: {body: getFieldValue(`detail-${time}`), post_category: getFieldValue(`postCategory-${time}`), author_id: loginUserList.user_id, title: getFieldValue(`title-${time}`), images: images }
+			})
+			dispatch({
+				type: 'upload/changeTime',
 			})
 		})
 		
@@ -91,9 +105,11 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 		{/*<Button type="ghost" onClick={ onClick.bind(this) } >
 		发布帖子
 		</Button>*/}
-		<div className={styles.block} >
-		<a onClick={handleToggleForumModal.bind(this)}>发布帖子</a>
+		<a onClick={handleToggleForumModal.bind(this)}>
+		<div className={styles.enterButton} >
+		发布帖子
 		</div>
+		</a>
 		<Modal title='发布帖子' 
 		width={900} 
 		visible={modalState} 

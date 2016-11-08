@@ -60,7 +60,7 @@ const upload = handleActions({
 	['upload/get/success/isSelectContextList'](state, action) {
 		return { ...state, isSelectContextList: action.payload, loading: false };
 	},
-
+	// post
 	['upload/post/createCourse'](state, action) {// 一级数据
 		return { ...state, };
 	},
@@ -79,7 +79,7 @@ const upload = handleActions({
 	['upload/post/createPost'](state, action) {// 一级数据
 		return { ...state, };
 	},
-
+	// put
 	['upload/put/createCourse'](state, action) {// 一级数据
 		return { ...state, };
 	},
@@ -93,6 +93,22 @@ const upload = handleActions({
 		return { ...state, };
 	},
 	['upload/put/createProblem'](state, action) {// 二级数据
+		return { ...state, };
+	},
+	// 
+	['upload/del/createCourse'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/del/createVideo'](state, action) {// 二级数据
+		return { ...state, };
+	},
+	['upload/del/createText'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/del/createTest'](state, action) {// 一级数据
+		return { ...state, };
+	},
+	['upload/del/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
 

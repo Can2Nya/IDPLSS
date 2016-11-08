@@ -215,7 +215,7 @@ function* getUpLoadInfo(action) {
 	}
 }
 
-function* postCreateData(action) {
+function* CreateData(action) {
 	try {
 		if(action.type.search('post') !== -1) {
 			if(action.type == 'upload/post/createProblem' || action.type == 'upload/post/createVideo'){
@@ -243,6 +243,10 @@ function* postCreateData(action) {
 					type: nextAction,
 					pagination: 1
 				})
+				yield put({
+					type: 'upload/changeModalState',
+					modalState: false
+				})
 			}
 			
 		};
@@ -259,7 +263,22 @@ function* postCreateData(action) {
 				type: nextAction,
 				pagination: 1
 			})
-		};
+		}
+		if(action.type.search('del') !== -1){
+			const { jsonResult } = yield call(req.UserDelMainData, action);
+				if (jsonResult) {
+					message.success('删除成功')
+				}
+				let nextAction = 'user/get/user';
+				if(action.type == 'upload/del/createCourse') nextAction += 'Video'
+				if(action.type == 'upload/del/createText') nextAction += 'Text'
+				if(action.type == 'upload/del/createTest') nextAction += 'Test'
+				if(action.type == 'upload/del/createPost') nextAction =  `forum/get/categorySource`
+				yield put({
+					type: nextAction,
+					pagination: 1
+				})
+		}
 	} catch (err) {
 		message.error(err);
 	}
@@ -336,12 +355,20 @@ function* watchCreateData() {
 		'upload/post/createText',
 		'upload/post/createTest',
 		'upload/post/createPost',
+		'upload/post/createProblem',
+		'upload/post/createVideo',
+
 		'upload/put/createCourse',
 		'upload/put/createText',
 		'upload/put/createTest',
-		'upload/post/createProblem',
-		'upload/post/createVideo'
-		], postCreateData)
+
+		'upload/del/createCourse',
+		'upload/del/createText',
+		'upload/del/createTest',
+		'upload/del/createPost',
+		'upload/del/createProblem',
+		'upload/del/createVideo',
+		], CreateData)
 }
 function* watchUserRecommend() {
 	yield* takeEvery([
