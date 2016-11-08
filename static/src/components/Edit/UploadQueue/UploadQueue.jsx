@@ -151,39 +151,59 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		})
 	}
 	const handleSort = (orderList) =>{
-		let newList = {}
-		orderList.map((val,index)=>{
-			newList[val] = index
-		})
-		newList['isOrder'] = true
+		// let newList = {}
+		// orderList.map((val,index)=>{
+		// 	newList[val] = index
+		// })
+		// newList['isOrder'] = true
 		dispatch({
 			type: 'upload/uploadFileOrder',
-			order: newList
+			order: orderList
 		})
 	}
 	const handleSubmitAll = ()=>{
-		let list = [];
-		list = list.concat(uploadList,isSelectContextList)
-		if(uploadList.length <= 0) {//先指操作为上传的区域
-			message.error('列表为空')
-			return ;
+		if (order.length > 0) {
+			order.map((data,index)=>{
+				if(isSelectMenuItem == '3'){
+					dispatch({
+						type: 'upload/post/createProblem',
+						test_id: isSelectContext.id,
+						body: { ...data, problem_order: index}
+					})
+				}
+				else{
+					dispatch({
+						type: 'upload/post/createVideo',
+						course_id: isSelectContext.id,
+						body: data,
+					})
+				}
+			})
 		}
-		uploadList.map((data,index)=>{
-			if(isSelectMenuItem == '3'){
-				dispatch({
-					type: 'upload/post/createProblem',
-					test_id: isSelectContext.id,
-					body: { ...data, problem_order: order[data.id || data.problem_description || data.video_name]}
-				})
+		else{
+			let list = [];
+			list = list.concat(isSelectContextList,uploadList)
+			if(uploadList.length <= 0) {//先指操作为上传的区域,加入修改api后遍历list
+				message.error('列表为空')
+				return ;
 			}
-			else{
-				dispatch({
-					type: 'upload/post/createVideo',
-					course_id: isSelectContext.id,
-					body: data,
-				})
-			}
-		})
+			uploadList.map((data,index)=>{
+				if(isSelectMenuItem == '3'){
+					dispatch({
+						type: 'upload/post/createProblem',
+						test_id: isSelectContext.id,
+						body: { ...data, problem_order: order[data.id || data.problem_description || data.video_name]}
+					})
+				}
+				else{
+					dispatch({
+						type: 'upload/post/createVideo',
+						course_id: isSelectContext.id,
+						body: data,
+					})
+				}
+			})
+		}
 	}
 	const handleChangeModalState = (type) =>{
 		if(type == 'new'){// 新文件
@@ -269,24 +289,31 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		list = list.concat(uploadList,isSelectContextList)
 		if(list.length <= 0) return <div>点击左下添加内容吧</div>;
 		else{
-			if(order.isOrder == true){
-				let index = 0
-				let newlist = []
-				for(let val in order){
-					// returnlist.push(
-					// 	<SortItem className='dynamic-item' sortData={`${val}`} key={index} >
-					// 	<UploadItem data={list[index]} form={form} onChange={handleChange} index={index}/>
-					// 	</SortItem>
-					// )
-					if(val == 'isOrder') break;
-					const match = pathToRegexp(':name-:level').exec(val)
-					// console.log(match)
+			// if(order.isOrder == true){
+			// 	let newlist = []
+			// 	for(let val in order){
+			// 		if(val == 'isOrder') break;
+			// 		const match = pathToRegexp(':name-:level').exec(val)
+			// 		newlist = [ ...newlist, list[match[2]] ]
+			// 	}
+			// 	return newlist.map((data,index) => {
+			// 		let orderlist = Object.getOwnPropertyNames(order)//
+			// 		return(
+			// 			<SortItem className='dynamic-item' sortData={`${orderlist[index]}`} key={index} >
+			// 			<UploadItem data={data} form={form} onChange={handleChange} index={index}/>
+			// 			</SortItem>
+			// 		)
+			// 	})
 
-					newlist = [ ...newlist, list[match[2]] ]
-					// console.log(val)
-					index++;
-
-				}
+			// }
+			if(order.length > 0 ){
+				return order.map((data,index)=>{
+					return(
+					<SortItem className='dynamic-item' sortData={data} key={index} >
+					<UploadItem data={data} form={form} onChange={handleChange} index={index}/>
+					</SortItem>
+					)
+				})
 			}
 			return list.map((data,index) => {
 				// console.log(data.file[0])
@@ -295,7 +322,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				// 刚上传的东西 包含 { file:[], "video_name", "video_description"}//视频
 				// {file:[],problem_description, problem_type, "choice_a": 3.12,      // 选项a的内容，下面类推"choice_b":12,"choice_c":13,"choice_d":14, }
 				return(
-					<SortItem className='dynamic-item' sortData={`${data.problem_description || data.id || data.file[0].preview}-${index}`} key={index} >
+					// <SortItem className='dynamic-item' sortData={`${data.problem_description || data.id || data.file[0].preview}-${index}`} key={index} >
+					// <UploadItem data={data} form={form} onChange={handleChange} index={index}/>
+					// </SortItem>
+					<SortItem className='dynamic-item' sortData={data} key={index} >
 					<UploadItem data={data} form={form} onChange={handleChange} index={index}/>
 					</SortItem>
 				)
