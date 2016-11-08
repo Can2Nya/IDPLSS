@@ -151,7 +151,7 @@ class User(db.Model):
     name = db.Column(db.String(32))
     sex = db.Column(db.Integer, default=0)  # 性别  0代表男生  1代表女生
     subject = db.Column(db.String(32))  # 注册填写专业学科类别 1哲学 2经济学 3法学 4教育学 5文学 6历史学 7理学 8工学 9农学 10医学 11军事学 12管理学
-    interested_field = db.Column(db.Integer,  default=0)  # 注册时填写感兴趣的领域 基础科学1 工程技术2 历史哲学3 经管法律4 语言文化5 艺术音乐6 兴趣生活7
+    interested_field = db.Column(db.String(32))  # 注册时填写感兴趣的领域 基础科学1 工程技术2 历史哲学3 经管法律4 语言文化5 艺术音乐6 兴趣生活7
     about_me = db.Column(db.String(128))
     followings = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref('follower',
                                 lazy='joined'), lazy='dynamic', cascade='all, delete-orphan')
@@ -191,7 +191,8 @@ class User(db.Model):
 
     @staticmethod
     def add_user():
-        user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True)
+        user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True,
+                     interested_field="1:2:3")
         user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True)
         db.session.add(user1)
         db.session.add(user2)
@@ -460,7 +461,7 @@ class PostComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     show = db.Column(db.Boolean, default=True)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
@@ -505,7 +506,7 @@ class Course(db.Model):
     course_name = db.Column(db.String(128))
     description = db.Column(db.Text)
     course_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
-    images = db.Column(db.String(256))
+    images = db.Column(db.String(512))
     like = db.Column(db.Integer, default=0)
     collect_sum = db.Column(db.Integer, default=0)  # 收藏该课程的人
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
@@ -565,7 +566,7 @@ class VideoList(db.Model):
     video_description = db.Column(db.Text)
     source_url = db.Column(db.String(256))
     show = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     time_line = db.Column(db.String(128))
     # TODO:保留一个timeline 如前端能返回视频的时间则用
     video_order = db.Column(db.Integer)  # 视频的顺序
@@ -623,7 +624,7 @@ class CourseComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     show = db.Column(db.Boolean, default=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
 
@@ -676,7 +677,7 @@ class TextResource(db.Model):
     source_url = db.Column(db.String(256))
     like = db.Column(db.Integer, default=0)
     show = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('TextResourceComment', backref='text_resources', lazy='dynamic')
 
@@ -733,7 +734,7 @@ class TextResourceComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     show = db.Column(db.Boolean, default=True)
     text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resources.id'))
 
@@ -787,7 +788,7 @@ class TestList(db.Model):
     test_sum = db.Column(db.Integer, default=0)  # 参与过该测试的人
     test_category = db.Column(db.Integer, default=1)  # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
     key_words = db.Column(db.String(128))  # 存储该试卷对应的知识点
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     like = db.Column(db.Integer, default=0)
     image = db.Column(db.String(256))  # 存放该测试的封面图
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -851,7 +852,7 @@ class TestProblem(db.Model):
     problem_description = db.Column(db.Text)  # 问题的描述
     problem_order = db.Column(db.Integer)  # 题目的顺序
     show = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     description_image = db.Column(db.String(256))   # 问题描述的图片,可选
     problem_type = db.Column(db.Integer)  # 该题目的类型,选择题为0  主观题为1
     choice_a = db.Column(db.String(128))
@@ -932,7 +933,7 @@ class TestRecord(db.Model):
     """
     __tablename__ = 'test_record'
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     show = db.Column(db.Boolean, default=True)
     test_accuracy = db.Column(db.Float, default=0)
     answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 做题人id
@@ -979,7 +980,7 @@ class AnswerRecord(db.Model):
     """
     __tablename__ = 'answer_record'
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     show = db.Column(db.Boolean, default=True)
     right_answer = db.Column(db.Text)
     user_answer = db.Column(db.Text)
@@ -1042,7 +1043,7 @@ class TextResourceBehavior(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resources.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     is_collect = db.Column(db.Boolean, default=False)
     is_like = db.Column(db.Boolean, default=False)
 
@@ -1064,7 +1065,7 @@ class CourseBehavior(db.Model):
     id = db.Column(db.Integer, primary_key=BadSignature)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     is_collect = db.Column(db.Boolean, default=False)
     is_like = db.Column(db.Boolean, default=False)
 
@@ -1086,7 +1087,7 @@ class TestBehavior(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     test_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     is_test = db.Column(db.Boolean, default=False)
     is_like = db.Column(db.Boolean, default=False)
 
