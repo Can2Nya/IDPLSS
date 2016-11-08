@@ -46,7 +46,7 @@ const user = handleActions({
 	  	};
 	},
 	['user/login/modal/toggle'](state, action) {
-		return { ...state, modalState: !action.modalState, isloginFormSubmit: false };
+		return { ...state, modalState: action.modalState, isloginFormSubmit: false };
 	},
 
 	['user/logout'](state, action){

@@ -19,7 +19,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 	const handleModelToggle = () =>{
 		dispatch({
 			type: 'user/login/modal/toggle',
-			modalState: modalState,
+			modalState: !modalState,
 		})
 	}
 	const handleLogin = ()=>{

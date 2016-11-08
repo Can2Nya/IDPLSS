@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import Button from '../../Button/Button';
 
 import styles from './ManageCover.less';
+import config from '../../../config/config.js'
 
 const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 	
@@ -13,7 +14,7 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 		<div className={styles.block}>
 			<Row>
 				<Col span={7}>
-					<div className={styles.preview}>
+					<div className={styles.preview} style={{backgroundImage: `url(${config.qiniu}/${data['images']})`}}>
 					</div>
 				</Col>
 				<Col span={15}>
@@ -28,7 +29,7 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 					<Button type='primary' onClick={onClickEdit.bind(this,data['id'])}>编辑</Button>
 					</span>
 					<span>
-					<Button type='ghost' onClick={onDelete}>删除</Button>
+					<Button type='ghost' onClick={onDelete.bind(this,data['id'])}>删除</Button>
 					</span>
 					</div>
 				</Col>

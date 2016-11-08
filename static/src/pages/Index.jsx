@@ -21,6 +21,7 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
+				if (!data.show) return;
 				return <Col span={8} lg={6} key={index}>
 				<VideoCover data={data}  type='big'/>
 				</Col>
@@ -33,6 +34,7 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
+				if (!data.show) return;
 				return <Col span={6} lg={5} key={index}>
 				<TextCover wordtype={data.resource_type} data={data} type='big' />
 				</Col>
@@ -45,6 +47,7 @@ const Index = ({ video, text, test, location }) => {
 		if(recommend.list <= 0) return;
 		else{
 			return recommend.list.map((data,index)=>{
+				if (!data.show) return;
 				return <Col span={24} key={index}>
 				<TestCover data={data} type='big' />
 				</Col>
