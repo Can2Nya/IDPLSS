@@ -18,7 +18,7 @@ def test_user_index_calc(user):
     other_users = [u for u in all_user if u != target_user]
     user_behaviors = TestBehavior.query.filter_by(user_id=target_user.id).all()
     for b in user_behaviors:
-        target_collections.append(TestList.query.filter_by(id=b.test_id).first())
+        target_collections.append(TestList.query.filter_by(id=b.test_id, show=True).first())
     # print "user collect course is %s" % target_collections
     index_dict = dict()  # 创建倒排表
     user_count_dict = dict()  # 保存相同的次数
@@ -81,7 +81,7 @@ def test_user_similarity_recommend(user, k, n):
     # 将课程按照兴趣度进行排序
     tests_result = []
     for x in interested_tests_list[:n]:
-        tests_result.append(TestList.query.filter_by(id=x[0]).first())
+        tests_result.append(TestList.query.filter_by(id=x[0], show=True).first())
     return tests_result
 
 
@@ -94,7 +94,7 @@ def test_index_pandas_calc(user_courses, _other_users):
     """
     target_user_tests = user_courses
     other_users = _other_users
-    all_tests = TestList.query.all()
+    all_tests = TestList.query.filter_by(show=True).all()
     other_tests = [c for c in all_tests if c not in target_user_tests]
     index_dict = dict()  # 用户-课程倒排表
     test_data_frame = pd.DataFrame(data=0, index=[c.id for c in target_user_tests],
@@ -103,7 +103,7 @@ def test_index_pandas_calc(user_courses, _other_users):
         index_dict[u.id] = list()
         u_behaviors = TestBehavior.query.filter_by(user_id=u.id).all()
         for b in u_behaviors:
-            c = TestList.query.filter_by(id=b.test_id).first()
+            c = TestList.query.filter_by(id=b.test_id, show=True).first()
             index_dict[u.id].append(c.id)
         # print 'u %s over' % u.id
     for test in target_user_tests:
@@ -141,7 +141,7 @@ def test_similarity_recommend(user, k, n):
     target_collections = []   # 目标用户
     target_behaviors = TestBehavior.query.filter_by(user_id=target_user.id).all()
     for b in target_behaviors:
-        c = TestList.query.filter_by(id=b.test_id).first()
+        c = TestList.query.filter_by(id=b.test_id, show=True).first()
         target_collections.append(c)
     result_dict = dict()
     similarity_data_frame = test_index_pandas_calc(target_collections, other_users)
@@ -155,7 +155,7 @@ def test_similarity_recommend(user, k, n):
             if r > 0:
                 result_list = similarity_data_frame[cid][similarity_data_frame[cid] == r].index.tolist()
                 # print "result list is %s" % result_list
-                for i in result_list:  # 数据过滤,清楚重复的索引
+                for i in result_list:  # 数据过滤,清除重复的索引
                     if i not in no_repeate_list:
                         no_repeate_list.append(i)
         # print "no repe list is %s" % no_repeate_list
@@ -168,5 +168,5 @@ def test_similarity_recommend(user, k, n):
     # print w_sort   # 保存排好序的各个课程相似度
     recommend_tests = []
     for x in w_sort[:n]:
-        recommend_tests.append(TestList.query.filter_by(id=x[0]).first())
+        recommend_tests.append(TestList.query.filter_by(id=x[0], show=True).first())
     return recommend_tests

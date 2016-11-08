@@ -17,7 +17,7 @@ def user_index_calc(user):
     other_users = [u for u in all_user if u != target_user]
     user_behaviors = TextResourceBehavior.query.filter_by(user_id=target_user.id).all()
     for b in user_behaviors:
-        target_collections.append(TextResource.query.filter_by(id=b.text_resource_id).first())
+        target_collections.append(TextResource.query.filter_by(id=b.text_resource_id, show=True).first())
     # print "user collect resources is %s" % target_collections
     index_dict = dict()  # 创建倒排表
     user_count_dict = dict()  # 保存相同的次数
@@ -58,7 +58,7 @@ def text_resources_user_recommend(user, k, n):
     # print "user collect text resources is %s" % target_t_resources
     # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
-    all_resources = TextResource.query.all()
+    all_resources = TextResource.query.filter_by(show=True).all()
     calc = 0
     other_resources = [t_resource for t_resource in all_resources if t_resource not in target_t_resources]
     k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
@@ -80,7 +80,7 @@ def text_resources_user_recommend(user, k, n):
     # 将课程按照兴趣度进行排序
     resources_result = []
     for x in interested_resources_list[:n]:
-        resources_result.append(TextResource.query.filter_by(id=x[0]).first())
+        resources_result.append(TextResource.query.filter_by(id=x[0], show=True).first())
     return resources_result
 
 
@@ -93,7 +93,7 @@ def text_resource_index_pandas_calc(user_resources, _other_users):
     """
     target_user_resources = user_resources
     other_users = _other_users
-    all_resources = TextResource.query.all()
+    all_resources = TextResource.query.filter_by(show=True).all()
     other_resources = [c for c in all_resources if c not in target_user_resources]
     index_dict = dict()  # 用户-课程倒排表
     resources_data_frame = pd.DataFrame(data=0, index=[c.id for c in target_user_resources],
@@ -102,7 +102,7 @@ def text_resource_index_pandas_calc(user_resources, _other_users):
         index_dict[u.id] = list()
         u_behaviors = TextResourceBehavior.query.filter_by(user_id=u.id).all()
         for b in u_behaviors:
-            c = TextResource.query.filter_by(id=b.text_resource_id).first()
+            c = TextResource.query.filter_by(id=b.text_resource_id, show=True).first()
             index_dict[u.id].append(c.id)
         # print 'u %s over' % u.id
     # print "---data frame is \n %s" % resources_data_frame
@@ -142,7 +142,7 @@ def text_resources_recommend(user, k, n):
     target_collections = []   # 目标用户
     target_behaviors = TextResourceBehavior.query.filter_by(user_id=target_user.id).all()
     for b in target_behaviors:
-        c = TextResource.query.filter_by(id=b.text_resource_id).first()
+        c = TextResource.query.filter_by(id=b.text_resource_id, show=True).first()
         target_collections.append(c)
     result_dict = dict()
     similarity_data_frame = text_resource_index_pandas_calc(target_collections, other_users)
@@ -169,5 +169,5 @@ def text_resources_recommend(user, k, n):
     # print w_sort   # 保存排好序的各个课程相似度
     recommend_text_resources = []
     for x in w_sort[:n]:
-        recommend_text_resources.append(TextResource.query.filter_by(id=x[0]).first())
+        recommend_text_resources.append(TextResource.query.filter_by(id=x[0], show=True).first())
     return recommend_text_resources
