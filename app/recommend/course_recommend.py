@@ -19,7 +19,7 @@ def user_similarity_calc(user):
     target_collections = []
     course_behaviors = CourseBehavior.query.filter_by(user_id=target_user.id).all()
     for behavior in course_behaviors:
-        target_collections.append(Course.query.filter_by(id=behavior.course_id).first())
+        target_collections.append(Course.query.filter_by(id=behavior.course_id, show=True).first())
     # 计算相似度, w字典保存相相似度
     # print "user collection courses is %s" % target_collections
     w = dict()
@@ -28,7 +28,7 @@ def user_similarity_calc(user):
         repeat_sum = 0
         user_behaviors = CourseBehavior.query.filter_by(user_id=u.id).all()
         for b in user_behaviors:
-            other_collections.append(Course.query.filter_by(id=b.course_id).first())
+            other_collections.append(Course.query.filter_by(id=b.course_id, show=True).first())
         for item_target in target_collections:
             for item_other in other_collections:
                 if item_target == item_other:
@@ -55,7 +55,7 @@ def user_index_calc(user):
     other_users = [u for u in all_user if u != target_user]
     user_behaviors = CourseBehavior.query.filter_by(user_id=target_user.id).all()
     for b in user_behaviors:
-        target_collections.append(Course.query.filter_by(id=b.course_id).first())
+        target_collections.append(Course.query.filter_by(id=b.course_id, show=True).first())
     # print "user collect course is %s" % target_collections
     index_dict = dict()  # 创建倒排表
     user_count_dict = dict()  # 保存相同的次数
@@ -100,7 +100,7 @@ def user_similarity_recommend(user, k, n):
     # print "user collect course is %s" % target_courses
     # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
-    all_courses = Course.query.all()
+    all_courses = Course.query.filter_by(show=True).all()
     calc = 0
     other_courses = [course for course in all_courses if course not in target_courses]
     k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
@@ -135,7 +135,7 @@ def course_index_pandas_calc(user_courses, _other_users):
     """
     target_user_courses = user_courses
     other_users = _other_users
-    all_courses = Course.query.all()
+    all_courses = Course.query.filter_by(show=True).all()
     other_courses = [c for c in all_courses if c not in target_user_courses]
     index_dict = dict()  # 用户-课程倒排表
     course_data_frame = pd.DataFrame(data=0, index=[c.id for c in target_user_courses],
@@ -144,7 +144,7 @@ def course_index_pandas_calc(user_courses, _other_users):
         index_dict[u.id] = list()
         u_behaviors = CourseBehavior.query.filter_by(user_id=u.id).all()
         for b in u_behaviors:
-            c = Course.query.filter_by(id=b.course_id).first()
+            c = Course.query.filter_by(id=b.course_id, show=True).first()
             index_dict[u.id].append(c.id)
         # print 'u %s over' % u.id
     for course in target_user_courses:
@@ -182,7 +182,7 @@ def course_similarity_recommend(user, k, n):
     target_collections = []   # 目标用户
     target_behaviors = CourseBehavior.query.filter_by(user_id=target_user.id).all()
     for b in target_behaviors:
-        c = Course.query.filter_by(id=b.course_id).first()
+        c = Course.query.filter_by(id=b.course_id, show=True).first()
         target_collections.append(c)
     result_dict = dict()
     similarity_data_frame = course_index_pandas_calc(target_collections, other_users)

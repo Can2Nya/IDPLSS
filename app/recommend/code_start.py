@@ -13,8 +13,8 @@ def code_start_course(user):
     print "interested field is %s" % interested_field
     course_list = []
     for filed in interested_field:
-        c = Course.query.filter_by(course_category=int(filed)).order_by(Course.timestamp.desc()).first()
-        if c is not None:
+        c = Course.query.filter_by(course_category=int(filed), show=True).order_by(Course.timestamp.desc()).first()
+        if c is not None and c.show is True:
             course_list.append(c)
     print "course is %s" % course_list
     if len(course_list) < 3:
@@ -34,8 +34,8 @@ def code_start_text_resource(user):
     interested_filed = user.interested_field.split(":")
     text_resource_list = []
     for field in interested_filed:
-        t_resource = TextResource.query.filter_by(resource_category=int(field)).order_by(TextResource.timestamp.desc()).first()
-        if t_resource is not None:
+        t_resource = TextResource.query.filter_by(resource_category=int(field), show=True).order_by(TextResource.timestamp.desc()).first()
+        if t_resource is not None and t_resource.show is True:
             text_resource_list.append(t_resource)
     if len(text_resource_list) < 3:
         return text_resource_list
@@ -53,8 +53,8 @@ def code_start_test(user):
     interested_filed = user.interested_field.split(":")
     test_list = []
     for field in interested_filed:
-        test = TestList.query.filter_by(test_category=int(field)).order_by(TestList.timestamp.desc()).first()
-        if test is not None:
+        test = TestList.query.filter_by(test_category=int(field), show=True).order_by(TestList.timestamp.desc()).first()
+        if test is not None and test.show is True:
             test_list.append(test)
     if len(test_list) < 3:
         return test_list

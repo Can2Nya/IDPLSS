@@ -9,7 +9,7 @@ def popular_course():
     :return:
     """
     l = []
-    all_course = Course.query.all()
+    all_course = Course.query.filter_by(show=True).all()
     [l.append(course.collect_sum) for course in all_course if course is not None]  # 将课程学习数量添加到list中:
     if len(l) < 3:
         return all_course
@@ -32,7 +32,7 @@ def popular_text_resource():
     :return:
     """
     l = []
-    all_text_resources = TextResource.query.all()
+    all_text_resources = TextResource.query.filter_by(show=True).all()
     [l.append(t_resource.download_sum) for t_resource in all_text_resources if t_resource is not None]  # 将文本资料下载学习添加到list中
     if len(l) < 3:
         return all_text_resources
@@ -55,7 +55,7 @@ def popular_test():
     :return:
     """
     l = []
-    all_test = TestList.query.all()
+    all_test = TestList.query.filter_by(show=True).all()
     [l.append(test.test_sum) for test in all_test if test is not None]  # 将课程学习数量添加到list中
     if len(l) < 3:
         return all_test
