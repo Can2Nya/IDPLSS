@@ -20,7 +20,7 @@ import config from '../config/config.js'
 
 const Manage = ({ upload, user, dispatch, location }) => {
 	const { loginUserList, userZoneList, total } = user
-	const { time,files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
+	const { time, files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
 
 	// ---------------action-------------------
 	// 切换菜单
@@ -44,6 +44,14 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		dispatch({
 			type: 'upload/changeEditState',
 			isEdit: false,
+		})
+		dispatch({
+			type: 'upload/multiplyPlus',
+			uploadListFiles: []
+		})
+		dispatch({
+			type: 'upload/multiplyPlusUploadList',
+			uploadList: []
 		})
 	}
 

@@ -51,7 +51,12 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		if (isSelectMenuItem == '1' && tmpFile.length > 0) {
 			dispatch({
 				type: 'upload/multiplyPlusUploadList',
-				uploadList: { file: tmpFile, video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`)}
+				uploadList: [
+				...uploadList,
+				{ 
+					file: tmpFile, 
+					video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`)
+				}]
 			})
 			dispatch({
 				type: 'upload/tmpPlus',
@@ -105,7 +110,9 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					}
 					dispatch({
 						type: 'upload/multiplyPlusUploadList',
-						uploadList: { 
+						uploadList: [
+						...uploadList,
+						{ 
 							...list,
 							file: uploadListFiles, 
 							description_image: images,
@@ -115,7 +122,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							author_id: loginUserList.user_id,
 							test_id: isSelectContext.id,
-						}
+						}]
 					})
 					dispatch({
 						type: 'upload/changeTime',
