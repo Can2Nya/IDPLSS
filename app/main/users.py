@@ -570,6 +570,32 @@ def self_test_problems(tid):
     })
 
 
+@main.route('/api/user/interested_field', methods=['GET'])
+@auth.login_required
+@get_current_user
+def interested_field():
+    # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
+    filed_list = [0, 1, 2, 3, 4, 5, 6, 7]
+    user = g.current_user
+    course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
+    test_behavior = TestBehavior.query.filter_by(user_id=user.id).all()
+    text_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
+    result_dict = dict.fromkeys(filed_list, 0)
+    for c in course_behaviors:
+        c_id = c.course_id
+        course = Course.query.filter_by(id=c_id).first()
+        result_dict[course.course_category] += 1
+    for t in test_behavior:
+        t_id = t.test_list_id
+        test = TestList.query.filter_by(id=t_id).first()
+        result_dict[test.test_catrgory] += 1
+    for r in text_behaviors:
+        r_id = r.text_resource_id
+        resource = TextResource.query.filter_by(id=r_id).first()
+        result_dict[resource.resource_category] += 1
+    return jsonify(result_dict)
+
+
 @main.route('/api/user/time-frequency', methods=['GET'])
 @auth.login_required
 @get_current_user

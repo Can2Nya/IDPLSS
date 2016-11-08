@@ -128,19 +128,42 @@ def new_problem(tid):
     return self_response('add problem successfully')
 
 
-@main.route('/api/test-list/<int:tid>/problems/<int:pid>', methods=['GET', 'DELETE'])
+@main.route('/api/test-list/<int:tid>/problems/<int:pid>', methods=['GET', 'DELETE', 'PUT'])
+@user_login_info
 def problem_operation(tid, pid):
     problem = TestProblem.query.get_or_404(pid)
+    user = g.current_user
     if request.method == 'GET':
         if problem.show is not False:
             return jsonify(problem.to_json())
         else:
             return not_found()
     elif request.method == 'DELETE':
-        problem.show = False
-        db.session.add(problem)
-        db.session.commit()
-        return self_response('delete problem successfully')
+        if user.id == problem.author_id or have_school_permission(user):
+            problem.show = False
+            db.session.add(problem)
+            db.session.commit()
+            return self_response('delete problem successfully')
+        else:
+            return forbidden('does not have permission to delete this problem')
+    elif request.method == 'PUT':
+        if user.id == problem.author_id or have_school_permission(user):
+            modify_info = request.json
+            problem.right_answer = modify_info['right_answer']
+            problem.choice_a = modify_info['choice_a']
+            problem.choice_b = modify_info['choice_b']
+            problem.choice_c = modify_info['choice_c']
+            problem.choice_d = modify_info['choice_d']
+            problem.problem_description = modify_info['problem_description']
+            problem.description_image = modify_info['description_image']
+            problem.problem_type = modify_info['problem_type']
+            problem.answer_explain = modify_info['answer_explain']
+            db.session.add(problem)
+            db.session.commit()
+            return self_response("update problem info successfully")
+        else:
+            return forbidden('does not have permission to edit this problem')
+
     else:
         return self_response('invalid operation')
 

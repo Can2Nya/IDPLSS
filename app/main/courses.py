@@ -1,4 +1,4 @@
-# codint: utf-8
+# coding: utf-8
 from flask import g, request, url_for, current_app, jsonify
 from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses, CourseBehavior
 from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
@@ -11,6 +11,10 @@ from app.main.authentication import auth
 
 @main.route('/api/courses', methods=['GET'])
 def courses():
+    """
+    获得所有课程
+    :return: json
+    """
     page = request.args.get('page', 1, type=int)
     pagination = Course.query.filter_by(show=True).order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
