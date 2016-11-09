@@ -136,3 +136,24 @@ export async function UserRecommend(action) {
 	if(action.type.search('test') !== -1) url += 'tests/1'
 	return xFetch(url,{method: 'GET',});
 }
+
+export async function UserCollect(action) {
+	// get ,delete方法
+	let url = `${apiUrl}/api/`
+	let msg = {method: `${action.method || 'GET'}`}
+	if(action.type.search('set') !== -1){
+		if(action.context == 'video') url += `courses/${action.id}/collect-course`
+		if(action.context == `text`) url += `text-resources/${action.id}/collect-resource`
+		if(action.context == `test`) {
+			url += `test-list/new-test-record`;
+			msg = {...msg, body: JSON.stringify(action.body)}
+		}
+	}
+	if(action.type.search('get') !== -1){
+		if(action.context == 'video') url += `courses/${action.id}/is-collecting`
+		if(action.context == `text`) url += `text-resources/${action.id}/is-collecting`
+		// if(action.context == `test`) url += `tests/${action.id}`
+	}
+	
+	return xFetch(url,msg);
+}

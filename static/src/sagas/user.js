@@ -1,6 +1,6 @@
 import { takeLatest, takeEvery } from 'redux-saga';
 import { take, call, put, fork, cancel } from 'redux-saga/effects';
-
+import { browserHistory } from 'react-router'
 import { message } from 'antd';
 
 import * as req from '../services/user';
@@ -301,6 +301,37 @@ function* getUserRecommend(action) {
 	}
 }
 
+function* getUserCollect(action) {
+	try {
+		const { jsonResult } = yield call(req.UserCollect, action);
+		if (jsonResult) {
+			if(action.type == 'user/set/Collect' && (action.method == 'GET' || action.method == 'POST')){
+				yield put({
+					type: 'user/get/Collect/success',
+					payload: true
+				});
+				if(action.context == 'test'){
+					browserHistory.push(`/play/test/${action.test_id}/${jsonResult.test_record_id}`)
+				}
+			}
+			if(action.type == 'user/set/Collect' && action.method == 'DELETE'){
+				yield put({
+					type: 'user/get/Collect/success',
+					payload: false
+				});
+			}
+			if(action.type == 'user/get/Collect'){
+				yield put({
+					type: 'user/get/Collect/success',
+					payload: jsonResult.status
+				});
+			}
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
 
 
 function* watchUserLogin() {
@@ -377,6 +408,13 @@ function* watchUserRecommend() {
 		'user/get/testRecommend'
 		], getUserRecommend)
 }
+function* watchUserCollect() {
+	yield* takeEvery([
+		'user/get/collect',
+		'user/set/collect',
+		'user/set/collect/success'
+		], getUserRecommend)
+}
 
 
 /*function* watchUserGetJson() {
@@ -396,6 +434,7 @@ export default function* () {
 	yield fork(watchCreateData)
 	yield fork(watchUserRecommend)
 	//yield fork(watchUserGetJson)
+	yield fork(watchUserCollect)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

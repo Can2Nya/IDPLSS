@@ -177,15 +177,31 @@ const user = handleActions({
 	['user/get/recommend/success'](state, action){
 		return { ...state, recommend: action.payload }
 	},
+	// -------内容------------------
+	['user/get/collect'](state, action){
+		// context: Video,Text,test
+		return { ...state }
+	},
+	['user/set/collect'](state, action){
+		// 触发需要method：get，delete,post(创建测试使用)
+		// context: video,text,test
+		return { ...state }
+	},
+	['user/set/collect/success'](state, action){
+		return { ...state, isCollectContext: action.isCollectContext }
+	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
 	modalState: false,//modal是否被激活
 	stepState: 0,//注册步骤状态
+
 	isAllowStepChange: false,//可以允许改变步骤
 	isloginFormSubmit: false,//login表单是否被提交【这名字咱要改惹
 	isregisterFormSubmit: false,//register表单是否被提交
 	isregisterConfirm: false,//是否邮箱验证成功
+	isCollectContext: false,//是否参加内容【课程／文本／测试】
+
 	isSelectTab: '0',// user zone一级菜单
 	isSelectSubTab: '0', // user zone 二级菜单
 	total: 0,// 下面两个列表的中内容的总数【不是两个列表加起来的

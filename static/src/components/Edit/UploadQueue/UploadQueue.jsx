@@ -9,6 +9,7 @@ import Qiniu from 'react-qiniu'
 
 import Button from '../../Button/Button';
 import UploadItem from '../../Widget/UploadItem/UploadItem';
+import config from '../../../config/config.js'
 
 import styles from './UploadQueue.less';
 import 'react-anything-sortable/sortable.css';
@@ -41,34 +42,59 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 	};
 	// -----------action----------------------
 	const isChangeorAdd = () =>{
-		if(!itemData.problem_description || !itemData.video_name) handleAdd();
-		else handleChangeOk()
-	}
-	const handleChangeOk = () =>{
-
-	}
-	const handleAdd = ()=>{
-		if (isSelectMenuItem == '1' && tmpFile.length > 0) {
-			dispatch({
-				type: 'upload/multiplyPlusUploadList',
-				uploadList: [
-				...uploadList,
-				{ 
-					file: tmpFile, 
-					video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`)
-				}]
-			})
-			dispatch({
-				type: 'upload/tmpPlus',
-				tmpFile: []
-			})
-			dispatch({
-				type: 'upload/changeTime',
-			})
+		let itemdata = itemData.problem_description || itemData.video_name
+		if(!itemdata) {
+			handleAdd()
+		}
+		else {
 			dispatch({
 				type: 'upload/changeModalState',
-				modalState: false
+				modalState: !modalState
 			})
+		}
+	}
+	// const handleChangeOk = () =>{
+	// 	dispatch({
+	// 		type: 'upload/changeModalState',
+	// 		modalState: !modalState
+	// 	})
+	// }
+	const handleAdd = ()=>{
+		if (isSelectMenuItem == '1' ) {
+			if(tmpFile.length <= 0){
+				message.error('请上传文件')
+				return;
+			}
+			validateFields([
+				`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+				`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+				],(errors, values)=>{
+					dispatch({
+						type: 'upload/multiplyPlusUploadList',
+						uploadList: [
+						...uploadList,
+						{ 
+							file: tmpFile, 
+							// progress: uploadListProgress[tmpFile[0].preview] || 100,// 进度
+							video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							video_description: getFieldValue(`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							source_url: getFieldValue(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							author_id: loginUserList.user_id,
+							course_id: isSelectContext.id,
+						}]
+					})
+					dispatch({
+						type: 'upload/tmpPlus',
+						tmpFile: []
+					})
+					dispatch({
+						type: 'upload/changeTime',
+					})
+					dispatch({
+						type: 'upload/changeModalState',
+						modalState: false
+					})
+				})
 		};
 		if (isSelectMenuItem == '3') {
 			let list = {}
@@ -171,11 +197,15 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						body: { ...data, problem_order: index}
 					})
 				}
-				else{
+				if(isSelectMenuItem == '1'){
+					if(!data.file[0].request.xhr.response) {
+						message.error('列表有文件未上传完成')
+						return ;
+					}
 					dispatch({
 						type: 'upload/post/createVideo',
 						course_id: isSelectContext.id,
-						body: data,
+						body: { ...data, video_order: index}
 					})
 				}
 			})
@@ -195,7 +225,11 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						body: { ...data, problem_order: order[data.id || data.problem_description || data.video_name]}
 					})
 				}
-				else{
+				if(isSelectMenuItem == '1'){
+					if(!data.file[0].request.xhr.response) {
+						message.error('列表有文件未上传完成')
+						return ;
+					}
 					dispatch({
 						type: 'upload/post/createVideo',
 						course_id: isSelectContext.id,
@@ -206,7 +240,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		}
 	}
 	const handleChangeModalState = (type) =>{
-		if(type == 'new'){// 新文件
+		if(type == 'new' || type == 'clearitem'){// 新文件
 			dispatch({
 				type: 'upload/itemDataPlus',
 				itemData: {},
@@ -230,6 +264,9 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				tmpFile: file
 			})
 		}
+		file.uploadPromise = (e) =>{
+			console.log(e)// 后期再加上文件上传判断
+		}
 	}
 	const handleUpload = (files) =>{
 		let progresses = {};
@@ -240,9 +277,35 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					type: 'upload/setMultiplyProgress',
 					uploadListProgress: progresses
 				})
+				// if(uploadList.length > 0){
+				// 	uploadList.map((data,index)=>{
+				// 		let newlist = []
+				// 		newlist[index] = { ...data, progress: e.percent}
+				// 		dispatch({
+				// 			type: 'upload/multiplyPlusUploadList',
+				// 			uploadList: newlist
+				// 		})
+				// 	})
+				// }
 			}
 		})
 	}
+
+	const testImageValue = () =>{
+		let filelist = [];
+		if(itemData.description_image) {
+			itemData.description_image.split(':').map((filename,index)=>{
+				filelist = [ ...filelist, filename]
+			})
+		}
+		if(uploadListFiles.length > 0 ){
+			uploadListFiles.map((file,index)=>{
+				if(file.request.xhr.response) filelist = [ ...filelist, `${JSON.parse(file.request.xhr.response).key}`]
+			})
+		}
+		return filelist;
+	}
+
 
 	// --------render-------------------------
 	const renderUploadText = () =>{//添加文件的modal
@@ -255,27 +318,23 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				)
 			}
 			else{
-				console.log(1)
 				if(!tmpFile[0].request.xhr.response) return <Progress percent={uploadListProgress[tmpFile[0].preview].toFixed(0)} strokeWidth={5} status="active" />
 				else return <div>{tmpFile[0].name}</div>
 			}
 		
 	}
 
-	
-	const testImageValue = () =>{
-		let filelist = [];
-		if(uploadListFiles.length <= 0) return filelist;
-		else{
-			uploadListFiles.map((file,index)=>{
-				if(file.request.xhr.response) filelist = [ ...filelist, `${JSON.parse(file.request.xhr.response).key}`]
-			})
-			return filelist;
-		}
-	}
+
 	const renderTestImange = () =>{
-		if(uploadListFiles.length <= 0) return;
-		else{
+		if (itemData.description_image) {
+			return itemData.description_image.split(':').map((filename,index)=>{
+				return(
+					<div className={styles.preview} key={index} style={{ backgroundImage: `url(${config.qiniu}/${filename})`}}>
+					</div>
+				)
+			})
+		};
+		if(uploadListFiles.length > 0) {
 			 return uploadListFiles.map((data,index) => {
 				return(
 					<div className={styles.preview} key={index} style={{ backgroundImage: `url(${data.preview})`}}>
@@ -337,14 +396,14 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			<Modal title="添加视频" 
 			width={900}
 			visible={modalState} 
-			onOk={isChangeorAdd.bind(this)} onCancel={handleChangeModalState.bind(this)}
+			onOk={isChangeorAdd.bind(this)} onCancel={handleChangeModalState.bind(this,'clearitem')}
 			>
 			<Form>
 			<Row>
 				<Col span={8}>
 				<Form.Item 
 				help="仅限视频格式"
-				hasFeedback>
+				>
 					<a>
 				<Qiniu 
 					onDrop={handleDrop} 
@@ -354,7 +413,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					token={token} 
 					multiple={false}
 					onUpload={handleUpload}>
-					<div className={styles.preview}>
+					<div className={styles.preview} style={{ width: '100%'}}>
 						{ renderUploadText() }
 						
 					</div>
@@ -362,7 +421,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				</a>
 				<Input type='text' 
 				{...getFieldProps(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						// initialValue: testImageValue(),
+						initialValue: testImageValue(),
 						rules: [
 							{ required: true },
 						],
@@ -375,24 +434,24 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					<Form.Item
 					{...formItemLayout}
 					label='标题'
-					hasFeedback
+					
 					>
 						<Input {...getFieldProps(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-							// initialValue: itemData.video_name || itemData.course_name || null,
+							initialValue: itemData.video_name || null,
 							rules: [
-								{ required: true, min: 2, max: 15, message: ['至少为 2 个字符','最多为 15 个字符'] },
+								{ required: true, min: 1, max: 15, message: ['至少为 2 个字符','最多为 15 个字符'] },
 							],
 						})} type="text" />
 					</Form.Item>
 					<Form.Item
 					{...formItemLayout}
 					label='描述'
-					hasFeedback
+					
 					>
 						<Input {...getFieldProps(`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-							// initialValue: isSelectContext.video_description || isSelectContext.test_description || null,
+							initialValue: itemData.video_description || null,
 							rules: [
-								{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
+								{ required: true, min: 1, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 							],
 						})} type="textarea" rows={6}/>
 					</Form.Item>
@@ -416,7 +475,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`choice-a-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.chioce_a || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -429,7 +488,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.chioce_b || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -442,7 +501,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.chioce_c || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -455,7 +514,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.chioce_d || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -469,7 +528,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			<Modal title="添加问题" 
 			width={900}
 			visible={modalState} 
-			onOk={isChangeorAdd.bind(this)} onCancel={handleChangeModalState.bind(this)}
+			onOk={isChangeorAdd.bind(this)} onCancel={handleChangeModalState.bind(this,'clearitem')}
 			>
 			<Form>
 			<Row>
@@ -478,7 +537,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.problem_description || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -504,8 +563,9 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 				<Input type='text'
 					{...getFieldProps(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
+						initialValue: itemData.answer_explain || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
@@ -518,7 +578,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					{...getFieldProps(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
 						initialValue: itemData.right_answer || null,
 						rules: [
-							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
 					})}
 				/>
