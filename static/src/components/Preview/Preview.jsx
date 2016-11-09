@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import styles from './Preview.less';
 import config from '../../config/config.js'
 
-const Preview = ({ type, data }) => {
+const Preview = ({ type, data, isCollect }) => {
 	const PreviewCls = () =>{
 		if(type == 'video' || type == 'text'){
 			if(type == 'text'){
@@ -47,9 +47,23 @@ const Preview = ({ type, data }) => {
 				<a href={`${data.source_url}`} download={`${data.source_url}`}><Button className={styles.button}>下载</Button></a>
 			)
 		}
-		else return(
-			<Button className={styles.button}>立即参加</Button>
-		)
+		else {
+			if(isCollect == false || type == 'test' ){
+				return <Button className={styles.button}>立即参加</Button>
+			}
+			else{
+				return (
+					<Row gutter={8} type='flex' align="middle">
+					<Col span={16}>
+						<Button className={styles.button}>已参加</Button>
+					</Col>
+					<Col span={8}>
+						取消参加
+					</Col>
+					</Row>
+				)
+			}
+		}
 	}
 	return (
 		<div className={styles.preview}>

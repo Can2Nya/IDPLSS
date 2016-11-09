@@ -19,13 +19,15 @@ let UploadItem = ({ upload, user, dispatch, form, data, index, onChange }) => {
 
 	// ------------render-------------------
 	const renderProgresses = () =>{
-		if(data.file && data.file.length > 0){
-			data.file.map((f) =>{
-				f.onprogress = (e) =>{
-					return e.percent
-				}
-			})
-		}
+		// if(data.file && data.file.length > 0){
+		// 	data.file.map((f) =>{
+		// 		return f.onprogress = (e) =>{
+		// 			console.log(1)
+		// 			console.log(e.percent)
+		// 			e.percent
+		// 		}
+		// 	})
+		// }
 		// if(tmpFile.length > 0){//修改上传的
 		// 	tmpFile.map((f) =>{
 		// 		f.onprogress = (e) =>{
@@ -33,6 +35,9 @@ let UploadItem = ({ upload, user, dispatch, form, data, index, onChange }) => {
 		// 		}
 		// 	})
 		// }
+		if(data.file && data.file.length > 0){
+			return uploadListProgress[data.file[0].preview]
+		}
 		else return 100
 	}
 	return (
@@ -49,7 +54,7 @@ let UploadItem = ({ upload, user, dispatch, form, data, index, onChange }) => {
 		<Button onClick={onChange.bind(this,data,index)}>
 		<Icon type="edit" />
 		</Button>
-		<Button onClick={onChange.bind(this,data,index)}>
+		<Button >
 		<Icon type="edit" />
 		</Button>
 		</span>

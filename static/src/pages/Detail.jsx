@@ -22,7 +22,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 	const { total, comment } = isSelectContext
 	const { id } = isSelectContext.context
 
-	const { loginUserList } = user
+	const { loginUserList, isCollectContext } = user
 
 	// -------------action----------------
 	const handlePostSubmit = (form, value, e) => {//评论表单提交(参数顺序不能反)
@@ -55,6 +55,31 @@ const Detail = ({ context, user, dispatch, location }) => {
 
 			})
 		});
+	}
+
+	const handleUserCollect = () =>{
+		if(!loginUserList.user_id) {
+			dispatch({
+				type: 'user/login/modal/toggle',
+				modalState: true,
+			})
+		}
+		else{
+			if(stateName == 'test'){
+				dispatch({
+					type: 'user/set/collect',
+					context: `${stateName}`,
+					method: 'POST',
+					body: {answerer_id: loginUserList.user_id, test_id: isSelectContext.test_id }
+				})
+				// browserHistory.push('/play/test/')
+			}
+			dispatch({
+				type: 'user/set/collect',
+				context: `${stateName}`,
+				method: 'GET'
+			})
+		}
 	}
 
 	const handlePostDelete = (commentid, authorid, e) =>{
@@ -147,7 +172,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={8} lg={7}>
-			<Preview type={`${stateName}`} data={ isSelectContext.context } />
+			<Preview type={`${stateName}`} data={ isSelectContext.context } isCollect={ isCollectContext } />
 			<div className={styles.margin}>
 			<Recommend type={stateName} />
 			</div>

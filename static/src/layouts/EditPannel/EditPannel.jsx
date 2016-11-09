@@ -22,116 +22,20 @@ let EditPannel = ({ upload, user, form, dispatch }) => {
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
 	const { files, token, modalState, progress, isSelectMenuItem, isSelectContextId, isSelectContext, isEdit } = upload
-// -----------------form rule-----------------------
-	/*const formItemLayout = {
-		labelCol: { span: 4 },
-		wrapperCol: { span: 20 },
-	};
-	const keywordProps = getFieldProps(`keyword-${isSelectContextId}`, {
-		rules: [
-			{ required: true, message:'请输入至少一个关键字', type: 'array'},
-		],
-	});
-	const fileValue = () =>{
-		if(files.length <= 0 || !files[0].request.xhr.response) return `${isSelectContext.source_url || isSelectContext.images}`;
-		else return `${config.qiniu}/${JSON.parse(files[0].request.xhr.response).key}`
-	}
-	const handlePreSubmitData = (formType)=>{
-		
-		let body = {};
-			
-			validateFields([`title-${formType}-${isSelectContextId}`,`detail-${formType}-${isSelectContextId}`,`category-${formType}-${isSelectContextId}`],(errors, values) =>{
-				if(errors){
-					return ;
-				}
-				if(isSelectMenuItem == '1'){
-					validateFields([`file-${formType}-${isSelectContextId}`],(errors, values) =>{
-						if(errors){
-							return ;
-						}
-						body = {course_name: getFieldValue(`title-${formType}-${isSelectContextId}`), description: getFieldValue(`detail-${formType}-${isSelectContextId}`), category: getFieldValue(`category-${formType}-${isSelectContextId}`), image: getFieldValue(`file-${formType}-${isSelectContextId}`)}
-						handleSubmit(body)
-					});
-				}
-				if(isSelectMenuItem == '2'){
-					validateFields([`file-${formType}-${isSelectContextId}`],(errors, values) =>{
-						if(errors){
-							return ;
-						}
-						let allWordType = ['other','doc:docx', 'excel', 'pdf', 'ppt']
-						let wordType = pathToRegexp(':name.:type').exec(files[0].name)[2]
-						let mun = 0;
-						allWordType.map((value,index)=>{
-							if(value.search(wordType)!= -1) mun = index
-						})
-						body = {resource_name: getFieldValue(`title-${formType}-${isSelectContextId}`), description: getFieldValue(`detail-${formType}-${isSelectContextId}`), category: getFieldValue(`category-${formType}-${isSelectContextId}`), source_url: getFieldValue(`file-${formType}-${isSelectContextId}`), type: mun}
-						handleSubmit(body)
-					});
-				}
-				if(isSelectMenuItem == '3'){
-					validateFields([`keyword-${isSelectContextId}`],(errors, values) =>{
-						if(errors){
-							return ;
-						}
-						let keyword = '';
-						getFieldValue(`keyword-${isSelectContextId}`).map((value,index) => {
-							if(index == getFieldValue(`keyword-${isSelectContextId}`).length -1) keyword += `${value}`
-							else keyword += `${value}:`
-						})
-						body = {title: getFieldValue(`title-${formType}-${isSelectContextId}`), description: getFieldValue(`detail-${formType}-${isSelectContextId}`), category: getFieldValue(`category-${formType}-${isSelectContextId}`), key_words: keyword}
-						handleSubmit(body)
-					});
-				}
-			});
-	}
-	// --------------action ------------------------
-	const handleDrop = (files) =>{
-		dispatch({
-			type: 'upload/drop',
-			files: files
-		})
-	}
-	const handleUpload = (files) =>{
-		let progresses = {};
-		files.map((f) =>{
-			f.onprogress = (e) =>{
-				progresses[f.preview] = e.percent
-				dispatch({
-					type: 'upload/setProgress',
-					progress: progresses
-				})
-			}
-		})
-	}
-	const handleSubmit = (body) =>{
-		console.log(body)
-		// body = merged(body,{ author_id: loginUserList.user_id })
-		if (isSelectMenuItem == '1') {
-			dispatch({
-				type: 'upload/put/createCourse',
-				id: isSelectContextId,
-				body: body
-			})
-		}
-		if (isSelectMenuItem == '2') {
-			dispatch({
-				type: 'upload/put/createText',
-				id: isSelectContextId,
-				body: body
-			})
-		}
-		if (isSelectMenuItem == '3') {
-			dispatch({
-				type: 'upload/put/createTest',
-				id: isSelectContextId,
-				body: body
-			})
-		}
-	}*/
+// -----------------action-----------------------
+	
 	const handleChangeEditState = () =>{
 		dispatch({
 			type: 'upload/changeEditState',
 			isEdit: false,
+		})
+		dispatch({
+			type: 'upload/multiplyPlusUploadList',
+			uploadList: []
+		})
+		dispatch({
+			type: 'upload/multiplyPlus',
+			uploadListFiles: []
 		})
 	}
 	/*

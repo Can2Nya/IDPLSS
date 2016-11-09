@@ -161,7 +161,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 				<Input {...getFieldProps(`title-${formType}-${isSelectContextId}`, {
 					initialValue: isSelectContext.test_title || isSelectContext.resource_name || isSelectContext.course_name,
 					rules: [
-						{ required: true, min: 2, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
+						{ required: true, min: 1, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
 					],
 				})} type="text" />
 			</Form.Item>
@@ -173,7 +173,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 				<Input {...getFieldProps(`detail-${formType}-${isSelectContextId}`, {
 					initialValue: isSelectContext.test_description || isSelectContext.description,
 					rules: [
-						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
+						{ required: true, min: 1, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
 				})} type="textarea" rows={8}/>
 			</Form.Item>
@@ -217,7 +217,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 				token={token} 
 				multiple={false}
 				onUpload={handleUpload}>
-				<div className={styles.preview} style={{ backgroundImage: `url(${fileValue()})` }}>
+				<div className={styles.preview} style={{ backgroundImage: `url(${config.qiniu}/${fileValue()})` }}>
 					<Icon type='plus' />
 					<div>点击上传课程封面图</div>
 

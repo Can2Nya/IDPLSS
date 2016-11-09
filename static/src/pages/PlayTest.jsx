@@ -151,10 +151,10 @@ PlayTest.PropTypes = {
 };
 
 function mapStateToProp({ test, user }){
-	const { loginUserList } = user
-	if(loginUserList.length <= 0){
-		browserHistory.push('/login/')
-	}
+	// const { loginUserList } = user
+	// if(loginUserList.length <= 0){
+	// 	browserHistory.push('/login/')
+	// }
 	return{
 		test: test,
 	}

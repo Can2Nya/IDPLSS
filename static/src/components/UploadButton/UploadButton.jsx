@@ -105,7 +105,7 @@ let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, prog
 			>
 				<Input {...getFieldProps(`title-${formType}-${time}`, {
 					rules: [
-						{ required: true, min: 2, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
+						{ required: true, min: 1, max: 15, message: ['题目至少为 2 个字符','题目最多为 15 个字符'] },
 					],
 				})} type="text" />
 			</Form.Item>
@@ -116,7 +116,7 @@ let UploadButton = ({ form, files, time, type, modalState, token, qiniuUrl, prog
 			>
 				<Input {...getFieldProps(`detail-${formType}-${time}`, {
 					rules: [
-						{ required: true, min: 2, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
+						{ required: true, min: 1, max: 300, message: ['至少为 2 个字符','最多为 300 个字符'] },
 					],
 				})} type="textarea" rows={6}/>
 			</Form.Item>
