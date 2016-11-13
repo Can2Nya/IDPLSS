@@ -938,6 +938,7 @@ class TestRecord(db.Model):
     test_accuracy = db.Column(db.Float, default=0)
     answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # 做题人id
     test_list_id = db.Column(db.Integer, db.ForeignKey('test_list.id'))  # 对应试卷的id
+    is_finished = db.Column(db.Boolean, default=False)   # 是否完成测试
     answers = db.relationship('AnswerRecord', backref='record', lazy='dynamic')
 
     def __repr__(self):
@@ -963,7 +964,8 @@ class TestRecord(db.Model):
             "answerer_user_name": id_change_user(self.answerer_id).user_name,
             "answerer_name": id_change_user(self.answerer_id).name,
             "answers_count": self.answers.count(),
-            "test_id": self.test_list_id
+            "test_id": self.test_list_id,
+            "is_finished": self.is_finished
         }
         return json_test_record
 

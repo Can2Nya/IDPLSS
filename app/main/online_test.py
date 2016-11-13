@@ -178,24 +178,36 @@ def new_test_record():
     """
     user = g.current_user
     record_info = request.json
-    test_record = TestRecord.from_json(record_info)
-    db.session.add(test_record)
-    test_id = record_info['test_id']
-    test_info = TestList.query.get_or_404(test_id)  # 累加参与了做题的人数
-    test_info.test_sum += 1
-    db.session.add(test_info)
-    behavior = TestBehavior.query.filter_by(user_id=user.id, test_id=test_id).first()
-    if behavior is None:
-        record = TestBehavior(user_id=user.id, test_id=test_id, is_test=True)
-        db.session.add(record)
+    db_record = TestRecord.query.filter_by(answerer_id=record_info['answerer_id'], test_id=record_info['test_id']).first()
+    if db_record is None:
+        test_record = TestRecord.from_json(record_info)
+        db.session.add(test_record)
+        test_id = record_info['test_id']
+        test_info = TestList.query.get_or_404(test_id)  # 累加参与了做题的人数
+        test_info.test_sum += 1
+        db.session.add(test_info)
+        behavior = TestBehavior.query.filter_by(user_id=user.id, test_id=test_id).first()
+        if behavior is None:
+            record = TestBehavior(user_id=user.id, test_id=test_id, is_test=True)
+            db.session.add(record)
+        else:
+            behavior.is_like = True
+            db.session.add(behavior)
+        db.session.commit()
+        return jsonify({
+            "status": 'create rest record successfully',
+            "test_record_id": test_record.id
+        })
+    elif db_record is not None and db_record.is_finished is False:
+        return jsonify({
+            "status": "test not finished , reset record",
+            "test_record_id": db_record.id
+        })
     else:
-        behavior.is_like = True
-        db.session.add(behavior)
-    db.session.commit()
-    return jsonify({
-        "status": 'create rest record successfully',
-        "test_record_id": test_record.id
-    })
+        return jsonify({
+            "status": "test finished",
+            "test_record_id": db_record.id
+        })
 
 
 @main.route('/api/test-list/test-answer/<int:pid>', methods=['POST'])
@@ -212,6 +224,20 @@ def judge_test_answer(pid):
         return self_response('True')
     else:
         return self_response('False')
+
+
+@main.route('/api/test-list/clean-record/<int:tid>', methods=['GET'])
+@auth.login_required
+@get_current_user
+def clean_record(tid):
+    user = g.current_user
+    old_record = TestRecord.query.filter_by(answerer_id=user.id, test_list_id=tid).first()
+    all_ans_record = AnswerRecord.query.filter_by(test_record_id=tid, answerer_id=user.id).all()
+    db.session.delete(old_record)
+    for ans in all_ans_record:
+        db.session.delete(ans)
+    db.session.commit()
+    return self_response("clean old record successfully")
 
 
 @main.route('/api/test-list/over-test/<int:tid>', methods=['GET'])
@@ -240,10 +266,12 @@ def over_test(tid):
         except ZeroDivisionError:
             accuracy = 0
         test_record.test_accuracy = accuracy
+        test_record.is_finished = True
         db.session.add(test_record)
         db.session.commit()
         return jsonify({
             "status": "calc accuracy complete",
+            "choice_problems_count": choice_count,
             "accuracy": accuracy
         })
 
