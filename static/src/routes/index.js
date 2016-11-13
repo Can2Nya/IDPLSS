@@ -100,11 +100,21 @@ const Routes = ({ history, dispatch }) =>{
 				dispatch({
 					type: `${context}/get/${fuc}`,
 					id: id,
-					pagination: match[4]
+					pagination: match[4],
+					count: 'part',// 写到这里，记得all
+
 				})
 				dispatch({
 					type: `user/get/${context}Recommend`
 				})
+				if(context != 'test') {
+					dispatch({
+						type: 'user/get/collect',
+						context: context,
+						id: id,
+						method: 'GET'
+					})
+				}
 			}
 			// post detail
 			if(pathname.search('post')!== -1){
@@ -132,10 +142,19 @@ const Routes = ({ history, dispatch }) =>{
 				testRecordId: match[2],
 			})
 			dispatch({
-				type: 'test/get/series'
+				type: 'test/get/series',
+				id: match[1],
+				count: 'all',
 			})
 		}
-
+		// -video init------------------
+		if(pathname.search('play/video')!== -1){
+			const match = pathToRegexp('/play/video/:courseId/').exec(pathname);
+			dispatch({
+				type: 'video/init/video',
+				courseId: match[1],
+			})
+		}
 		// login listen----------------------
 		if(cookie.get('user_id') && cookie.get('authorization')){
 			dispatch({
@@ -268,7 +287,7 @@ const Routes = ({ history, dispatch }) =>{
 		<Route path="/login/" component={Login}>
 		</Route>
 		<Route path="/play/">
-			<Route path="video/:id/" component={PlayVideo}  />
+			<Route path="video/:courseId/" component={PlayVideo}  />
 			{/*<Route path="text/:id/" component={PlayText}  />*/}
 			<Route path="test/:testId/:recordId/" component={PlayTest}  />
 			<Route path="*" component={NotFound}  />

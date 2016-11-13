@@ -70,16 +70,27 @@ const Detail = ({ context, user, dispatch, location }) => {
 					type: 'user/set/collect',
 					context: `${stateName}`,
 					method: 'POST',
-					body: {answerer_id: loginUserList.user_id, test_id: isSelectContext.test_id }
+					body: {answerer_id: loginUserList.user_id, test_id: id }
 				})
 				// browserHistory.push('/play/test/')
 			}
-			dispatch({
-				type: 'user/set/collect',
-				context: `${stateName}`,
-				method: 'GET'
-			})
+			else{
+				dispatch({
+					type: 'user/set/collect',
+					context: `${stateName}`,
+					id: id,
+					method: 'GET'
+				})
+			}
 		}
+	}
+	const handleUserCollectCancel = () =>{
+		dispatch({
+			type: 'user/set/collect',
+			context: `${stateName}`,
+			id: id,
+			method: 'DELETE'
+		})
 	}
 
 	const handlePostDelete = (commentid, authorid, e) =>{
@@ -172,7 +183,14 @@ const Detail = ({ context, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={8} lg={7}>
-			<Preview type={`${stateName}`} data={ isSelectContext.context } isCollect={ isCollectContext } />
+
+			<Preview type={`${stateName}`} 
+			data={ isSelectContext.context } 
+			isCollect={ isCollectContext } 
+			onCollect={ handleUserCollect.bind(this) }
+			onCollectCancel={ handleUserCollectCancel.bind(this) }
+			/>
+
 			<div className={styles.margin}>
 			<Recommend type={stateName} />
 			</div>

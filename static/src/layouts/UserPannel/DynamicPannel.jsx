@@ -12,9 +12,9 @@ const DynamicPannel = ({ children, data }) => {
   return (
 	<div className={styles.dynamicpannel}>
 	  <Row>
-		<Col span={17}>
+		{/*<Col span={17}>
 			<TimeLine />
-		</Col>
+		</Col>*/}
 		<Col span={7}>
 			<div className={styles.userinfo}>
 				<div className={styles.row}>
