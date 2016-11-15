@@ -183,7 +183,7 @@ def new_test_record():
         test_record = TestRecord.from_json(record_info)
         db.session.add(test_record)
         test_id = record_info['test_id']
-        test_info = TestList.query.get_or_404(test_id)  # 累加参与了做题的人数
+        test_info = TestList.query.filter_by(id=test_id).first()  # 累加参与了做题的人数
         test_info.test_sum += 1
         db.session.add(test_info)
         behavior = TestBehavior.query.filter_by(user_id=user.id, test_id=test_id).first()
