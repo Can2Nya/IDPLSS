@@ -231,7 +231,7 @@ def judge_test_answer(pid):
 @get_current_user
 def clean_record(tid):
     user = g.current_user
-    old_record = TestRecord.query.filter_by(answerer_id=user.id, test_list_id=tid).first()
+    old_record = TestRecord.query.filter_by(id=tid).first()
     all_ans_record = AnswerRecord.query.filter_by(test_record_id=tid, answerer_id=user.id).all()
     db.session.delete(old_record)
     for ans in all_ans_record:
