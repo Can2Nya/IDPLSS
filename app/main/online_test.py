@@ -178,7 +178,7 @@ def new_test_record():
     """
     user = g.current_user
     record_info = request.json
-    db_record = TestRecord.query.filter_by(answerer_id=record_info['answerer_id'], test_id=record_info['test_id']).first()
+    db_record = TestRecord.query.filter_by(answerer_id=record_info['answerer_id'], test_list_id=record_info['test_id']).first()
     if db_record is None:
         test_record = TestRecord.from_json(record_info)
         db.session.add(test_record)
