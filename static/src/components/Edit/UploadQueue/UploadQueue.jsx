@@ -69,6 +69,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				],(errors, values)=>{
+					if(errors){
+						return ;
+					}
+
 					dispatch({
 						type: 'upload/multiplyPlusUploadList',
 						uploadList: [
@@ -222,7 +226,19 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					dispatch({
 						type: 'upload/post/createProblem',
 						test_id: isSelectContext.id,
-						body: { ...data, problem_order: order[data.id || data.problem_description || data.video_name]}
+						body: { 
+							problem_description: data.problem_description,
+							description_image: data.description_image,
+							problem_type: data.problem_type,
+							choice_a: data.choice_a,
+							choice_b: data.choice_b,
+							choice_c: data.choice_c,
+							choice_d: data.choice_d,
+							right_answer: data.right_answer,
+							answer_explain: data.answer_explain,
+							author_id: data.author_id,
+							problem_order: index,
+						}
 					})
 				}
 				if(isSelectMenuItem == '1'){
@@ -230,10 +246,18 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						message.error('列表有文件未上传完成')
 						return ;
 					}
+					console.log(data)
 					dispatch({
 						type: 'upload/post/createVideo',
 						course_id: isSelectContext.id,
-						body: data,
+						body: {
+							video_name: data.video_name,
+							video_description: data.video_description,
+							source_url: data.source_url,
+							author_id: data.author_id,
+							course_id: data.course_id,
+							video_order: index
+						}
 					})
 				}
 			})
@@ -291,6 +315,13 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		})
 	}
 
+	const videoValue = () =>{
+		if (itemData.source_url) return itemData.source_url;
+		if (tmpFile.length > 0){
+			if (tmpFile[0].request.xhr.response) return JSON.parse(tmpFile[0].request.xhr.response).key;
+		}
+	}
+
 	const testImageValue = () =>{
 		let filelist = [];
 		if(itemData.description_image) {
@@ -308,7 +339,8 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 
 
 	// --------render-------------------------
-	const renderUploadText = () =>{//添加文件的modal
+	const renderUploadText = () =>{
+			if(itemData.video_name) return <div>{itemData.video_name}</div>
 			if(tmpFile.length <= 0 ){
 				return (
 					<div>
@@ -317,7 +349,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					</div>
 				)
 			}
-			else{
+			if(tmpFile.length > 0 ){
 				if(!tmpFile[0].request.xhr.response) return <Progress percent={uploadListProgress[tmpFile[0].preview].toFixed(0)} strokeWidth={5} status="active" />
 				else return <div>{tmpFile[0].name}</div>
 			}
@@ -421,7 +453,11 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				</a>
 				<Input type='text' 
 				{...getFieldProps(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: testImageValue(),
+						initialValue: videoValue(),
+						// initialValue: ()=>{ 
+						// 	if(tmpFile[0]) return tmpFile[0].preview;
+						// 	else return null
+						// },
 						rules: [
 							{ required: true },
 						],

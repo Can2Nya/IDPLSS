@@ -75,7 +75,7 @@ function* setUser(action) {
 				//type: 'user/login/success',
 				//payload: jsonResult,
 			//});
-			console.log(jsonResult)
+			message.success(err);
 		}
 	} catch (err) {
 		message.error(err);
@@ -305,24 +305,24 @@ function* getUserCollect(action) {
 	try {
 		const { jsonResult } = yield call(req.UserCollect, action);
 		if (jsonResult) {
-			if(action.type == 'user/set/Collect' && (action.method == 'GET' || action.method == 'POST')){
+			if(action.type == 'user/set/collect' && (action.method == 'GET' || action.method == 'POST')){
 				yield put({
-					type: 'user/get/Collect/success',
+					type: 'user/set/collect/success',
 					payload: true
 				});
 				if(action.context == 'test'){
-					browserHistory.push(`/play/test/${action.test_id}/${jsonResult.test_record_id}`)
+					browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
 				}
 			}
-			if(action.type == 'user/set/Collect' && action.method == 'DELETE'){
+			if(action.type == 'user/set/collect' && action.method == 'DELETE'){
 				yield put({
-					type: 'user/get/Collect/success',
+					type: 'user/set/collect/success',
 					payload: false
 				});
 			}
-			if(action.type == 'user/get/Collect'){
+			if(action.type == 'user/get/collect'){
 				yield put({
-					type: 'user/get/Collect/success',
+					type: 'user/set/collect/success',
 					payload: jsonResult.status
 				});
 			}
@@ -412,8 +412,7 @@ function* watchUserCollect() {
 	yield* takeEvery([
 		'user/get/collect',
 		'user/set/collect',
-		'user/set/collect/success'
-		], getUserRecommend)
+		], getUserCollect)
 }
 
 

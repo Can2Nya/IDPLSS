@@ -28,7 +28,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 	});
 	const fileValue = () =>{
 		if(files.length <= 0 || !files[0].request.xhr.response) return `${isSelectContext.source_url || isSelectContext.images}`;
-		else return `${config.qiniu}/${JSON.parse(files[0].request.xhr.response).key}`
+		else return `${JSON.parse(files[0].request.xhr.response).key}`
 	}
 	const handlePreSubmitData = (formType)=>{
 		
@@ -98,7 +98,6 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 		})
 	}
 	const handleSubmit = (body) =>{
-		console.log(body)
 		// body = merged(body,{ author_id: loginUserList.user_id })
 		if (isSelectMenuItem == '1') {
 			dispatch({

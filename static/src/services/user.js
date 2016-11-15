@@ -81,6 +81,7 @@ export async function UserisFollowedBy(action) {
 	});
 }
 export async function UserUpLoadInfo(action) {
+	console.log(action)
 	let url = `${apiUrl}/api/`
 	if(action.type == 'upload/get/token') url += 'user/qiniu-token'
 	else{

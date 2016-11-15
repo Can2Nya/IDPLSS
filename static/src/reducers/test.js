@@ -75,21 +75,17 @@ const test = handleActions({
 		}
 	},
 	['test/get/series'](state, action) {//获取有关联的列表
-		data['testId'] = state.isSelectContext.id
-		data['pagination'] = state.isSelectPagination
-		return { 
-		...state, 
-		// isSelectContext: { ...state.isSelectContext, loading: true, },
-		};
+		// count: part, all
+		return { ...state, };
 	},
 	['test/get/success/series'](state, action) {
 		return { 
 			...state,
 			isSelectContext: { 
 				...state.isSelectContext, 
-				list: action.payload.problem_list, 
-				total: action.payload.count,
-				next: action.payload.next
+				list: action.payload, 
+				total: action.count,
+				// next: action.payload.next
 			},
 		}
 	},
@@ -137,16 +133,16 @@ const test = handleActions({
 				isSelectContext: {
 					...isSelectContext.isSelectContext,
 					testRecordId: action.testRecordId,
+					isSubmit: false,
 				}
 			},
-			isSelectPagination: 1,
 		};
 	},
 	
 	['test/post/problemResult'](state, action) {
 		const { isSelectContext } = state
-		data['problemId'] = action.id
-		data['body'] = action.data
+		// data['problemId'] = action.id
+		// data['body'] = action.data
 		return { 
 			...state, 
 			isSelectContext: { 
@@ -160,30 +156,64 @@ const test = handleActions({
 	},
 	['test/post/success/problemResult'](state, action) {
 		const { isSelectContext } = state
+		const { submitCount } = isSelectContext.isSelectContext
 		return { 
 			...state, 
 			isSelectContext: { 
 				...isSelectContext,
 				isSelectContext: {
 					...isSelectContext.isSelectContext,
-					isSubmit: false,
-					status: true,
+					submitCount: submitCount +1,
+					// accuracy: action.accuracy,
+					// isSubmit: false,
 				}
 			},
 		};
 	},
-	['test/changeProblem'](state, action) {
+	['test/get/problemResult'](state, action) {
+		return { ...state }
+	},
+	['test/get/success/problemResult'](state, action) {
 		const { isSelectContext } = state
-		const { problemId, isComplete } = isSelectContext.isSelectContext
+		const { submitCount } = isSelectContext.isSelectContext
 		return { 
 			...state, 
 			isSelectContext: { 
 				...isSelectContext,
 				isSelectContext: {
 					...isSelectContext.isSelectContext,
-					problemId: action.problemId,
-					isComplete: isComplete +1, 
-					id: isSelectContext.list[problemId].id,
+					accuracy: action.accuracy,
+					// isSubmit: false,
+				}
+			},
+		};
+	},
+	['test/countProblem'](state, action) {
+		const { isSelectContext } = state
+		const { isComplete } = isSelectContext.isSelectContext
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					// problemId: action.problemId,
+					isComplete: action.isComplete,
+					// id: isSelectContext.list[action.problemId].id,
+					// status: false,
+				}
+			},
+		};
+	},
+	['test/changeRoll'](state, action) {
+		const { isSelectContext } = state
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					isRolling: action.isRolling
 				}
 			},
 		};
@@ -221,37 +251,22 @@ const test = handleActions({
 	isSelectCategory: 0,//选定的分类，没选定就是分类的1
 	isSelectPagination: 1,//选定的分页，默认从1开始
 	isSelectContext: {//选定的内容
-		total: 1,//列表总数
+		total: 0,//列表总数
 		id: 0,// 选择的测试
 		context: {},
-		list: [
-			{
-		      "answer_explain": "上底加下底的和乘以高除以2",
-		      "author_id": 2,
-		      "choice_a": "10",
-		      "choice_b": "12",
-		      "choice_c": "13",
-		      "choice_d": "14",
-		      "description_image": "fjakdjfakjsdfkj",
-		      id: 2,
-		      "problem_description": "求三角形的面积",
-		      problem_order: 1,
-		      "problem_type": 0,
-		      "right_answer": "10",
-		      "show": true,
-		      "test_id": 4,
-		      "timestamp": "2016-10-04 09:52:52"
-		    },
-		],
+		list: [],
 		comment: [],//课程评论列表
 		isSelectContext: {
 			id: null,//指问题本身的id
 			testRecordId: 0,// 测试记录id，可以从用户中心获取或者测试中心
-			problemId: 0,//正在做的第几题(指的是isSelectContext的list顺序中的id)
+			accuracy: null,// 正确率
+			// modalStatus: ,// modal状态
+			// problemId: 0,//正在做的第几题(指的是isSelectContext的list顺序中的id)
+			// answer: '',// 用户的回答
 			isSubmit: false,// 是否提交题目
-			isCorrect: false,// 是否正确
+			isRolling: false,// 是否滚动
 			isComplete: 0, // 完成题目数量
-			status: false,// 是否完成该题目（指已经接受到该题目的数据）
+			// status: false,// 是否完成该题目（指已经接受到该题目的数据）
 		},//选定内容再选择里面的列表
 	},//选定的内容
 	loading: false,//加载中

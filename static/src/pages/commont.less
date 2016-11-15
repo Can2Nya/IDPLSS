@@ -156,10 +156,23 @@
 		height: 608px;
 		box-shadow: 0 0 10px @gray;
 	}
+	.detail{
+		min-height: 300px;
+		padding: 20px;
+		.title{
+			font-size: 24px;
+		}
+		p{
+			font-size: 14px;
+		}
+	}
 	@media (min-width: 992px){
 		.video{
 			width: 900px;
 			height: 559px;
+		}
+		.contain{
+			width: 900px;
 		}
 	}
 	@media (min-width: 1500px){
@@ -167,16 +180,23 @@
 			width: 1250px;
 			height: 800px;
 		}
+		.contain{
+			width: 1250px;
+		}
 	}
 }
 .playTest{
 	div[class~="ant-progress-bg"]{
 		background-color: @purple !important;
 	}
-	.position{
-		position: absolute;
-		width: 100%;
+	div[class~="queue-anim-entering"],div[class~="queue-anim-leaving"]{
+		position: absolute !important;
+		width: 98%;
 	}
+	// .position{
+	// 	position: absolute;
+	// 	width: 100%;
+	// }
 	.testBlock{
 		
 		padding: 30px 0;
@@ -184,6 +204,17 @@
 	.testBg{
 		padding: 30px;
 		background-color: @white;
+		box-shadow: 0 0 10px @gray;
+		min-height: 600px;
+	}
+	.progressBlock{
+		height: 65px;
+		width: 100%;
+		padding: 25px 5px;
+	}
+	.progressBg{
+		background-color: fade(@white, 80%);;
+		transition: all ease .5s;
 		box-shadow: 0 0 10px @gray;
 	}
 }

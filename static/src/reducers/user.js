@@ -188,7 +188,10 @@ const user = handleActions({
 		return { ...state }
 	},
 	['user/set/collect/success'](state, action){
-		return { ...state, isCollectContext: action.isCollectContext }
+		let newStatus;
+		if(action.payload == 'True') newStatus = true;
+		if(action.payload == 'False') newStatus = false;
+		return { ...state, isCollectContext: newStatus }
 	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
