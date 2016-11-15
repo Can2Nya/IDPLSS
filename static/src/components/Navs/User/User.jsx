@@ -60,7 +60,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 							<Input {...getFieldProps('username',{})} type='text' />
 						</Form.Item>,//这个逗号非常重要！！！
 						<Form.Item label="密码" key='2' >
-							<Input {...getFieldProps('password',{})} type='password' />
+							<Input {...getFieldProps('password',{})} type='password' onPressEnter={handleLogin.bind(this)} />
 						</Form.Item>,
 					] : null}
 

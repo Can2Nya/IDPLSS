@@ -6,9 +6,12 @@ import classNames from 'classnames';
 
 import Button from '../Button/Button';
 
-import styles from './VideoTitle.less';
+import styles from './ContextTitle.less';
 
-const VideoTitle = ({ location }) => {
+const ContextTitle = ({ location, data }) => {
+	const { isSelectContext, category } = data
+	const { context } = isSelectContext
+	// const { id, problemId, testRecordId, isSubmit, isCorrect, isComplete, status } = isSelectContext.isSelectContext
 	// const titleCls = () =>{
 	// 	var style = {}
 	// 	if (noline) style[[styles.noline]] = true;
@@ -21,7 +24,7 @@ const VideoTitle = ({ location }) => {
 	// 		[styles[type]]:true,
 	// 	});
 	// };
-	// const renderVideoTitle = () =>{
+	// const renderContextTitle = () =>{
 	// 	if (type == 'big') {
 	// 		return(
 	// 			<div className={styles.right}>
@@ -38,7 +41,7 @@ const VideoTitle = ({ location }) => {
 		<Row>
 		<Col span={24}>
 		<div className={styles.title}>
-		xxxxxxx视频标题视频标题
+		{ context.test_title || context.video_title }
 		</div>
 		</Col>
 		<Col span={24}>
@@ -49,15 +52,12 @@ const VideoTitle = ({ location }) => {
 						<Icon type="home" />
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
-						<Link to={{ pathname:`${location.pathname}`}}>xxxx</Link>
-						</Breadcrumb.Item>
-						<Breadcrumb.Item>
-						xxxxx
+						<Link to={{ pathname:`${location.pathname}`}}>{ category[context.test_category] }</Link>
 						</Breadcrumb.Item>
 			</Breadcrumb>
 		</Col>
 		<Col span={5}>
-			<div className={styles.time}>xxxxx年x月x日</div>
+			<div className={styles.time}>{ context.timestamp }</div>
 		</Col>
 		<Col span={5}>
 			<div className={styles.favor}><Icon type="heart-o" />  收藏</div>
@@ -69,8 +69,8 @@ const VideoTitle = ({ location }) => {
 	);
 };
 
-VideoTitle.propTypes = {  
+ContextTitle.propTypes = {  
 	
 };
 
-export default VideoTitle;
+export default ContextTitle;

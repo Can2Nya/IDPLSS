@@ -1,7 +1,7 @@
 import { takeLatest, takeEvery } from 'redux-saga';
 import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import * as req from '../services/test';
-import { message } from 'antd';
+import { message, Modal, Progress } from 'antd';
 
 import { data } from '../services/test.js';//
 
@@ -64,7 +64,8 @@ function* getTestDetailListSource(action) {
 		if (jsonResult) {
 			yield put({
 				type: `test/get/success/series`,
-				payload: jsonResult,
+				payload: jsonResult.problem_list || jsonResult.problems,
+				count: jsonResult.count
 			});
 		}
 	} catch (err) {
@@ -114,6 +115,39 @@ function* getTestDetailListSource(action) {
 // 	}
 // }
 
+function* TestAnswer(action) {
+	try {
+		const { jsonResult } = yield call(req.TestAnswer, action);
+		if (jsonResult) {
+			if(action.type == "test/post/problemResult"){
+				if(action.index == action.total){
+					yield put({
+						type: 'test/get/problemResult',
+						id: action.test_record_id
+					});
+				}
+				
+			}
+			if (action.type == 'test/get/problemResult') {
+				yield put({
+					type: 'test/get/success/problemResult',
+					accuracy: jsonResult.accuracy
+				});
+				Modal.success({
+					title: '您的答题正确率',
+					content: <Progress type="circle" percent={jsonResult.accuracy * 100} />
+				});
+			};
+		}
+	} catch (err) {
+		message.error(err);
+		// yield put({
+		//   type: 'test/get/failed/recommend',
+		//   err,
+		// });
+	}
+}
+
 function* watchTestCategorySourceGet() {
 	yield takeLatest('test/get/categorySource', getTestCategorySource)
 }
@@ -132,6 +166,9 @@ function* watchTestDetailListGet() {
 // function* watchTestDetailCommentDelete() {
 // 	yield takeLatest('test/delete/comment', deleteTestDetailCommentSource)
 // }
+function* watchTestAnswer() {
+	yield takeEvery(["test/post/problemResult",'test/get/problemResult'], TestAnswer)
+}
 
 export default function* () {
 	yield fork(watchTestCategorySourceGet);
@@ -140,6 +177,7 @@ export default function* () {
 	yield fork(watchTestDetailListGet)
 	// yield fork(watchTestDetailCommentPost)
 	// yield fork(watchTestDetailCommentDelete)
+	yield fork(watchTestAnswer)
 	// Load test.
 	//yield put({
 	//	type: 'test/get/categorySource',

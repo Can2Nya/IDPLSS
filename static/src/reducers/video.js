@@ -125,6 +125,30 @@ const video = handleActions({
 		const newMode = action.mode;
 		return { ...state, mode: newMode }
 	},**/
+	// --------------play video--------------------
+	['video/init/video'](state, action) {
+		const { isSelectContext } = state
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				id: action.courseId,
+			},
+		};
+	},
+	['video/changeVideo'](state, action) {
+		const { isSelectContext } = state
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					isSelectVideo: action.isSelectVideo
+				}
+			},
+		};
+	},
 	// ------------通用--改变分页-----------------------------------------
 	['video/changeCategory'](state, action) {
 		return { ...state, isSelectCategory: action.isSelectCategory }
@@ -164,6 +188,7 @@ const video = handleActions({
 		list: [],
 		comment: [],//课程评论列表
 		isSelectContext:{
+			isSelectVideo: 0,// list 列表中的顺序
 
 		}//选定内容中的内容
 	},//选定的内容

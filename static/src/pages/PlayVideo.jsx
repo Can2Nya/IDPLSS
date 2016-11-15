@@ -7,13 +7,24 @@ import classNames from 'classnames';
 import videojs from 'video.js/dist/video.min.js';
 import Layout from '../layouts/Layout/Layout';
 
-import VideoTitle from '../components/VideoTitle/VideoTitle';
+import TimeLine from '../components/TimeLine/TimeLine';
+import ContextTitle from '../components/ContextTitle/ContextTitle';
 import UserLittleInfo from '../components/UserLittleInfo/UserLittleInfo';
 
+import config from '../config/config.js'
 import styles from './commont.less';
 import 'video.js/dist/video-js.min.css';
 
 const PlayVideo = ({ video, dispatch, location }) =>{
+	const { isSelectContext, isSelectPagination } = video
+	const { isSelectVideo } = isSelectContext.isSelectContext
+
+	const isAllowVideo = () =>{
+		if(isSelectContext.list.length <= 0){
+			browserHistory.push(`/detail/video/${isSelectContext.id}/#!/series/1/`)
+		}
+	}
+
 	const videoCls = classNames({
 		'video-js': true,
 		'vjs-default-skin': true,
@@ -27,7 +38,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		render() {
 			return(
 				<video id='videoPlay' className={videoCls} controls preload='auto'>
-					<source src='http://ocaxzmfrd.bkt.clouddn.com/%E5%B8%88%E5%A4%A7+%E5%AE%A3%E4%BC%A0%E8%A7%86%E9%A2%91.mp4' />
+					<source src={`${this.props.url}`} />
 				</video>
 			)
 		}
@@ -38,6 +49,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 	// renderVideo.play();
 	return(
 		<Layout location={location}>
+		{ isAllowVideo() }
 		<div className={styles.playVideo}>
 
 		<div className={styles.contain}>
@@ -45,7 +57,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 
 		<Row type='flex' align='top'>
 		<Col span={18}>
-			<VideoTitle location={location}/>
+			<ContextTitle location={location} data={video}/>
 		</Col>
 		<Col span={6}>
 			<UserLittleInfo />
@@ -59,7 +71,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		<div className={styles.contain}>
 		<Row type='flex' justify='center'>
 
-			<RenderVideo />
+			<RenderVideo url={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
 			
 		</Row>
 		</div>
@@ -67,6 +79,17 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 
 		<div className={styles.contain}>
 		<Row>
+		<Col span={12}>
+		<div className={styles.detail}>
+		<div className={styles.title}>
+		课程名
+		</div>
+		<p>miaoshu</p>
+		</div>
+		</Col>
+		<Col span={12}>
+		<TimeLine />
+		</Col>
 		</Row>
 		</div>
 

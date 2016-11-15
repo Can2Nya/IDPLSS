@@ -18,9 +18,9 @@ export async function getTestDetail(action) {
 }
 
 export async function getTestDetailList(action) {
-	let url = `${apiUrl}/api/test-list/${action.id}`;
-	if(action.type == 'test/get/series') url += '/problems';
-	// if(action.type == 'video/get/comment') url += '/comments';
+	let url = `${apiUrl}/api/`;
+	if(action.count == 'part') url += `test-list/${action.id}/problems?page=${action.pagination}`;
+	if(action.count == 'all') url += `user/${action.id}/self-test-problems`;
 	
 	return xFetch(url,{method: 'GET',});
 }
@@ -34,8 +34,14 @@ export async function getTestDetailList(action) {
 // export async function deleteTestDetailComment(action) {
 // 	return xFetch(apiUrl+'/api/courses/detail/comment/'+data['commentId'],{method: 'DELETE',});
 // }
-export async function postProblemResult(action) {
-	return xFetch(apiUrl+'/api/test-list/test-answer/'+data['problemId'],{method: 'POST',
-		body: JSON.stringify(data['body']),
-	});
+export async function TestAnswer(action) {
+	if(action.type == 'test/post/problemResult'){
+		return xFetch(`${apiUrl}/api/test-list/test-answer/${action.id}`,{method: 'POST',
+			body: JSON.stringify(action.body),
+		});
+	}
+	if(action.type == 'test/get/problemResult'){
+		return xFetch(`${apiUrl}/api/test-list/over-test/${action.id}`,{method: 'GET',});
+	}
+	
 }

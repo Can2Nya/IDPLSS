@@ -606,14 +606,7 @@ def time_frequency():
     """
     user = g.current_user
     w = dict()
-    time_hour_part_1 = ['0']
-    time_hour_part_2 = []
-    for x in range(0, 10):
-        front = '0'
-        time_hour_part_1.append(front+str(x))
-    for t in range(10, 24):
-        time_hour_part_2.append(str(t))
-    time_hour = time_hour_part_1 + time_hour_part_2
+    time_hour = [str(x) for x in range(0, 24)]
     frequency_dict = w.fromkeys(time_hour, 0)  # 时间频率字典
     course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
     resource_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import styles from './Button.less';
 
-const Button = ({ children, type, loading, htmlType, icon, onClick }) => {
+const Button = ({ children, type, loading, htmlType, icon, disabled, onClick }) => {
 	/*type有primary,ghost,dashed*/
 	const buttonCls = classNames({
 		[styles[type]]: true,
@@ -16,6 +16,7 @@ const Button = ({ children, type, loading, htmlType, icon, onClick }) => {
 		onClick={onClick}
 		loading={loading}
 		htmlType={htmlType}
+		disabled={disabled}
 		icon={icon}
 		>
 		{children}
