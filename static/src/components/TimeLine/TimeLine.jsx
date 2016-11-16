@@ -5,22 +5,24 @@ import classNames from 'classnames';
 
 import styles from './TimeLine.less';
 
-const TimeLine = ({ data }) => {
+const TimeLine = ({ data, onChangeVideo }) => {
 	return (
 		<div className={styles.pannel} >
 		<Row>
 		<Col span={4}>
-			
+			<div className={styles.subtitle}>{`第${data.video_order}课`}</div>
 		</Col>
 		<Col span={20}>
 		<div className={styles.dot}>
 		</div>
 		<div className={styles.context}>
-			<div className={styles.time}>
-			xxxxxxxxxxxx
+			<a onClick={onChangeVideo.bind(this,data.video_order)}>
+			<div className={styles.title}>
+			{ data.video_name }
 			</div>
+			</a>
 			<div className={styles.text}>
-			xxxxxxxxxxxx
+			{ data.video_description }
 			</div>
 		</div>
 		</Col>

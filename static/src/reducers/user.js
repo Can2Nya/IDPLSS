@@ -187,11 +187,17 @@ const user = handleActions({
 		// context: video,text,test
 		return { ...state }
 	},
+	['user/replace/collect'](state, action){
+		// 触发需要method：get(用于清除测试数据)
+		// id为清除的测试记录
+		// context: test
+		return { ...state }
+	},
 	['user/set/collect/success'](state, action){
 		let newStatus;
 		if(action.payload == 'True') newStatus = true;
 		if(action.payload == 'False') newStatus = false;
-		return { ...state, isCollectContext: newStatus }
+		return { ...state, isCollectContext: newStatus || action.payload }
 	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)

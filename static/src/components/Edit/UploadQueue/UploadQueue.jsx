@@ -227,17 +227,18 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						type: 'upload/post/createProblem',
 						test_id: isSelectContext.id,
 						body: { 
-							problem_description: data.problem_description,
-							description_image: data.description_image,
-							problem_type: data.problem_type,
-							choice_a: data.choice_a,
-							choice_b: data.choice_b,
-							choice_c: data.choice_c,
-							choice_d: data.choice_d,
-							right_answer: data.right_answer,
-							answer_explain: data.answer_explain,
+							problem_description: data.problem_description || '',
+							description_image: data.description_image || '',
+							problem_type: data.problem_type || '',
+							choice_a: data.choice_a || '',
+							choice_b: data.choice_b || '',
+							choice_c: data.choice_c || '',
+							choice_d: data.choice_d || '',
+							right_answer: data.right_answer || '',
+							answer_explain: data.answer_explain || '',
 							author_id: data.author_id,
-							problem_order: index,
+							test_id: data.test_id,
+							problem_order: index
 						}
 					})
 				}
@@ -251,9 +252,9 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						type: 'upload/post/createVideo',
 						course_id: isSelectContext.id,
 						body: {
-							video_name: data.video_name,
-							video_description: data.video_description,
-							source_url: data.source_url,
+							video_name: data.video_name || '' ,
+							video_description: data.video_description || '' ,
+							source_url: data.source_url || '' ,
 							author_id: data.author_id,
 							course_id: data.course_id,
 							video_order: index

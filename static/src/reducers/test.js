@@ -134,6 +134,7 @@ const test = handleActions({
 					...isSelectContext.isSelectContext,
 					testRecordId: action.testRecordId,
 					isSubmit: false,
+					result: [],
 				}
 			},
 		};
@@ -156,16 +157,14 @@ const test = handleActions({
 	},
 	['test/post/success/problemResult'](state, action) {
 		const { isSelectContext } = state
-		const { submitCount } = isSelectContext.isSelectContext
+		const { result } = isSelectContext.isSelectContext
 		return { 
 			...state, 
 			isSelectContext: { 
 				...isSelectContext,
 				isSelectContext: {
 					...isSelectContext.isSelectContext,
-					submitCount: submitCount +1,
-					// accuracy: action.accuracy,
-					// isSubmit: false,
+					result: [...result, action.payload ]
 				}
 			},
 		};
@@ -260,6 +259,7 @@ const test = handleActions({
 			id: null,//指问题本身的id
 			testRecordId: 0,// 测试记录id，可以从用户中心获取或者测试中心
 			accuracy: null,// 正确率
+			result: [], // 试题结果，对错按顺序存
 			// modalStatus: ,// modal状态
 			// problemId: 0,//正在做的第几题(指的是isSelectContext的list顺序中的id)
 			// answer: '',// 用户的回答

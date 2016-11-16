@@ -132,9 +132,9 @@ export async function UserDelMainData(action) {
 
 export async function UserRecommend(action) {
 	let url = `${apiUrl}/api/recommend/`
-	if(action.type.search('video') !== -1) url += 'courses/1'
-	if(action.type.search('text') !== -1) url += 'text-resources/1'
-	if(action.type.search('test') !== -1) url += 'tests/1'
+	if(action.type.search('video') !== -1) url += 'courses/0'
+	if(action.type.search('text') !== -1) url += 'text-resources/0'
+	if(action.type.search('test') !== -1) url += 'tests/0'
 	return xFetch(url,{method: 'GET',});
 }
 
@@ -142,6 +142,9 @@ export async function UserCollect(action) {
 	// get ,delete方法
 	let url = `${apiUrl}/api/`
 	let msg = {method: `${action.method || 'GET'}`}
+	if(action.type.search('replace') !== -1){
+		if(action.context == `test`) url += `test-list/clean-record/${action.recordId}`
+	}
 	if(action.type.search('set') !== -1){
 		if(action.context == 'video') url += `courses/${action.id}/collect-course`
 		if(action.context == `text`) url += `text-resources/${action.id}/collect-resource`

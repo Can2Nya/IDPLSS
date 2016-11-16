@@ -18,10 +18,10 @@ const UserLittleInfo = ({ data }) => {
 		</div>
 		<div className={styles.userinfo}>
 			<div className={styles.name}>
-			name
+			{ data.author_name }
 			</div>
 			<div className={styles.introduce}>
-			xxxxx
+			
 			</div>
 		</div>
 		</div>

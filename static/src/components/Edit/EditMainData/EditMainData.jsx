@@ -72,7 +72,7 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 							if(index == getFieldValue(`keyword-${isSelectContextId}`).length -1) keyword += `${value}`
 							else keyword += `${value}:`
 						})
-						body = {title: getFieldValue(`title-${formType}-${isSelectContextId}`), description: getFieldValue(`detail-${formType}-${isSelectContextId}`), category: getFieldValue(`category-${formType}-${isSelectContextId}`), key_words: keyword}
+						body = {title: getFieldValue(`title-${formType}-${isSelectContextId}`), description: getFieldValue(`detail-${formType}-${isSelectContextId}`), category: getFieldValue(`category-${formType}-${isSelectContextId}`), key_words: keyword, image: ''}
 						handleSubmit(body)
 					});
 				}
@@ -185,14 +185,14 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 					{ required: true, message: '请选择分类', type: 'number'},
 				],
 			})} placeholder="请选择稿件分类" style={{ width: '100%' }}>
-			<Select.Option value={0}>计算机/互联网</Select.Option>
-			<Select.Option value={1}>基础科学</Select.Option>
-			<Select.Option value={2}>工程技术</Select.Option>
-			<Select.Option value={3}>历史哲学</Select.Option>
-			<Select.Option value={4}>经管法律</Select.Option>
-			<Select.Option value={5}>语言文化</Select.Option>
-			<Select.Option value={6}>艺术音乐</Select.Option>
-			<Select.Option value={7}>兴趣生活</Select.Option>
+			<Select.Option value={1}>计算机/互联网</Select.Option>
+			<Select.Option value={2}>基础科学</Select.Option>
+			<Select.Option value={3}>工程技术</Select.Option>
+			<Select.Option value={4}>历史哲学</Select.Option>
+			<Select.Option value={5}>经管法律</Select.Option>
+			<Select.Option value={6}>语言文化</Select.Option>
+			<Select.Option value={7}>艺术音乐</Select.Option>
+			<Select.Option value={8}>兴趣生活</Select.Option>
 			</Select>
 			</Form.Item>
 			</div>
