@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import videojs from 'video.js/dist/video.min.js';
 import Layout from '../layouts/Layout/Layout';
 
+import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
 import TimeLine from '../components/TimeLine/TimeLine';
 import ContextTitle from '../components/ContextTitle/ContextTitle';
 import UserLittleInfo from '../components/UserLittleInfo/UserLittleInfo';
@@ -17,39 +18,76 @@ import 'video.js/dist/video-js.min.css';
 
 const PlayVideo = ({ video, dispatch, location }) =>{
 	const { isSelectContext, isSelectPagination } = video
-	const { isSelectVideo } = isSelectContext.isSelectContext
+	const { isSelectVideo, videoElement } = isSelectContext.isSelectContext
 
+	// ----------------render----------------------------
 	const isAllowVideo = () =>{
 		if(isSelectContext.list.length <= 0){
 			browserHistory.push(`/detail/video/${isSelectContext.id}/#!/series/1/`)
 		}
 	}
-
+	const renderVideoList = ()=>{
+		return isSelectContext.list.map((data,index)=>{
+			if(!data.show) return;
+			return <TimeLine data={data} key={index} onChangeVideo={handleChangeVideo} />
+		})
+	}
 	const videoCls = classNames({
 		'video-js': true,
 		'vjs-default-skin': true,
 		[styles.video]: true,
 	})
-	const RenderVideo = React.createClass({
-		componentDidMount()	{
-			const play = videojs('videoPlay')
-			// play.play();
-		},
-		render() {
-			return(
-				<video id='videoPlay' className={videoCls} controls preload='auto'>
-					<source src={`${this.props.url}`} />
-				</video>
-			)
-		}
-		// const play = videojs('videoPlay')
-		// play.play();
-	})
+	// -------------action-----------------------------
+	const handleChangeVideo = (id) =>{
+		dispatch({
+			type: 'video/changeVideo',
+			isSelectVideo: id,
+		})
+		// videoElement.src(`${config.qiniu}/${isSelectContext.list[id].source_url}`)
+		// videoElement.reset()
+		// videoElement.load()
+	}
+	// --------------fuc-----------------------------
+	// const handleChangeVideoSrc = () =>{
+	// 	videoElement.src(`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`)
+	// 	videoElement.reset()
+	// 	videoElement.load()
+	// }
+
+	// // -------------react-----------------------------
+	// const Video = React.createClass({
+	// 	componentWillMount() {
+	// 		console.log(2)
+	// 		isAllowVideo();
+	// 	},
+	// 	componentDidMount()	{
+	// 		console.log(1)
+	// 		const play = videojs('videoPlay')
+	// 		dispatch({
+	// 			type: 'video/init/player',
+	// 			videoElement: play
+	// 		})
+	// 		// play.play();
+	// 	},
+	// 	shouldComponentUpdate(){
+	// 		console.log(3)
+	// 		return false;
+	// 	},
+	// 	render() {
+	// 		return(
+	// 			<video id='videoPlay' className={videoCls} controls preload='auto'>
+	// 				<source src={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
+	// 			</video>
+	// 		)
+	// 	}
+	// 	// const play = videojs('videoPlay')
+	// 	// play.play();
+	// })
 	// const renderVideo = videojs('videoPlay');
 	// renderVideo.play();
 	return(
 		<Layout location={location}>
-		{ isAllowVideo() }
+		
 		<div className={styles.playVideo}>
 
 		<div className={styles.contain}>
@@ -57,10 +95,10 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 
 		<Row type='flex' align='top'>
 		<Col span={18}>
-			<ContextTitle location={location} data={video}/>
+			<ContextTitle data={video} location={location} index={isSelectVideo}/>
 		</Col>
 		<Col span={6}>
-			<UserLittleInfo />
+			<UserLittleInfo data={isSelectContext.context} />
 		</Col>
 
 		</Row>
@@ -71,7 +109,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		<div className={styles.contain}>
 		<Row type='flex' justify='center'>
 
-			<RenderVideo url={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
+			<VideoPlayer url={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
 			
 		</Row>
 		</div>
@@ -82,13 +120,15 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		<Col span={12}>
 		<div className={styles.detail}>
 		<div className={styles.title}>
-		课程名
+		{ isSelectContext.context.course_name }
 		</div>
-		<p>miaoshu</p>
+		<p>{ isSelectContext.context.description }</p>
 		</div>
 		</Col>
 		<Col span={12}>
-		<TimeLine />
+		<div className={styles.displayVideoList}>
+		{ renderVideoList() }
+		</div>
 		</Col>
 		</Row>
 		</div>

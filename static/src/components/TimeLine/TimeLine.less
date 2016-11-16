@@ -4,7 +4,16 @@
 	width: 100%;
 	.context{
 		border-left: 2px solid @yellow;
-		padding: 25px 15px; 
+		padding: 15px 0 0 15px; 
+		transition: all ease-in .5s;
+		&:hover{
+			background-color: lighten(@gray, 15%)
+		}
+	}
+	.subtitle{
+		color: @gray;
+		font-size: 17px;
+		margin-top: 15px;
 	}
 	.dot{
 		width: 10px;
@@ -15,13 +24,13 @@
 		top: 25px;
 		left: -4px;
 	}
-	.time{
-		color: @gray;
-		font-size: 14px;
-		margin-bottom: 10px;
+	.title{
+		color: @purple;
+		font-size: 18px;
+		margin-bottom: 5px;
 	}
 	.text{
-		color: @purple;
-		font-size: 24px;
+		color: @gray;
+		font-size: 14px;
 	}
 }

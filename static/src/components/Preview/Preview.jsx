@@ -47,22 +47,23 @@ const Preview = ({ type, data, isCollect, onCollect, onCollectCancel }) => {
 				<a href={`${data.source_url}`} download={`${data.source_url}`}><Button className={styles.button}>下载</Button></a>
 			)
 		}
-		else {
-			if(isCollect == false || type == 'test' ){
-				return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
-			}
-			else{
-				return (
-					<Row gutter={8} type='flex' align="middle">
-					<Col span={16}>
-						<Link to={`/play/video/${data.id}/`} ><Button className={styles.button}>已参加</Button></Link>
-					</Col>
+		if(type == 'test' ){
+			// if(isCollect == false) 
+			return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
+			// if(isCollect == true) return <div className={styles.buttonDisable}>已参与答题</div>
+		}
+		if(type == 'video' ){
+			if(isCollect == false) return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
+			if(isCollect == true) return (
+				<Row gutter={8} type='flex' align="middle">
+				<Col span={16}>
+					<Link to={`/play/video/${data.id}/`} ><Button className={styles.button}>已参加</Button></Link>
+				</Col>
 					<Col span={8}>
 						<a onClick={onCollectCancel.bind(this)}>取消参加</a>
 					</Col>
 					</Row>
-				)
-			}
+			)
 		}
 	}
 	return (

@@ -8,7 +8,7 @@ import Button from '../Button/Button';
 
 import styles from './ContextTitle.less';
 
-const ContextTitle = ({ location, data }) => {
+const ContextTitle = ({ location, data, index }) => {
 	const { isSelectContext, category } = data
 	const { context } = isSelectContext
 	// const { id, problemId, testRecordId, isSubmit, isCorrect, isComplete, status } = isSelectContext.isSelectContext
@@ -37,11 +37,19 @@ const ContextTitle = ({ location, data }) => {
 	// 	}
 	// 	return;
 	// };
+	const renderTitle = () =>{
+		if(index !== undefined && isSelectContext){
+			return isSelectContext.list[index].video_name;
+		}
+		else {
+			return context.test_title
+		}
+	}
 	return (
 		<Row>
 		<Col span={24}>
 		<div className={styles.title}>
-		{ context.test_title || context.video_title }
+		{ renderTitle() }
 		</div>
 		</Col>
 		<Col span={24}>
@@ -52,7 +60,7 @@ const ContextTitle = ({ location, data }) => {
 						<Icon type="home" />
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
-						<Link to={{ pathname:`${location.pathname}`}}>{ category[context.test_category] }</Link>
+						{/*<Link to={{ pathname:`${location.pathname}`}}>{ category[context.test_category] }</Link>*/}
 						</Breadcrumb.Item>
 			</Breadcrumb>
 		</Col>

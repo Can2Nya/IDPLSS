@@ -1,7 +1,7 @@
 import { takeLatest, takeEvery } from 'redux-saga';
 import { take, call, put, fork, cancel } from 'redux-saga/effects';
 import { browserHistory } from 'react-router'
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 
 import * as req from '../services/user';
 
@@ -306,12 +306,53 @@ function* getUserCollect(action) {
 		const { jsonResult } = yield call(req.UserCollect, action);
 		if (jsonResult) {
 			if(action.type == 'user/set/collect' && (action.method == 'GET' || action.method == 'POST')){
-				yield put({
-					type: 'user/set/collect/success',
-					payload: true
-				});
 				if(action.context == 'test'){
-					browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
+					if(jsonResult.status.search('reset') !== -1){
+						// Modal.confirm({
+						// 	title: '上一次测试未完成',
+						// 	content: '是否重新测试',
+						// 	onOk: function* ok(close){
+								yield put({
+									type: 'user/replace/collect',
+									context: 'test',
+									id: action.body.test_id,
+									recordId: jsonResult.test_record_id
+								})
+							// 	close()
+							// },
+							// onOk(){},
+							// onOk().then(
+							// 	yield put({
+							// 		type: 'user/replace/collect',
+							// 		context: 'test',
+							// 		id: action.body.test_id,
+							// 		recordId: jsonResult.test_record_id
+							// 	})
+							// )
+						// })
+						// yield call(Modal.confirm, {
+						// 	title: '上一次测试未完成',
+						// 	content: '是否重新测试',
+						// 	onOk: yield put({
+						// 			type: 'user/replace/collect',
+						// 			context: 'test',
+						// 			id: action.body.test_id,
+						// 			recordId: jsonResult.test_record_id
+						// 		})
+						// })
+					}
+					if(jsonResult.status.search('test finished') !== -1){
+						Modal.success({
+							title: '您已完成该测试',
+						})
+					}
+					else browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
+				}
+				else{
+					yield put({
+						type: 'user/set/collect/success',
+						payload: true
+					});
 				}
 			}
 			if(action.type == 'user/set/collect' && action.method == 'DELETE'){
@@ -325,6 +366,9 @@ function* getUserCollect(action) {
 					type: 'user/set/collect/success',
 					payload: jsonResult.status
 				});
+			}
+			if(action.type == 'user/replace/collect'){
+				browserHistory.push(`/play/test/${action.id}/${action.recordId}/`)
 			}
 		}
 	} catch (err) {
@@ -412,6 +456,7 @@ function* watchUserCollect() {
 	yield* takeEvery([
 		'user/get/collect',
 		'user/set/collect',
+		'user/replace/collect',
 		], getUserCollect)
 }
 

@@ -20,7 +20,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 	const { loginUserList } = user
 	const { getFieldProps, getFieldsValue, validateFields, getFieldValue } = form;
 	const { isSelectContext, isSelectPagination } = test
-	const { submitCount, testRecordId, isSubmit, isComplete, isRolling, accuracy } = isSelectContext.isSelectContext
+	const { result, submitCount, testRecordId, isSubmit, isComplete, isRolling, accuracy } = isSelectContext.isSelectContext
 	// ---------------------fuc----------------------
 	const isAllowTest = () =>{
 		if(isSelectContext.list.length <= 0){
@@ -109,6 +109,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 		// 	</div>
 		// )
 		return isSelectContext.list.map((problem,index)=>{
+			if(!problem.show) return;
 			if(problem.problem_type == 0){
 				return (
 					<SelectTest 
@@ -117,6 +118,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 					status={isSubmit} 
 					data={problem} 
 					index={index} 
+					result={result}
 					onFormChange={handleCountProblem.bind(this)}
 					>
 					</SelectTest>
@@ -128,6 +130,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 				status={isSubmit} 
 				data={problem} 
 				index={index} 
+				result={result}
 				onFormChange={handleCountProblem.bind(this)}
 				>
 				</SubjectivityTest>
@@ -182,12 +185,12 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 		<Affix offsetTop={60} onChange={handleRolling.bind(this)} >
 		<div className={renderProgressCls}>
 		<Row>
-		<Col span={2} lg={1}>
-		<span>
+		<Col span={2}>
+		<span style={{textAlign: 'center'}}>
 		做题进度
 		</span>
 		</Col>
-		<Col span={22} lg={23}>
+		<Col span={22}>
 		<Progress percent={renderPrecent(isComplete)} strokeWidth={20} status="active" format={() => `${isComplete}/${isSelectContext.total}`} />
 		</Col>
 		</Row>

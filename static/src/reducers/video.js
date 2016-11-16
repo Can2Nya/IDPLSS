@@ -136,6 +136,19 @@ const video = handleActions({
 			},
 		};
 	},
+	['video/init/player'](state, action) {
+		const { isSelectContext } = state
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					videoElement: action.videoElement
+				}
+			},
+		};
+	},
 	['video/changeVideo'](state, action) {
 		const { isSelectContext } = state
 		return { 
@@ -189,7 +202,7 @@ const video = handleActions({
 		comment: [],//课程评论列表
 		isSelectContext:{
 			isSelectVideo: 0,// list 列表中的顺序
-
+			videoElement: null,// 视频元素
 		}//选定内容中的内容
 	},//选定的内容
 	upload: {

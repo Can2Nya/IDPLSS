@@ -101,6 +101,10 @@ const Manage = ({ upload, user, dispatch, location }) => {
 				})
 				onOk()
 			},
+			onCancel: (e)=>{
+				console.log(e)
+				e()
+			}
 		})
 	}
 

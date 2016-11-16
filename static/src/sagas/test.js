@@ -120,6 +120,13 @@ function* TestAnswer(action) {
 		const { jsonResult } = yield call(req.TestAnswer, action);
 		if (jsonResult) {
 			if(action.type == "test/post/problemResult"){
+				let newStatus;
+				if(jsonResult.status == 'True') newStatus = true;
+				if(jsonResult.status == 'False') newStatus = false;
+				yield put({
+					type: 'test/post/success/problemResult',
+					payload: newStatus
+				})
 				if(action.index == action.total){
 					yield put({
 						type: 'test/get/problemResult',
@@ -135,7 +142,8 @@ function* TestAnswer(action) {
 				});
 				Modal.success({
 					title: '您的答题正确率',
-					content: <Progress type="circle" percent={jsonResult.accuracy * 100} />
+					content: `${jsonResult.accuracy * 100}%`
+					// content: <Progress type="circle" percent={jsonResult.accuracy * 100} />
 				});
 			};
 		}
