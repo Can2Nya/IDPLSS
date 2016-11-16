@@ -22,16 +22,16 @@ import styles from './VideoPlayer.less';
 			return{
 				// videoElement: null,
 				// url: '',
+				time: Date.now(),
 			}
 		},
 		componentWillMount() {
 		},
 		componentDidMount()	{
-			console.log(1)
-			const play = videojs('videoPlay')
+			const play = videojs(`videoPlay-${this.state.time}`)
 			play.src(this.props.url)
 			// this.setState({
-			// 	videoElement: play
+			// 	time: Date.now()
 			// })
 			// play.play();
 		},
@@ -39,13 +39,13 @@ import styles from './VideoPlayer.less';
 			return false;
 		},
 		componentWillReceiveProps(nextProps){
-			const play = videojs('videoPlay')
+			const play = videojs(`videoPlay-${this.state.time}`)
 			play.pause()
 			play.src(nextProps.url)
 		},
 		render() {
 			return(
-				<video id='videoPlay' className={videoCls} controls preload='auto'>
+				<video id={`videoPlay-${this.state.time}`} className={videoCls} controls preload='auto'>
 				</video>
 			)
 		}
