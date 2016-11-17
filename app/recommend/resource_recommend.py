@@ -12,13 +12,9 @@ def user_index_calc(user):
     """
     # 计算用户有正反馈的课程
     target_user = user
-    target_collections = []
+    target_collections = user.collection_text_resource
     all_user = User.query.all()
     other_users = [u for u in all_user if u != target_user]
-    user_behaviors = TextResourceBehavior.query.filter_by(user_id=target_user.id).all()
-    for b in user_behaviors:
-        target_collections.append(TextResource.query.filter_by(id=b.text_resource_id, show=True).first())
-    # print "user collect resources is %s" % target_collections
     index_dict = dict()  # 创建倒排表
     user_count_dict = dict()  # 保存相同的次数
     result_dict = dict()  # 相似度字典
@@ -59,6 +55,8 @@ def text_resources_user_recommend(user, k, n):
     # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
     all_resources = TextResource.query.filter_by(show=True).all()
+    if not all_resources != target_t_resources:
+        return []  # 如果全部资源已经下载过了  返回空
     calc = 0
     other_resources = [t_resource for t_resource in all_resources if t_resource not in target_t_resources]
     k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
@@ -139,11 +137,13 @@ def text_resources_recommend(user, k, n):
     target_user = user
     all_users = User.query.all()
     other_users = [u for u in all_users if u != target_user]  # 其它用户
-    target_collections = []   # 目标用户
-    target_behaviors = TextResourceBehavior.query.filter_by(user_id=target_user.id).all()
-    for b in target_behaviors:
-        c = TextResource.query.filter_by(id=b.text_resource_id, show=True).first()
-        target_collections.append(c)
+    target_collections = user.collection_text_resource
+    all_resources = TextResource.query.all()
+    if not target_collections != all_resources:
+        return []
+    count_other_resource = len(all_resources) - len(target_collections)
+    if count_other_resource < k:
+        k = count_other_resource
     result_dict = dict()
     similarity_data_frame = text_resource_index_pandas_calc(target_collections, other_users)
     for index, t_resource in enumerate(target_collections):

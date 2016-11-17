@@ -43,6 +43,19 @@ def test_operation(tid):
     elif request.method == 'DELETE':
         if user.id == test.author_id or have_school_permission(user):
             test.show = False
+            all_users = User.query.all()
+            for u in all_users:   # 测试已经删除,将关联的测试记录也删除
+                record = TestRecord.query.filter_by(answerer_id=u.id, test_list_id=test.id).first()
+                if record is not None:
+                    db.session.delete(record)
+                    all_answer_record = AnswerRecord.query.filter_by(answerer_id=u.id, test_record_id=record.id).all()
+                    if all_answer_record is not None:
+                        for r in all_answer_record:
+                            db.session.delete(r)
+            all_behaviors = TestBehavior.query.filter_by(test_id=test.id).all()
+            if all_behaviors is not None:
+                for b in all_behaviors:
+                    db.session.delete(b)
             db.session.add(test)
             db.session.commit()
             return self_response('delete test successfully')
@@ -234,8 +247,9 @@ def clean_record(tid):
     old_record = TestRecord.query.filter_by(id=tid).first()
     all_ans_record = AnswerRecord.query.filter_by(test_record_id=tid, answerer_id=user.id).all()
     db.session.delete(old_record)
-    for ans in all_ans_record:
-        db.session.delete(ans)
+    if all_ans_record is not None:
+        for ans in all_ans_record:
+            db.session.delete(ans)
     db.session.commit()
     return self_response("clean old record successfully")
 

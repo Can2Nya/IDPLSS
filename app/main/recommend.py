@@ -38,6 +38,9 @@ def popular_resources_recommend():
 @main.route('/api/recommend/popular-tests', methods=['GET'])
 def popular_tests_recommend():
     tests = popular_test()
+    print 'popular test is %s' % len(tests)
+    for test in tests:
+        print test[0].to_json()
     return jsonify({
                 "count": len(tests),
                 "recommend_tests": [test.to_json() for test in tests],
@@ -65,7 +68,7 @@ def recommend_courses(type_id):
 
     else:
         user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
-        if len(user_behaviors) < 5:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
+        if len(user_behaviors) < 2:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             courses = code_start_course(user)
 
@@ -322,6 +325,7 @@ def get_text_resources(user, type_id):
             redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
             print redis_store.get(resource_name)
         print "resource ItemCf calc finish"
+
 
 
 

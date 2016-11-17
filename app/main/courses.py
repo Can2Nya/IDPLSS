@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import g, request, url_for, current_app, jsonify
-from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses, CourseBehavior
+from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses, CourseBehavior, User
 from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
 from app.utils.responses import self_response
 from app.utils.model_tools import calc_count, have_school_permission
@@ -47,6 +47,14 @@ def course_operation(cid):
     elif request.method == 'DELETE':
         if user.id == course.author_id or have_school_permission(user):
             course.show = False
+            all_user = User.query.all()
+            for u in all_user:
+                if u.is_collecting_course(course):
+                    u.collection_courses.remove(course)
+            all_behaviors = CourseBehavior.query.filter_by(course_id=course.id).all()
+            if all_behaviors is not None:
+                for b in all_behaviors:
+                    db.session.delete(b)
             db.session.add(course)
             db.session.commit()
             return self_response('delete course successfully')
