@@ -144,6 +144,7 @@ class User(db.Model):
     email = db.Column(db.String(32), unique=True, index=True)
     user_type = db.Column(db.Integer, default=0)
     avatar = db.Column(db.String(64))
+    is_ban = db.Column(db.Boolean, default=False)  # 用户是否被屏蔽
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow, index=True)

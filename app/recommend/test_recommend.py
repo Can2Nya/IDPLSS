@@ -61,6 +61,8 @@ def test_user_similarity_recommend(user, k, n):
     k_similarity_user = similarity_result[:k]
     all_tests = TestList.query.all()
     # calc = 0
+    if not target_tests != all_tests:   # 当所有的test都被用户收藏 返回空
+        return []
     other_tests = [test for test in all_tests if test not in target_tests]
     k_similarity_user_dict = dict(k_similarity_user)  # 转化为字典方便查询
     interested_tests = dict()
@@ -137,12 +139,18 @@ def test_similarity_recommend(user, k, n):
     """
     target_user = user
     all_users = User.query.all()
+    all_tests = TestList.query.all()
     other_users = [u for u in all_users if u != target_user]  # 其它用户
     target_collections = []   # 目标用户
     target_behaviors = TestBehavior.query.filter_by(user_id=target_user.id).all()
     for b in target_behaviors:
         c = TestList.query.filter_by(id=b.test_id, show=True).first()
         target_collections.append(c)
+    if not target_collections != all_tests:  # 当所有的课程都已经被用户收藏时  没有推荐
+        return []
+    other_test_count = len(all_tests) - len(target_collections)
+    if other_test_count < k:
+        k = other_test_count
     result_dict = dict()
     similarity_data_frame = test_index_pandas_calc(target_collections, other_users)
     for index, test in enumerate(target_collections):

@@ -85,6 +85,14 @@ def text_resource_detail(rid):
     elif request.method == 'DELETE':
         if user.id == text_resource.author_id or have_school_permission(user):
             text_resource.show = False
+            all_users = User.query.all()
+            for u in all_users:   # 删除用户收藏的课程
+                if u.is_collecting_text_resouurce(text_resource):
+                    u.collection_text_resource.remove(text_resource)
+            all_behaviors = TextResourceBehavior.query.filter_by(text_resource_id=text_resource.id).all()
+            if all_behaviors is not None:
+                for b in all_behaviors:
+                    db.session.delete(b)
             db.session.add(text_resource)
             db.session.commit()
             return self_response('delete text resource successfully')

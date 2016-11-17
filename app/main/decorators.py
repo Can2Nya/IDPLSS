@@ -66,7 +66,7 @@ def get_current_user(f):
     :param f:
     :return:
     """
-    from app.main.responses import not_found
+    from app.main.responses import not_found, forbidden
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -85,6 +85,8 @@ def get_current_user(f):
                     auth_ok = current_user.verify_password(auth.password)
             if not auth_ok:
                 return not_found()
+        if current_user.is_ban is True:
+            return forbidden('user has ban login system')  # 用户被禁止访问post方法,不能进行post操作
         g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function
@@ -96,7 +98,7 @@ def user_login_info(f):
     :param f:
     :return:如果已经登录返回当前登录用户,未登录返回None
     """
-    from app.main.responses import not_found
+    from app.main.responses import not_found, forbidden
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -116,6 +118,8 @@ def user_login_info(f):
                         auth_ok = current_user.verify_password(auth.password)
                 if not auth_ok:
                     return not_found()
+            if current_user is not None and current_user.is_ban is True:
+                return forbidden('user has ban login system')  # 用户被禁止访问post方法,不能进行post操作
             g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function
