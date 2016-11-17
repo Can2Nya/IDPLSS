@@ -38,9 +38,7 @@ def popular_resources_recommend():
 @main.route('/api/recommend/popular-tests', methods=['GET'])
 def popular_tests_recommend():
     tests = popular_test()
-    print 'popular test is %s' % len(tests)
-    for test in tests:
-        print test[0].to_json()
+    print 'popular test is %s' % tests
     return jsonify({
                 "count": len(tests),
                 "recommend_tests": [test.to_json() for test in tests],
