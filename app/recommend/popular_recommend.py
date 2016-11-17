@@ -9,21 +9,22 @@ def popular_course():
     :return:
     """
     l = []
+    recommend_list = []
     all_course = Course.query.filter_by(show=True).all()
     [l.append(course.collect_sum) for course in all_course if course is not None]  # 将课程学习数量添加到list中:
     if len(l) < 3:
-        return all_course
+        for c in all_course:
+            recommend_list.append(c)
+        return recommend_list
     else:
         collect_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = collect_sum_reverse[:3]  # 取前3进行推荐
-        if result[0] == result[1] and result[0] == result[2]:
-            recommend_course = Course.query.filter_by(collect_sum=result[0]).all()
-            return recommend_course[:3]
-        else:
-            recommend = []
-            for i in range(0, 3):
-                recommend.append(Course.query.filter_by(collect_sum=result[i]).all())
-            return recommend[:3]
+        result = set(result)   # 收藏数字数字去重
+        for count in result:
+            courses = Course.query.filter_by(collect_sum=count).all()
+            for course in courses:
+                recommend_list.append(course) 
+        return recommend_list[:3]
 
 
 def popular_text_resource():
@@ -32,21 +33,22 @@ def popular_text_resource():
     :return:
     """
     l = []
+    recommend_list = []
     all_text_resources = TextResource.query.filter_by(show=True).all()
     [l.append(t_resource.download_sum) for t_resource in all_text_resources if t_resource is not None]  # 将文本资料下载学习添加到list中
     if len(l) < 3:
-        return all_text_resources
+        for t in all_text_resources:
+            recommend_list.append(t)
+        return recommend_list
     else:
         download_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = download_sum_reverse[:3]  # 取前3进行推荐
-        if result[0] == result[1] and result[0] == result[2]:
-            recommend_resource = TextResource.query.filter_by(download_sum=result[0]).all()
-            return recommend_resource[:3]
-        else:
-            recommend = []
-            for i in range(0, 3):
-                recommend.append(TextResource.query.filter_by(download_sum=result[i]).all())
-            return recommend[:3]
+        result = set(result)
+        for count in result:
+            resources = TextResource.query.filter_by(download_sum=count).all()
+            for r in resources:
+                recommend_list.append(r)
+            return recommend_list[:3]
 
 
 def popular_test():
@@ -55,21 +57,22 @@ def popular_test():
     :return:
     """
     l = []
+    recommend_test = []
     all_test = TestList.query.filter_by(show=True).all()
     [l.append(test.test_sum) for test in all_test if test is not None]  # 将课程学习数量添加到list中
     if len(l) < 3:
-        return all_test
+        for t in all_test:
+            recommend_test.append(t)
+        return recommend_test
     else:
         test_sum_reverse = sorted(l, reverse=True)   # 由大到小降序
         result = test_sum_reverse[:3]  # 取前3进行推荐
-        if result[0] == result[1] and result[0] == result[2]:
-            recommend_test = TestList.query.filter_by(test_sum=result[0]).all()
-            return recommend_test[:3]
-        else:
-            recommend = []
-            for i in range(0, 3):
-                recommend.append(TestList.query.filter_by(test_sum=result[i]).all())
-            return recommend[:3]
+        result = set(result)
+        for count in result:
+            tests = TestList.query.filter_by(test_sum=count).all()
+            for t in tests:
+                recommend_test.append(t)
+        return recommend_test[:3]
 
 
 
