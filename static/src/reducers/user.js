@@ -194,10 +194,16 @@ const user = handleActions({
 		return { ...state }
 	},
 	['user/set/collect/success'](state, action){
-		let newStatus;
-		if(action.payload == 'True') newStatus = true;
-		if(action.payload == 'False') newStatus = false;
-		return { ...state, isCollectContext: newStatus || action.payload }
+		
+		if(typeof(action.payload) != "boolean"){
+			let newStatus;
+			if(action.payload == 'True') newStatus = true;
+			if(action.payload == 'False') newStatus = false;
+			return { ...state, isCollectContext: newStatus }
+		}
+		else{
+			return { ...state, isCollectContext: action.payload }
+		}
 	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
