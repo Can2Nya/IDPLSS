@@ -574,8 +574,9 @@ def self_test_problems(tid):
 @auth.login_required
 @get_current_user
 def interested_field():
-    # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6
+    # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6 兴趣生活7
     filed_list = [0, 1, 2, 3, 4, 5, 6, 7]
+    result_list = []
     user = g.current_user
     course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
     test_behavior = TestBehavior.query.filter_by(user_id=user.id).all()
@@ -586,14 +587,19 @@ def interested_field():
         course = Course.query.filter_by(id=c_id).first()
         result_dict[course.course_category] += 1
     for t in test_behavior:
-        t_id = t.test_list_id
+        t_id = t.test_id
         test = TestList.query.filter_by(id=t_id).first()
-        result_dict[test.test_catrgory] += 1
+        result_dict[test.test_category] += 1
     for r in text_behaviors:
         r_id = r.text_resource_id
         resource = TextResource.query.filter_by(id=r_id).first()
         result_dict[resource.resource_category] += 1
-    return jsonify(result_dict)
+    for k, v in result_dict.items():
+        temp_dict = dict()
+        temp_dict['category'] = k
+        temp_dict['value'] = v
+        result_list.append(temp_dict)
+    return jsonify(result_list)
 
 
 @main.route('/api/user/time-frequency', methods=['GET'])
@@ -606,21 +612,38 @@ def time_frequency():
     """
     user = g.current_user
     w = dict()
-    time_hour = [str(x) for x in range(0, 24)]
+    result_list = []
+    index_dict = ['0'+str(x) for x in range(0, 10)]
+    time_hour = [x for x in range(0, 24)]
     frequency_dict = w.fromkeys(time_hour, 0)  # 时间频率字典
+    print frequency_dict
     course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
     resource_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
     test_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
     for c_b in course_behaviors:
         log_time = c_b.timestamp
         t = log_time.strftime("%H")
+        if t in index_dict:  # 转化格式
+            t = t[1:]
+        t = int(t)
         frequency_dict[t] += 1
     for r_b in resource_behaviors:
         log_time = r_b.timestamp
         t = log_time.strftime("%H")
+        if t in index_dict:  # 转化格式
+            t = t[1:]
+        t = int(t)
         frequency_dict[t] += 1
     for t_b in test_behaviors:
         log_time = t_b.timestamp
         t = log_time.strftime("%H")
+        if t in index_dict:  # 转化格式
+            t = t[1:]
+        t = int(t)
         frequency_dict[t] += 1
-    return jsonify(frequency_dict)
+    for k, v in frequency_dict.items():
+        temp_dict = dict()
+        temp_dict['time'] = k
+        temp_dict['value'] = v
+        result_list.append(temp_dict)
+    return jsonify(result_list)
