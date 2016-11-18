@@ -29,7 +29,7 @@ def user_similarity_calc(user):
         if repeat_sum != 0:
             # print "user id is %s count is %s " % (u.id, repeat_sum)
             w[u.id] = repeat_sum
-            w[u.id] /= math.sqrt(len(target_collections)*len(other_collections)*1.0)
+            w[u.id] /= math.sqrt(target_collections.count()*len(other_collections)*1.0)
     w_sort = sorted(w.iteritems(), key=lambda d: d[1], reverse=True)
     return w_sort, target_collections
 
@@ -67,7 +67,7 @@ def user_index_calc(user):
     # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
-        result_dict[uid] /= math.sqrt(len(target_collections * len(CourseBehavior.query.filter_by(user_id=uid).all())))
+        result_dict[uid] /= math.sqrt(len(target_collections.count() * len(CourseBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
     # print "result dict is %s" % w_sort
     return w_sort, target_collections
@@ -175,7 +175,7 @@ def course_similarity_recommend(user, k, n):
     print "from main collect is %s" % target_collections
     if not target_collections != all_courses:   # 当用户收藏了全部课程时, 直接返回空
         return []
-    count_other_course = len(all_courses) - len(target_collections)
+    count_other_course = len(all_courses) - target_collections.count()
     if count_other_course < k:
         k = count_other_course
     result_dict = dict()

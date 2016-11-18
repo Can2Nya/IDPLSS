@@ -148,9 +148,8 @@ def test_similarity_recommend(user, k, n):
         target_collections.append(c)
     if not target_collections != all_tests:  # 当所有的课程都已经被用户收藏时  没有推荐
         return []
-    other_test_count = len(all_tests) - len(target_collections)
-    if other_test_count < k:
-        k = other_test_count
+    if len(target_collections) < 3:
+        k = len(target_collections)
     result_dict = dict()
     similarity_data_frame = test_index_pandas_calc(target_collections, other_users)
     for index, test in enumerate(target_collections):

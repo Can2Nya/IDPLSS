@@ -36,7 +36,7 @@ def user_index_calc(user):
     # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
-        result_dict[uid] /= math.sqrt(len(target_collections*len(TextResourceBehavior.query.filter_by(user_id=uid).all())))
+        result_dict[uid] /= math.sqrt(len(target_collections.count()*len(TextResourceBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
     # print "result dict is %s" % w_sort
     return w_sort, target_collections
@@ -141,7 +141,7 @@ def text_resources_recommend(user, k, n):
     all_resources = TextResource.query.all()
     if not target_collections != all_resources:
         return []
-    count_other_resource = len(all_resources) - len(target_collections)
+    count_other_resource = len(all_resources) - target_collections.count()
     if count_other_resource < k:
         k = count_other_resource
     result_dict = dict()

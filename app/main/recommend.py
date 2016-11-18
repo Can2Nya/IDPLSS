@@ -68,7 +68,7 @@ def recommend_courses(type_id):
 
     else:
         user_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
-        if len(user_behaviors) < 2:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
+        if len(user_behaviors) < 5:   # 当用户行为的数量少于X时, 由于数据量少计算没有意义 因为根据用户兴趣标签来进行推荐
             print 'code start calc start'
             courses = code_start_course(user)
 
@@ -78,9 +78,10 @@ def recommend_courses(type_id):
                 "status": "successfully"
             })
         else:                         # 如果行为数量已经足够,则进行UserCf或者ItemCf算法推荐
+            print "personal recommend start"
             if type_id == 0:
                 if redis_store.get(str(user.id)+"_1_user_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course(user, type_id=0)
+                    get_course.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -102,7 +103,7 @@ def recommend_courses(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_course") is None:   # 如果缓存中没有课程数据,则计算
-                    get_course(user, type_id=1)
+                    get_course.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_courses": 0,
@@ -154,7 +155,7 @@ def recommend_text_resources(type_id):
             if type_id == 0:
 
                 if redis_store.get(str(user.id)+"_1_user_resource") is None:   # 如果缓存中没有文本数据,则计算
-                    get_text_resources(user, type_id=0)
+                    get_text_resources.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -176,7 +177,7 @@ def recommend_text_resources(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_resource") is None:   # 如果缓存中没有数据,则计算
-                    get_text_resources(user, type_id=1)
+                    get_text_resources.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_text_resources": 0,
@@ -228,7 +229,7 @@ def recommend_test(type_id):
         else:
             if type_id == 0:
                 if redis_store.get(str(user.id)+"_1_user_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests(user, type_id=0)
+                    get_tests.delay(user, type_id=0)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -250,7 +251,7 @@ def recommend_test(type_id):
                     })
             else:
                 if redis_store.get(str(user.id)+"_1_item_test") is None:   # 如果缓存中没有课程数据,则计算
-                    get_tests(user, type_id=1)
+                    get_tests.delay(user, type_id=1)
                     return jsonify({
                          "count": 0,
                          "recommend_tests": 0,
@@ -272,70 +273,73 @@ def recommend_test(type_id):
                     })
 
 
-# @celery.task
+@celery.task
 def get_tests(user, type_id):
     user = user
     type_id = type_id
+    count = 1
     if type_id == 0:  # 根据UserCf计算
         tests = test_user_similarity_recommend(user, 10, 3)
         for x in range(1, len(tests)+1):
-            test_name = str(user.id)+"_"+str(x)+"_user_test"
-            redis_store.set(test_name, tests[x-1].id, redis_timeout)
+            if tests[x-1] is not None:
+                test_name = str(user.id)+"_"+str(count)+"_user_test"
+                redis_store.set(test_name, tests[x-1].id, redis_timeout)
+                count += 1
         print "test UserCf calc finish"
     else:     # 根据ItemCf计算
         tests = test_similarity_recommend(user, 10, 3)
         for x in range(1, len(tests)+1):
-            test_name = str(user.id)+"_"+str(x)+"_item_test"
-            redis_store.set(test_name, tests[x-1].id, redis_timeout)
+            if tests[x-1] is not None:
+                test_name = str(user.id)+"_"+str(count)+"_item_test"
+                redis_store.set(test_name, tests[x-1].id, redis_timeout)
+                count += 1
         print "test ItemCf calc finish"
 
 
-# @celery.task
+@celery.task
 def get_course(user, type_id):
     user = user
     type_id = type_id
+    count = 1
     if type_id == 0:  # 根据UserCf计算
         courses = user_similarity_recommend(user, 10, 3)
         for x in range(1, len(courses)+1):
-            course_name = str(user.id)+"_"+str(x)+"_user_course"
-            redis_store.set(course_name, courses[x-1].id, redis_timeout)
+            if courses[x-1] is not None:
+                course_name = str(user.id)+"_"+str(count)+"_user_course"
+                redis_store.set(course_name, courses[x-1].id, redis_timeout)
+                count += 1
         print "course UserCf calc finish"
     else:
         courses = course_similarity_recommend(user, 10, 3)
         for x in range(1, len(courses)+1):
-            course_name = str(user.id)+"_"+str(x)+"_item_course"
-            redis_store.set(course_name, courses[x-1].id, redis_timeout)
+            if courses[x-1] is not None:
+                course_name = str(user.id)+"_"+str(count)+"_item_course"
+                redis_store.set(course_name, courses[x-1].id, redis_timeout)
+                count += 1
         print "course  ItemCf calc finish"
 
 
-# @celery.task
+@celery.task
 def get_text_resources(user, type_id):
     user = user
     type_id = type_id
+    count = 1
     if type_id == 0:  # 根据UserCf计算
         text_resources = text_resources_user_recommend(user, 10, 3)
         for x in range(1, len(text_resources)+1):
-            resource_name = str(user.id)+"_"+str(x)+"_user_resource"
-            redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
+            if text_resources[x-1] is not None:
+                resource_name = str(user.id)+"_"+str(count)+"_user_resource"
+                redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
+                count += 1
         print "resource UserCf calc finish"
     else:
         text_resources = text_resources_recommend(user, 10, 3)
         for x in range(1, len(text_resources)+1):
-            resource_name = str(user.id)+"_"+str(x)+"_item_resource"
-            redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
-            print redis_store.get(resource_name)
+            if text_resources[x-1] is not None:
+                resource_name = str(user.id)+"_"+str(count)+"_item_resource"
+                redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
+                count += 1
+                print redis_store.get(resource_name)
         print "resource ItemCf calc finish"
-
-
-@celery.task
-def run_long_time():
-    for i in range(1, 1000000):
-        pass
-    print "hello run long time end"
-
-@main.route('/api/celery-test')
-def celery_test():
-    run_long_time.delay()
-    return jsonify({"status": "ok"})
 
 
