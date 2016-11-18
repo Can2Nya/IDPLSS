@@ -570,7 +570,7 @@ def self_test_problems(tid):
     })
 
 
-@main.route('/api/user/interested_field', methods=['GET'])
+@main.route('/api/user/interested-field', methods=['GET'])
 @auth.login_required
 @get_current_user
 def interested_field():
@@ -596,9 +596,11 @@ def interested_field():
         result_dict[resource.resource_category] += 1
     for k, v in result_dict.items():
         temp_dict = dict()
+        print "before temp_dict is %s" % temp_dict
         temp_dict['category'] = k
         temp_dict['value'] = v
         result_list.append(temp_dict)
+        print "after temp dict is %s" % temp_dict
     return jsonify(result_list)
 
 
@@ -643,7 +645,9 @@ def time_frequency():
         frequency_dict[t] += 1
     for k, v in frequency_dict.items():
         temp_dict = dict()
+        print "before temp_dict is %s" % temp_dict
         temp_dict['time'] = k
         temp_dict['value'] = v
+        print "after temp dict is %s" % temp_dict
         result_list.append(temp_dict)
     return jsonify(result_list)
