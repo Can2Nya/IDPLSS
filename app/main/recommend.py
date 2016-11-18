@@ -9,6 +9,8 @@ from app.recommend.resource_recommend import text_resources_user_recommend,  tex
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
 from app import redis_store
+
+from .. import celery
 # local val
 redis_timeout = 80000  # 缓存的过期时间
 recommend_count = 3  # 推荐的数量
@@ -325,6 +327,15 @@ def get_text_resources(user, type_id):
         print "resource ItemCf calc finish"
 
 
+@celery.task
+def run_long_time():
+    for i in range(1, 1000000):
+        pass
+    print "hello run long time end"
 
+@main.route('/api/celery-test')
+def celery_test():
+    run_long_time.delay()
+    return jsonify({"status": "ok"})
 
 

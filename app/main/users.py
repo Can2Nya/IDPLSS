@@ -596,12 +596,10 @@ def interested_field():
         result_dict[resource.resource_category] += 1
     for k, v in result_dict.items():
         temp_dict = dict()
-        print "before temp_dict is %s" % temp_dict
         temp_dict['category'] = k
         temp_dict['value'] = v
         result_list.append(temp_dict)
-        print "after temp dict is %s" % temp_dict
-    return jsonify(result_list)
+    return jsonify({"result": result_list})
 
 
 @main.route('/api/user/time-frequency', methods=['GET'])
@@ -618,7 +616,6 @@ def time_frequency():
     index_dict = ['0'+str(x) for x in range(0, 10)]
     time_hour = [x for x in range(0, 24)]
     frequency_dict = w.fromkeys(time_hour, 0)  # 时间频率字典
-    print frequency_dict
     course_behaviors = CourseBehavior.query.filter_by(user_id=user.id).all()
     resource_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
     test_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
@@ -645,9 +642,7 @@ def time_frequency():
         frequency_dict[t] += 1
     for k, v in frequency_dict.items():
         temp_dict = dict()
-        print "before temp_dict is %s" % temp_dict
         temp_dict['time'] = k
         temp_dict['value'] = v
-        print "after temp dict is %s" % temp_dict
         result_list.append(temp_dict)
-    return jsonify(result_list)
+    return jsonify({"result": result_list})
