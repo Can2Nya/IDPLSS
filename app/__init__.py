@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import configs, ENV
 from flask_redis import FlaskRedis
+from celery import Celery
 
 
 mail = Mail()
@@ -13,6 +14,8 @@ moment = Moment()
 db = SQLAlchemy()
 cors = CORS()
 redis_store = FlaskRedis()
+
+celery = Celery(__name__, broker=configs[ENV].CELERY_BROKER_URL)
 
 
 def create_app():
@@ -28,6 +31,8 @@ def create_app():
     moment.init_app(app)
     db.init_app(app)
     redis_store.init_app(app)
+
+    celery.conf.update(app.config)
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     return app
