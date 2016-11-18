@@ -194,7 +194,7 @@ class User(db.Model):
     def add_user():
         user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True,
                      interested_field="1:2:3")
-        user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True)
+        user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True, interested_field="1")
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
@@ -1029,8 +1029,8 @@ class AnswerRecord(db.Model):
 
     @staticmethod
     def from_json(json_info):
-        right_answer = json_info.get('right_answer')
-        user_answer = json_info.get('user_answer')
+        right_answer = str(json_info.get('right_answer'))
+        user_answer = str(json_info.get('user_answer'))
         problem_type = json_info.get('problem_type')
         answerer_id = json_info.get('answerer_id')
         test_record_id = json_info.get('test_record_id')
