@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import division
 from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
 from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
@@ -594,10 +595,17 @@ def interested_field():
         r_id = r.text_resource_id
         resource = TextResource.query.filter_by(id=r_id).first()
         result_dict[resource.resource_category] += 1
+    count = 0
+    for k, v in result_dict.items():
+        count += v
+    print "count is %s" % count
     for k, v in result_dict.items():
         temp_dict = dict()
         temp_dict['category'] = k
-        temp_dict['value'] = v
+        try:
+            temp_dict['value'] = (v/count)*100
+        except ZeroDivisionError:
+            temp_dict['value'] = 0
         result_list.append(temp_dict)
     return jsonify({"result": result_list})
 
