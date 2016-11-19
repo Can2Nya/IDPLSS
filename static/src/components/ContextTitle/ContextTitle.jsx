@@ -8,9 +8,9 @@ import Button from '../Button/Button';
 
 import styles from './ContextTitle.less';
 
-const ContextTitle = ({ location, data, index }) => {
+const ContextTitle = ({ location, data, type }) => {
 	const { isSelectContext, category } = data
-	const { context } = isSelectContext
+	// const { context } = isSelectContext
 	// const { id, problemId, testRecordId, isSubmit, isCorrect, isComplete, status } = isSelectContext.isSelectContext
 	// const titleCls = () =>{
 	// 	var style = {}
@@ -38,10 +38,12 @@ const ContextTitle = ({ location, data, index }) => {
 	// 	return;
 	// };
 	const renderTitle = () =>{
-		if(index !== undefined && isSelectContext){
-			return isSelectContext.list[index].video_name;
+		if(type == 'video'){
+			const { context } = isSelectContext.isSelectContext
+			return context.video_name;
 		}
-		else {
+		if(type == 'test'){
+			const { context } = isSelectContext
 			return context.test_title
 		}
 	}
@@ -60,15 +62,15 @@ const ContextTitle = ({ location, data, index }) => {
 						<Icon type="home" />
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
-						{/*<Link to={{ pathname:`${location.pathname}`}}>{ category[context.test_category] }</Link>*/}
+						<Link to={{ pathname:`${location.pathname}`}}>{ category[isSelectContext.context.test_category+1 || isSelectContext.context.course_category+1] }</Link>
 						</Breadcrumb.Item>
 			</Breadcrumb>
 		</Col>
 		<Col span={5}>
-			<div className={styles.time}>{ context.timestamp }</div>
+			<div className={styles.time}>{ isSelectContext.isSelectContext.context.timestamp || isSelectContext.context.timestamp }</div>
 		</Col>
 		<Col span={5}>
-			<div className={styles.favor}><Icon type="heart-o" />  收藏</div>
+			<div className={styles.favor}><Icon type="heart-o" />  喜欢</div>
 		</Col>
 		</Row>
 		</Col>

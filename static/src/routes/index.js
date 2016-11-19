@@ -95,6 +95,7 @@ const Routes = ({ history, dispatch }) =>{
 				fuc = match[3]
 				dispatch({
 					type: `${context}/get/detail`,
+					mode: 'course',
 					id: id
 				})
 				dispatch({
@@ -135,7 +136,7 @@ const Routes = ({ history, dispatch }) =>{
 		// -------------end--------------------
 		// -test problem init------------------
 		if(pathname.search('play/test')!== -1){
-			const match = pathToRegexp('/play/test/:testId/:recordId').exec(pathname);
+			const match = pathToRegexp('/play/test/:testId/:recordId/').exec(pathname);
 			dispatch({
 				type: 'test/init/problem',
 				testId: match[1],
@@ -149,10 +150,27 @@ const Routes = ({ history, dispatch }) =>{
 		}
 		// -video init------------------
 		if(pathname.search('play/video')!== -1){
-			const match = pathToRegexp('/play/video/:courseId/').exec(pathname);
+			const match = pathToRegexp('/play/video/:courseId/:videoId/').exec(pathname);
 			dispatch({
 				type: 'video/init/video',
 				courseId: match[1],
+				videoId: match[2]
+			})
+			dispatch({
+				type: 'video/get/detail',
+				mode: 'video',
+				courseId: match[1],
+				id: match[2]
+			})
+			dispatch({
+				type: 'video/get/detail',
+				mode: 'course',
+				id: match[1]
+			})
+			dispatch({
+				type: 'video/get/series',
+				id: match[1],
+				count: 'all',// 写到这里，记得all
 			})
 		}
 		// login listen----------------------
@@ -181,6 +199,16 @@ const Routes = ({ history, dispatch }) =>{
 			})
 			let action = 'user/get/user';
 			if(match[2] == 'dynamic'){
+				//统计数据接口
+				dispatch({
+					type: 'user/get/stat',
+					mode: 'frequency'
+				})
+				dispatch({
+					type: 'user/get/stat',
+					mode: 'interestedField'
+				})
+				
 				dispatch({
 					type: 'user/changeSelectTab',
 					isSelectTab: '0'
@@ -247,6 +275,7 @@ const Routes = ({ history, dispatch }) =>{
 				type: action,
 				pagination: 1
 			})
+			
 		}
 		// user manage init-----------------------
 		if(pathname.search('manage')!== -1){
@@ -287,7 +316,7 @@ const Routes = ({ history, dispatch }) =>{
 		<Route path="/login/" component={Login}>
 		</Route>
 		<Route path="/play/">
-			<Route path="video/:courseId/" component={PlayVideo}  />
+			<Route path="video/:courseId/:videoId/" component={PlayVideo}  />
 			{/*<Route path="text/:id/" component={PlayText}  />*/}
 			<Route path="test/:testId/:recordId/" component={PlayTest}  />
 			<Route path="*" component={NotFound}  />

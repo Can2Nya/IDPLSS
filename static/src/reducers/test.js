@@ -224,6 +224,9 @@ const test = handleActions({
 	['test/changePagination'](state, action) {
 		return { ...state, isSelectPagination: action.isSelectPagination }
 	},
+	// ['test/changeTime'](state, action) {
+	// 	return { ...state, time: Date.now() }
+	// },
 }, {
 	stateName: 'test',
 		categorySource: {//分页中的列表
@@ -270,6 +273,7 @@ const test = handleActions({
 		},//选定内容再选择里面的列表
 	},//选定的内容
 	loading: false,//加载中
+	time: Date.now(),// 时间戳保持表单唯一
 });
 
 export default test;

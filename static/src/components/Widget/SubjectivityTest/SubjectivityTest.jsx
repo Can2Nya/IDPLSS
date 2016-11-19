@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import styles from './SubjectivityTest.less';
 import config from '../../../config/config.js'
 
-const SubjectivityTest = ({ result, status, data, index, form, onFormChange }) => {
+const SubjectivityTest = ({ time, result, status, data, index, form, onFormChange }) => {
 
 	const { getFieldProps, validateFields, getFieldValue } = form;
 
@@ -29,6 +29,12 @@ const SubjectivityTest = ({ result, status, data, index, form, onFormChange }) =
 			)
 		}
 	}
+	const renderProblemImage = () =>{
+		if(data.description_image == '') return;
+		return data.description_image.split(':').map((image,index)=>{
+			return <img key={index} height={200} src={`${config.qiniu}/${image}`} />
+		})
+	}
 	return (
 		<div className={styles.subjectivityTest}>
 			<div className={styles.title}>
@@ -37,15 +43,16 @@ const SubjectivityTest = ({ result, status, data, index, form, onFormChange }) =
 			{ renderProblemStatus() }
 			</span>
 			<div>
-			{ data.description_image.split(':').map((image,index)=>{
+			{/* data.description_image.split(':').map((image,index)=>{
 				return <img key={index} height={200} src={`${config.qiniu}/${image}`} />
-			})}
+			})*/}
+			{ renderProblemImage() }
 			</div>
 			</div>
 			<Form.Item>
 			<Input type='textarea' rows={5}
 			{...getFieldProps(`test-${data.id}`,{
-				// onChange: onFormChange
+				onChange: onFormChange
 			})}
 			/>
 			</Form.Item>

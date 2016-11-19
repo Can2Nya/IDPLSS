@@ -61,7 +61,9 @@ const video = handleActions({
 	// 	};
 	// },
 	['video/get/detail'](state, action) {
-		// 触发此action需要 id
+		// 触发此action需要 id , courseId(mode:video)
+		// mode: course, video
+		// mode为 video 的情况下额外需要courseId， id为video id
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -69,13 +71,32 @@ const video = handleActions({
 	},
 	['video/get/success/detail'](state, action) {
 		// 触发此action需要 id
-		return { 
-			...state,
-			isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
+		// 由saga触发
+		// mode: course, video
+		if(action.mode == 'course'){
+			return { 
+				...state,
+				isSelectContext: { ...state.isSelectContext, context: action.payload, loading: false },
+			}
 		}
+		if(action.mode == 'video'){
+			const { isSelectContext } = state
+			return { 
+				...state, 
+				isSelectContext: { 
+					...isSelectContext,
+					isSelectContext: {
+						...isSelectContext.isSelectContext,
+						context: action.payload,
+					}
+				},
+			};
+		}
+		
 	},
 	['video/get/series'](state, action) {
 		// 触发此action需要 id pagination
+		// count: 'part', 'all'
 		return { 
 		...state, 
 		isSelectContext: { ...state.isSelectContext, loading: true, },
@@ -86,7 +107,7 @@ const video = handleActions({
 			...state,
 			isSelectContext: { 
 				...state.isSelectContext, 
-				list: action.payload.video_list, 
+				list: action.payload.video_list || action.payload.course_video, 
 				loading: false,
 				total: action.payload.count
 			},
@@ -133,6 +154,10 @@ const video = handleActions({
 			isSelectContext: { 
 				...isSelectContext,
 				id: action.courseId,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					id: action.videoId
+				}
 			},
 		};
 	},
@@ -202,12 +227,9 @@ const video = handleActions({
 		comment: [],//课程评论列表
 		isSelectContext:{
 			isSelectVideo: 0,// list 列表中的顺序
-			videoElement: null,// 视频元素
+			context: {}, // 视频详情信息
 		}//选定内容中的内容
 	},//选定的内容
-	upload: {
-		uploadState: 0, // 上传百分比
-	},
 	loading: false,//加载中
 });
 

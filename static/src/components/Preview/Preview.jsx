@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Icon } from 'antd';
 import classNames from 'classnames';
 
 import styles from './Preview.less';
@@ -56,11 +56,11 @@ const Preview = ({ type, data, isCollect, onCollect, onCollectCancel }) => {
 			if(isCollect == false) return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
 			if(isCollect == true) return (
 				<Row gutter={8} type='flex' align="middle">
-				<Col span={16}>
-					<Link to={`/play/video/${data.id}/`} ><Button className={styles.button}>已参加</Button></Link>
+				<Col span={18}>
+					<Button className={styles.button} onClick={onCollectCancel.bind(this)}>取消参加</Button>
 				</Col>
-					<Col span={8}>
-						<a onClick={onCollectCancel.bind(this)}>取消参加</a>
+					<Col span={6}>
+						<a onClick={onCollectCancel.bind(this)}><Icon type="heart-o" />  喜欢</a>
 					</Col>
 					</Row>
 			)

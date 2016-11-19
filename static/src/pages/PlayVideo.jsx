@@ -17,15 +17,15 @@ import styles from './commont.less';
 import 'video.js/dist/video-js.min.css';
 
 const PlayVideo = ({ video, dispatch, location }) =>{
-	const { isSelectContext, isSelectPagination } = video
-	const { isSelectVideo, videoElement } = isSelectContext.isSelectContext
+	const { isSelectContext } = video
+	const { context } = isSelectContext.isSelectContext
 
 	// ----------------render----------------------------
-	const isAllowVideo = () =>{
-		if(isSelectContext.list.length <= 0){
-			browserHistory.push(`/detail/video/${isSelectContext.id}/#!/series/1/`)
-		}
-	}
+	// const isAllowVideo = () =>{
+	// 	if(isSelectContext.list.length <= 0){
+	// 		browserHistory.push(`/detail/video/${isSelectContext.id}/#!/series/1/`)
+	// 	}
+	// }
 	const renderVideoList = ()=>{
 		return isSelectContext.list.map((data,index)=>{
 			if(!data.show) return;
@@ -39,52 +39,11 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 	})
 	// -------------action-----------------------------
 	const handleChangeVideo = (id) =>{
-		dispatch({
-			type: 'video/changeVideo',
-			isSelectVideo: id,
-		})
-		// videoElement.src(`${config.qiniu}/${isSelectContext.list[id].source_url}`)
-		// videoElement.reset()
-		// videoElement.load()
+		// dispatch({
+		// 	type: 'video/changeVideo',
+		// 	isSelectVideo: id,
+		// })
 	}
-	// --------------fuc-----------------------------
-	// const handleChangeVideoSrc = () =>{
-	// 	videoElement.src(`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`)
-	// 	videoElement.reset()
-	// 	videoElement.load()
-	// }
-
-	// // -------------react-----------------------------
-	// const Video = React.createClass({
-	// 	componentWillMount() {
-	// 		console.log(2)
-	// 		isAllowVideo();
-	// 	},
-	// 	componentDidMount()	{
-	// 		console.log(1)
-	// 		const play = videojs('videoPlay')
-	// 		dispatch({
-	// 			type: 'video/init/player',
-	// 			videoElement: play
-	// 		})
-	// 		// play.play();
-	// 	},
-	// 	shouldComponentUpdate(){
-	// 		console.log(3)
-	// 		return false;
-	// 	},
-	// 	render() {
-	// 		return(
-	// 			<video id='videoPlay' className={videoCls} controls preload='auto'>
-	// 				<source src={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
-	// 			</video>
-	// 		)
-	// 	}
-	// 	// const play = videojs('videoPlay')
-	// 	// play.play();
-	// })
-	// const renderVideo = videojs('videoPlay');
-	// renderVideo.play();
 	return(
 		<Layout location={location}>
 		
@@ -95,7 +54,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 
 		<Row type='flex' align='top'>
 		<Col span={18}>
-			<ContextTitle data={video} location={location} index={isSelectVideo}/>
+			<ContextTitle data={video} location={location} type='video'/>
 		</Col>
 		<Col span={6}>
 			<UserLittleInfo data={isSelectContext.context} />
@@ -109,7 +68,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		<div className={styles.contain}>
 		<Row type='flex' justify='center'>
 
-			<VideoPlayer url={`${config.qiniu}/${isSelectContext.list[isSelectVideo].source_url}`} />
+			<VideoPlayer url={`${config.qiniu}/${context.source_url}`} />
 			
 		</Row>
 		</div>

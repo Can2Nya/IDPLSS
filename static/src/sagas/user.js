@@ -376,6 +376,21 @@ function* getUserCollect(action) {
 	}
 }
 
+function* getUserStat(action) {
+	try {
+		const { jsonResult } = yield call(req.UserStat, action);
+		if (jsonResult) {
+			yield put({
+				type: 'user/get/stat/success',
+				mode: action.mode,
+				payload: jsonResult.result
+			})
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
 
 
 function* watchUserLogin() {
@@ -459,6 +474,9 @@ function* watchUserCollect() {
 		'user/replace/collect',
 		], getUserCollect)
 }
+function* watchUserStat() {
+	yield* takeEvery('user/get/stat', getUserStat)
+}
 
 
 /*function* watchUserGetJson() {
@@ -479,6 +497,7 @@ export default function* () {
 	yield fork(watchUserRecommend)
 	//yield fork(watchUserGetJson)
 	yield fork(watchUserCollect)
+	yield fork(watchUserStat)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

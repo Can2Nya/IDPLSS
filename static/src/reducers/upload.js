@@ -136,8 +136,8 @@ const upload = handleActions({
 		return { ...state, time: Date.now() };
 	},
 }, {
-	// 单文件【瞎jb起错名（复数是什么鬼！
-	files: [], //0位置为一级数据，1位为二级数据单文件？？？？【用于修改视频文件作用
+	// 单文件【
+	files: [], //0位置为一级数据，1位为二级数据单文件【用于修改视频文件作用
 	progress: 0, //可为array或int
 	token: '',
 	modalState: false,//modal是否被激活
@@ -145,7 +145,7 @@ const upload = handleActions({
 	loading: false,
 	
 	// 多文件模式
-	tmpFile:[],//不知道怎么解释了。。。创建时临时存放的文件，事后再添加到列表（测试图片不需要）
+	tmpFile:[],//创建时临时存放的文件，事后再添加到列表（测试图片不需要）
 	uploadList: [],// 上传列表的一个包含除了文件还有其他参数
 	uploadListFiles: [],// 文件列表(一个测试一个列表,一个测试添加到列表后清除这个)
 	uploadListProgress: [],//可为array或int
