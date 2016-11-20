@@ -19,8 +19,6 @@ const Banner = ({ config }) => {
 				<Col span={2}
 						 offset={14}
 				>
-					<Massage >
-					</Massage>
 				</Col>
 				<Col span={2}>
 					<User textStyle={{ color: '#523552'}}>

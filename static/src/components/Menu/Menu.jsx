@@ -7,18 +7,6 @@ import classnames from 'classnames';
 import styles from './Menu.less';
 
 const Menu = ({ menu, isSelect, changeCategory }) => {
-	/*
-	const { list } = menu;
-	const handleToggleSelect = (id) =>{
-		dispatch({
-			type: 'menu/isSelect',
-			payload: id,
-		})
-		/**let selectkey;
-		if(location.hash) selectkey = location.hash.replace(/\D/g,'');
-		console.log(selectkey)
-		return (selectkey.charAt(0) === id)? true: false;
-	};*/
 
 	const renderMenu = () =>{
 		return(
@@ -52,7 +40,6 @@ const Menu = ({ menu, isSelect, changeCategory }) => {
 	};
 	return (
 		<div>
-			{/*<div className={styles.title}>{ title }</div>*/}
 			{renderMenu()}
 		</div>
 	);
@@ -62,31 +49,5 @@ Menu.propTypes = {
 	/*title: PropTypes.string.isRequired,*/
 };
 
-/*function menuFilter(menu, hash) {
-	if(hash){
-		var newSelectkey = hash.replace(/\D/g,'');
-		newSelectkey = parseInt(newSelectkey.charAt(0));
-		const newList = menu.list.map(line =>{
-			if( newSelectkey == line.id ) {
-				return { ...line, isSelect: true }
-			}
-			else {
-				return { ...line, isSelect: false }
-			}
-			return true;
-		});
-		return { ...menu, list: newList, selectkey: newSelectkey };
-	}
-	return menu;
-	
-}
-
-function mapStateToProps({ menu },{ location }){
-	return {
-		menu: menuFilter(menu,location.hash),
-	};
-};
-
-export default connect(mapStateToProps)(Menu);*/
 
 export default Menu;

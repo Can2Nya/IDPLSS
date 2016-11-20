@@ -10,23 +10,23 @@ import config from '../../config/config.js';
 import styles from './Pannel.less';
 
 const DynamicPannel = ({ children, data }) => {
-	const renderBarChart = () =>{
-		if(data.barData && data.barData.length > 0){
-			return <BarChart data={data.barData}/>
-		}
-	}
-	const renderPieChart = () =>{
-		if(data.pieData && data.pieData.length > 0){
-			return <PieChart data={[
-        {catagory: 0, value: 56.33 },
-        {catagory: 1, value: 24.03},
-        {catagory: 2, value: 10.38},
-        {catagory: 3,  value: 4.77},
-        {catagory: 4, value: 0.91},
-        {catagory: 5, value: 0.2}
-      ]}/>
-		}
-	}
+	// const renderBarChart = () =>{
+	// 	if(data.barData && data.barData.length > 0){
+	// 		return <BarChart data={data.barData}/>
+	// 	}
+	// }
+	// const renderPieChart = () =>{
+	// 	if(data.pieData && data.pieData.length > 0){
+	// 		return <PieChart data={[
+ //        {catagory: 0, value: 56.33 },
+ //        {catagory: 1, value: 24.03},
+ //        {catagory: 2, value: 10.38},
+ //        {catagory: 3,  value: 4.77},
+ //        {catagory: 4, value: 0.91},
+ //        {catagory: 5, value: 0.2}
+ //      ]}/>
+	// 	}
+	// }
   	return (
 	<div className={styles.dynamicpannel}>
 	  <Row>
