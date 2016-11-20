@@ -184,7 +184,7 @@ const user = handleActions({
 	['user/get/stat/success'](state, action){
 		// mode: 时间频率frequency，学习领域interested-field
 		if(action.mode == 'frequency') return { ...state, barData: action.payload }
-		if(action.mode == 'interestedField') return { ...state, pieData: action.payload }
+		if(action.mode == 'interestedField') return { ...state, radarData: action.payload }
 		return { ...state }
 	},
 	// -------内容------------------
@@ -215,6 +215,10 @@ const user = handleActions({
 			return { ...state, isCollectContext: action.payload }
 		}
 	},
+	['user/get/like'](state, action){
+		// context: Video,Text,test
+		return { ...state }
+	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
@@ -234,7 +238,7 @@ const user = handleActions({
 	userZoneSubList: [], // 二级数据存放【例如videolist，problemlist
 	recommend: [],// 用户自己接收的推荐
 	barData: [],// 条形图数据
-	pieData: [],// 饼图
+	radarData: [],// 饼图
 });
 
 export default user;

@@ -43,6 +43,7 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		// 	type: 'video/changeVideo',
 		// 	isSelectVideo: id,
 		// })
+		browserHistory.push(`/play/video/${isSelectContext.id}/${id}/`)
 	}
 	return(
 		<Layout location={location}>

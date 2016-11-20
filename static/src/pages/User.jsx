@@ -16,7 +16,7 @@ import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 
 import BarChart from '../components/Chart/BarChart/BarChart';
-import PieChart from '../components/Chart/PieChart/PieChart';
+import RadarChart from '../components/Chart/RadarChart/RadarChart';
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
 import TextCover from '../components/Widget/TextCover/TextCover';
@@ -26,7 +26,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, dispatch, user }) => {
-	const { pieData, barData, userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
+	const { radarData, barData, userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
 
 	const userMenu = {
 		'0': '#!/dynamic',
@@ -183,18 +183,9 @@ const User = ({ location, dispatch, user }) => {
 			return <BarChart data={barData}/>
 		}
 	}
-	const renderPieChart = () =>{
-		if(pieData && pieData.length > 0){
-			return <PieChart data={[
-			{catagory: 0, value: 0 },
-			{catagory: 1, value: 0},
-			{catagory: 2, value: 0},
-			{catagory: 3,  value: 0},
-			{catagory: 4, value: 0},
-			{catagory: 5, value: 0},
-			{catagory: 6, value: 0},
-			{catagory: 7, value: 0}
-		  ]}/>
+	const renderRadarChart = () =>{
+		if(radarData && radarData.length > 0){
+			return <RadarChart data={radarData}/>
 		}
 	}
 	return (
@@ -210,10 +201,10 @@ const User = ({ location, dispatch, user }) => {
 			<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={isSelectTab}>
 			{ cookie.get('user_id') == userList.user_id ? [
 				<Tabs.TabPane tab='基本信息' key='0'>
-					<DynamicPannel data={{ 'user': userList, 'loginUser': loginUserList, 'barData': barData, 'pieData': pieData  }} >
+					<DynamicPannel data={{ 'user': userList }} >
 						<div>
 						{ renderBarChart() }
-						{ renderPieChart() }
+						{ renderRadarChart() }
 						</div>
 					</DynamicPannel>
 				</Tabs.TabPane>,

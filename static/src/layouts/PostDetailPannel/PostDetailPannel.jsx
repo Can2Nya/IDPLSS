@@ -21,6 +21,14 @@ const PostDetailPannel = ({ children, data }) => {
 			[styles[type]]:true
 		});
 	};
+	const renderImage = () =>{
+		if(data.images == '') return;
+		else {
+			if(data.images) return data.images.split(':').map((image,index)=>{
+				return <img key={index} height={200} src={`${config.qiniu}/${image}`} />
+			})
+		}
+	}
 	return (
 		<div className={styles.pannel}>
 		<Row gutter={16}>
@@ -38,6 +46,9 @@ const PostDetailPannel = ({ children, data }) => {
 		</Link>
 		<div className={styles.text}>
 		<p>{ data.body }</p>
+		<div>
+			{renderImage()}
+		</div>
 		</div>
 		</Col>
 		</Row>
