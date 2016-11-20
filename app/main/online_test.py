@@ -331,7 +331,7 @@ def like_test(tid):
             db.session.add(record)
         else:
             behavior.is_like = True
-            db.sesion.add(behavior)
+            db.session.add(behavior)
         db.session.commit()
         return self_response("login user like test successfully")
 
