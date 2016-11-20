@@ -137,9 +137,17 @@ const Detail = ({ context, user, dispatch, location }) => {
 			}
 			return isSelectContext.list.map((list,index) =>{
 				if(!list.show) return
-				return(
-					<List key={index}>{ list['video_name'] || list['problem_description'] }</List>
-				);
+				if(stateName == 'video'){
+					return(
+						<Link key={index} to={`/play/video/${isSelectContext.context.id}/${list.id}/`}><List>{ list['video_name'] }</List></Link>
+					);
+				}
+				if(stateName == 'test'){
+					return(
+						<List key={index}>{ list['video_name'] || list['problem_description'] }</List>
+					);
+				}
+				
 			})
 		}
 		if(location.hash.search('comment')!== -1){

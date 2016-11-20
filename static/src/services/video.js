@@ -14,13 +14,21 @@ export async function getVideoRecommend(action) {
 	return xFetch(`${apiUrl}/api/recommend/popular-courses`,{method: 'GET',});
 }
 export async function getVideoDetail(action) {
-	return xFetch(`${apiUrl}/api/courses/detail/${action.id}`,{method: 'GET',});
+	if(action.mode == 'course'){
+		return xFetch(`${apiUrl}/api/courses/detail/${action.id}`,{method: 'GET',});
+	}
+	if(action.mode == 'video'){
+		return xFetch(`${apiUrl}/api/courses/${action.courseId}/video/${action.id}`,{method: 'GET',});
+	}
 }
 
 export async function getVideoDetailList(action) {
-	let url = `${apiUrl}/api/courses/${action.id}`;
-	if(action.type == 'video/get/series') url += '/video-list';
-	if(action.type == 'video/get/comment') url += '/comments';
+	let url = `${apiUrl}/api/`;
+	if(action.type == 'video/get/series'){
+		if(action.count == 'part') url += `courses/${action.id}/video-list`;
+		if(action.count == 'all') url += `user/self-course/${action.id}/video`
+	} 
+	if(action.type == 'video/get/comment') url += `courses/${action.id}/comments`;
 	
 	return xFetch(url,{method: 'GET',});
 }

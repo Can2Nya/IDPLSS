@@ -15,6 +15,8 @@ import UserBanner from '../components/UserBanner/UserBanner';
 import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 
+import BarChart from '../components/Chart/BarChart/BarChart';
+import PieChart from '../components/Chart/PieChart/PieChart';
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
 import TextCover from '../components/Widget/TextCover/TextCover';
@@ -24,7 +26,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, dispatch, user }) => {
-	const { userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
+	const { pieData, barData, userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
 
 	const userMenu = {
 		'0': '#!/dynamic',
@@ -176,6 +178,25 @@ const User = ({ location, dispatch, user }) => {
 			}
 		})
 	}
+	const renderBarChart = () =>{
+		if(barData && barData.length > 0){
+			return <BarChart data={barData}/>
+		}
+	}
+	const renderPieChart = () =>{
+		if(pieData && pieData.length > 0){
+			return <PieChart data={[
+			{catagory: 0, value: 0 },
+			{catagory: 1, value: 0},
+			{catagory: 2, value: 0},
+			{catagory: 3,  value: 0},
+			{catagory: 4, value: 0},
+			{catagory: 5, value: 0},
+			{catagory: 6, value: 0},
+			{catagory: 7, value: 0}
+		  ]}/>
+		}
+	}
 	return (
 		<Layout location={location}>
 		<div className={styles.user}>
@@ -189,7 +210,12 @@ const User = ({ location, dispatch, user }) => {
 			<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={isSelectTab}>
 			{ cookie.get('user_id') == userList.user_id ? [
 				<Tabs.TabPane tab='基本信息' key='0'>
-					<DynamicPannel data={{ 'user': userList }} />
+					<DynamicPannel data={{ 'user': userList, 'loginUser': loginUserList, 'barData': barData, 'pieData': pieData  }} >
+						<div>
+						{ renderBarChart() }
+						{ renderPieChart() }
+						</div>
+					</DynamicPannel>
 				</Tabs.TabPane>,
 				/*<Tabs.TabPane tab='我参与的' key='2'>
 					<TabPannel config={{'nav': ['课程','文本资料','测试']}} title='历史'  onTabClick={handleSubTabsLink.bind(this)} activeKey={isSelectSubTab}/>

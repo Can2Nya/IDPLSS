@@ -45,7 +45,7 @@ import styles from './VideoPlayer.less';
 		},
 		render() {
 			return(
-				<video id={`videoPlay-${this.state.time}`} className={videoCls} controls preload='auto'>
+				<video id={`videoPlay-${this.state.time}`} key={1} className={videoCls} controls preload='auto'>
 				</video>
 			)
 		}

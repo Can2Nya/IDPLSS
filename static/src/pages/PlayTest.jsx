@@ -19,7 +19,7 @@ import styles from './commont.less';
 let PlayTest = ({ test, user, form, dispatch, location }) =>{
 	const { loginUserList } = user
 	const { getFieldProps, getFieldsValue, validateFields, getFieldValue } = form;
-	const { isSelectContext, isSelectPagination } = test
+	const { isSelectContext, isSelectPagination, time } = test
 	const { result, submitCount, testRecordId, isSubmit, isComplete, isRolling, accuracy } = isSelectContext.isSelectContext
 	// ---------------------fuc----------------------
 	const isAllowTest = () =>{
@@ -119,6 +119,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 					data={problem} 
 					index={index} 
 					result={result}
+					time={time}
 					onFormChange={handleCountProblem.bind(this)}
 					>
 					</SelectTest>
@@ -131,6 +132,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 				data={problem} 
 				index={index} 
 				result={result}
+				time={time}
 				onFormChange={handleCountProblem.bind(this)}
 				>
 				</SubjectivityTest>
@@ -176,7 +178,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 
 		<Row type='flex' align='top'>
 		<Col span={18}>
-			<ContextTitle location={location} data={test}/>
+			<ContextTitle location={location} data={test} type='test'/>
 		</Col>
 		</Row>
 		</div>

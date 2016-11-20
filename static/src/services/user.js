@@ -161,3 +161,10 @@ export async function UserCollect(action) {
 	
 	return xFetch(url,msg);
 }
+
+export async function UserStat(action) {
+	let url = `${apiUrl}/api/user/`
+	if(action.mode == 'frequency') url += 'time-frequency'
+	if(action.mode == 'interestedField') url += 'interested-field'
+	return xFetch(url,{method: 'GET',});
+}

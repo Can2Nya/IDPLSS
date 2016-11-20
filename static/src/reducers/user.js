@@ -177,6 +177,16 @@ const user = handleActions({
 	['user/get/recommend/success'](state, action){
 		return { ...state, recommend: action.payload }
 	},
+	['user/get/stat'](state, action){
+		// mode: 时间频率frequency，学习领域interested-field
+		return { ...state }
+	},
+	['user/get/stat/success'](state, action){
+		// mode: 时间频率frequency，学习领域interested-field
+		if(action.mode == 'frequency') return { ...state, barData: action.payload }
+		if(action.mode == 'interestedField') return { ...state, pieData: action.payload }
+		return { ...state }
+	},
 	// -------内容------------------
 	['user/get/collect'](state, action){
 		// context: Video,Text,test
@@ -194,10 +204,16 @@ const user = handleActions({
 		return { ...state }
 	},
 	['user/set/collect/success'](state, action){
-		let newStatus;
-		if(action.payload == 'True') newStatus = true;
-		if(action.payload == 'False') newStatus = false;
-		return { ...state, isCollectContext: newStatus || action.payload }
+		
+		if(typeof(action.payload) != "boolean"){
+			let newStatus;
+			if(action.payload == 'True') newStatus = true;
+			if(action.payload == 'False') newStatus = false;
+			return { ...state, isCollectContext: newStatus }
+		}
+		else{
+			return { ...state, isCollectContext: action.payload }
+		}
 	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
@@ -217,6 +233,8 @@ const user = handleActions({
 	userZoneList: [],// 通用存放数据list
 	userZoneSubList: [], // 二级数据存放【例如videolist，problemlist
 	recommend: [],// 用户自己接收的推荐
+	barData: [],// 条形图数据
+	pieData: [],// 饼图
 });
 
 export default user;

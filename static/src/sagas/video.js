@@ -49,6 +49,7 @@ function* getVideoDetailSource(action) {
 		if (jsonResult) {
 			yield put({
 				type: `video/get/success/detail`,
+				mode: action.mode,
 				payload: jsonResult,
 			});
 		}
@@ -135,10 +136,10 @@ function* watchVideoRecommendGet() {
 	yield takeLatest('video/get/recommend', getVideoRecommendSource)
 }
 function* watchVideoDetailGet() {
-	yield takeLatest('video/get/detail', getVideoDetailSource)
+	yield takeEvery('video/get/detail', getVideoDetailSource)
 }
 function* watchVideoDetailListGet() {
-	yield takeLatest(['video/get/series','video/get/comment'], getVideoDetailListSource)
+	yield takeEvery(['video/get/series','video/get/comment'], getVideoDetailListSource)
 }
 function* watchVideoDetailCommentPost() {
 	yield takeLatest('video/post/comment', postVideoDetailCommentSource)
