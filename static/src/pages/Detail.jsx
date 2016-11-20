@@ -92,6 +92,13 @@ const Detail = ({ context, user, dispatch, location }) => {
 			method: 'DELETE'
 		})
 	}
+	const handleUserLike = () =>{
+		dispatch({
+			type: 'user/get/like',
+			context: `${stateName}`,
+			id: id,
+		})
+	}
 
 	const handlePostDelete = (commentid, authorid, e) =>{
 		if ((user.loginUserList.user_type == 2 && user.loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
@@ -139,7 +146,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 				if(!list.show) return
 				if(stateName == 'video'){
 					return(
-						<Link key={index} to={`/play/video/${isSelectContext.context.id}/${list.id}/`}><List>{ list['video_name'] }</List></Link>
+						<Link key={index} to={`/play/video/${isSelectContext.context.id}/${list.id}/`}><List>{ `第${index+1}课：${list['video_name']}` }</List></Link>
 					);
 				}
 				if(stateName == 'test'){
@@ -193,10 +200,11 @@ const Detail = ({ context, user, dispatch, location }) => {
 			<Col span={8} lg={7}>
 
 			<Preview type={`${stateName}`} 
-			data={ isSelectContext.context } 
-			isCollect={ isCollectContext } 
-			onCollect={ handleUserCollect.bind(this) }
-			onCollectCancel={ handleUserCollectCancel.bind(this) }
+				data={ isSelectContext.context } 
+				isCollect={ isCollectContext } 
+				onCollect={ handleUserCollect.bind(this) }
+				onCollectCancel={ handleUserCollectCancel.bind(this) }
+				onLike={ handleUserLike.bind(this) }
 			/>
 
 			<div className={styles.margin}>
@@ -210,16 +218,21 @@ const Detail = ({ context, user, dispatch, location }) => {
 				<div className={styles.tabpannel}>
 				<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={handleActiveTab()}>
 				<Tabs.TabPane tab='列表' key={1} disabled={renderIsDisableSeries()}>
+					<div style={{minHeight: '400px'}}>
 					{ renderList() }
+					</div>
 					<Pagination current={20} total={total} onChange={handleChangePagination} />
+					
 				</Tabs.TabPane>
 				<Tabs.TabPane tab='评论' key={2} disabled={renderIsDisableComment()}>
-
+					<div style={{minHeight: '400px'}}>
 					<InputForm 
 					onSubmit={handlePostSubmit}
 					user={user}/>
 					{ renderList() }
+					</div>
 					<Pagination current={20} total={total} onChange={handleChangePagination} />
+					
 				</Tabs.TabPane>
 				</Tabs>
 				</div>

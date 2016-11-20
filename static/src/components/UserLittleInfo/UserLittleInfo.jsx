@@ -3,6 +3,7 @@ import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Row, Col, Button, Tabs } from 'antd';
 import classNames from 'classnames';
 
+import config from '../../config/config.js'
 import styles from './UserLittleInfo.less';
 
 const UserLittleInfo = ({ data }) => {
@@ -14,7 +15,7 @@ const UserLittleInfo = ({ data }) => {
 	// }
 	return (
 		<div className={styles.pannel} >
-		<div className={styles.avatar}>
+		<div className={styles.avatar} style={{backgroundImage: `url(${config.qiniu}/${data.author_avatar})`}}>
 		</div>
 		<div className={styles.userinfo}>
 			<div className={styles.name}>

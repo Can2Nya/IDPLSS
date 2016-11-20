@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import styles from './Preview.less';
 import config from '../../config/config.js'
 
-const Preview = ({ type, data, isCollect, onCollect, onCollectCancel }) => {
+const Preview = ({ type, data, isCollect, onCollect, onCollectCancel, onLike }) => {
 	const PreviewCls = () =>{
 		if(type == 'video' || type == 'text'){
 			if(type == 'text'){
@@ -49,8 +49,18 @@ const Preview = ({ type, data, isCollect, onCollect, onCollectCancel }) => {
 		}
 		if(type == 'test' ){
 			// if(isCollect == false) 
-			return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
+			// return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
 			// if(isCollect == true) return <div className={styles.buttonDisable}>已参与答题</div>
+			return (
+				<Row gutter={8} type='flex' align="middle">
+				<Col span={18}>
+					<Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
+				</Col>
+				<Col span={6}>
+					<a onClick={onLike.bind(this)}><Icon type="heart-o" />  喜欢</a>
+				</Col>
+				</Row>
+			)
 		}
 		if(type == 'video' ){
 			if(isCollect == false) return <Button className={styles.button} onClick={onCollect.bind(this)}>立即参加</Button>
@@ -60,7 +70,7 @@ const Preview = ({ type, data, isCollect, onCollect, onCollectCancel }) => {
 					<Button className={styles.button} onClick={onCollectCancel.bind(this)}>取消参加</Button>
 				</Col>
 					<Col span={6}>
-						<a onClick={onCollectCancel.bind(this)}><Icon type="heart-o" />  喜欢</a>
+						<a onClick={onLike.bind(this)}><Icon type="heart-o" />  喜欢</a>
 					</Col>
 					</Row>
 			)

@@ -10,13 +10,13 @@ const TimeLine = ({ data, onChangeVideo }) => {
 		<div className={styles.pannel} >
 		<Row>
 		<Col span={4}>
-			<div className={styles.subtitle}>{`第${data.video_order}课`}</div>
+			<div className={styles.subtitle}>{`第${data.video_order+1}课`}</div>
 		</Col>
 		<Col span={20}>
 		<div className={styles.dot}>
 		</div>
 		<div className={styles.context}>
-			<a onClick={onChangeVideo.bind(this,data.video_order)}>
+			<a onClick={onChangeVideo.bind(this,data.id)}>
 			<div className={styles.title}>
 			{ data.video_name }
 			</div>

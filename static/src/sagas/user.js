@@ -391,7 +391,16 @@ function* getUserStat(action) {
 	}
 }
 
-
+function* getUserLike(action) {
+	try{
+		const { jsonResult } = yield call(req.UserLike, action);
+		if (jsonResult) {
+			message.success('收到一个赞！')
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
 
 function* watchUserLogin() {
 	yield* takeLatest('user/login', login)
@@ -477,7 +486,9 @@ function* watchUserCollect() {
 function* watchUserStat() {
 	yield* takeEvery('user/get/stat', getUserStat)
 }
-
+function* watchUserLike() {
+	yield* takeLatest('user/get/like', getUserLike)
+}
 
 /*function* watchUserGetJson() {
 	yield* takeLatest(['user/login','user/getInfo','user/register'], getJson)
@@ -498,6 +509,7 @@ export default function* () {
 	//yield fork(watchUserGetJson)
 	yield fork(watchUserCollect)
 	yield fork(watchUserStat)
+	yield fork(watchUserLike)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

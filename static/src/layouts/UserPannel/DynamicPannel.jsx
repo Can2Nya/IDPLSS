@@ -10,7 +10,6 @@ import config from '../../config/config.js';
 import styles from './Pannel.less';
 
 const DynamicPannel = ({ children, data }) => {
-	console.log(data)
 	const renderBarChart = () =>{
 		if(data.barData && data.barData.length > 0){
 			return <BarChart data={data.barData}/>

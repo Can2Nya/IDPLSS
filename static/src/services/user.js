@@ -132,9 +132,9 @@ export async function UserDelMainData(action) {
 
 export async function UserRecommend(action) {
 	let url = `${apiUrl}/api/recommend/`
-	if(action.type.search('video') !== -1) url += 'courses/0'
-	if(action.type.search('text') !== -1) url += 'text-resources/0'
-	if(action.type.search('test') !== -1) url += 'tests/0'
+	if(action.type.search('video') !== -1) url += 'courses/1'
+	if(action.type.search('text') !== -1) url += 'text-resources/1'
+	if(action.type.search('test') !== -1) url += 'tests/1'
 	return xFetch(url,{method: 'GET',});
 }
 
@@ -166,5 +166,13 @@ export async function UserStat(action) {
 	let url = `${apiUrl}/api/user/`
 	if(action.mode == 'frequency') url += 'time-frequency'
 	if(action.mode == 'interestedField') url += 'interested-field'
+	return xFetch(url,{method: 'GET',});
+}
+export async function UserLike(action) {
+	let url = `${apiUrl}/api/`
+	if(action.context == 'video') url += `courses/like/${action.id}`
+	if(action.context == `text`) url += `text-resources/like/${action.id}`
+	if(action.context == `test`) url += `test-list/like/${action.id}`
+
 	return xFetch(url,{method: 'GET',});
 }

@@ -215,6 +215,10 @@ const user = handleActions({
 			return { ...state, isCollectContext: action.payload }
 		}
 	},
+	['user/get/like'](state, action){
+		// context: Video,Text,test
+		return { ...state }
+	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
