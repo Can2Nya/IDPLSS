@@ -21,7 +21,7 @@ let InputForm = ({ form, user, onSubmit }) => {
 
 	const renderNoUser = () =>{
 		if(user.loginUserList <= 0) return <div className={styles.nouser}>登录后可评论</div>;
-		else return <Input type="textarea" { ...bodyProps } placeholder="请输入文字" autosize={{ minRows: 4, maxRows: 6 }} />
+		else return <Input type="textarea" { ...bodyProps } placeholder="请输入文字" autosize={{ minRows: 4, maxRows: 4 }} />
 	}
 	return (
 		<div className={styles.inputform}>

@@ -10,33 +10,16 @@ import styles from './ContextTitle.less';
 
 const ContextTitle = ({ location, data, type }) => {
 	const { isSelectContext, category } = data
-	// const { context } = isSelectContext
-	// const { id, problemId, testRecordId, isSubmit, isCorrect, isComplete, status } = isSelectContext.isSelectContext
-	// const titleCls = () =>{
-	// 	var style = {}
-	// 	if (noline) style[[styles.noline]] = true;
-	// 	if (type == 'small') style[[styles.small]] = true;
-	// 	if (type == 'big') style[[styles.big]] = true;
-		
-
-	// 	return classNames({
-	// 		[styles.noline]:noline,
-	// 		[styles[type]]:true,
-	// 	});
-	// };
-	// const renderContextTitle = () =>{
-	// 	if (type == 'big') {
-	// 		return(
-	// 			<div className={styles.right}>
-	// 			<img src={config.dot} />
-	// 			<Link to="#">
-	// 			<span>more</span>
-	// 			</Link>
-	// 			</div>
-	// 		);
-	// 	}
-	// 	return;
-	// };
+	const renderTime = () =>{
+		if(type == 'video'){
+			const { context } = isSelectContext.isSelectContext
+			return context.timestamp;
+		}
+		if(type == 'test'){
+			const { context } = isSelectContext
+			return context.timestamp
+		}
+	}
 	const renderTitle = () =>{
 		if(type == 'video'){
 			const { context } = isSelectContext.isSelectContext
@@ -67,7 +50,7 @@ const ContextTitle = ({ location, data, type }) => {
 			</Breadcrumb>
 		</Col>
 		<Col span={5}>
-			<div className={styles.time}>{ isSelectContext.isSelectContext.context.timestamp || isSelectContext.context.timestamp }</div>
+			<div className={styles.time}>{renderTime()}</div>
 		</Col>
 		<Col span={5}>
 			<div className={styles.favor}><Icon type="heart-o" />  喜欢</div>

@@ -117,7 +117,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 					form={form}
 					status={isSubmit} 
 					data={problem} 
-					index={index} 
+					index={index+1} 
 					result={result}
 					time={time}
 					onFormChange={handleCountProblem.bind(this)}
@@ -130,7 +130,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 				form={form}
 				status={isSubmit} 
 				data={problem} 
-				index={index} 
+				index={index+1} 
 				result={result}
 				time={time}
 				onFormChange={handleCountProblem.bind(this)}
