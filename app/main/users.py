@@ -598,15 +598,15 @@ def interested_field():
     count = 0
     for k, v in result_dict.items():
         count += v
-    print "count is %s" % count
     for k, v in result_dict.items():
         temp_dict = dict()
         temp_dict['category'] = k
         try:
-            temp_dict['value'] = (v/count)*100
+            temp_dict['value'] = (v/count)
         except ZeroDivisionError:
             temp_dict['value'] = 0
         result_list.append(temp_dict)
+        temp_dict['obj'] = 'me'
     return jsonify({"result": result_list})
 
 
