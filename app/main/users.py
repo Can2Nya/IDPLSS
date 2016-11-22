@@ -552,7 +552,7 @@ def self_test():
 def self_courses_video_list(cid):
     user = g.current_user
     course = Course.query.filter_by(id=cid, show=True).first()
-    course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id).all()
+    course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id, show=True).all()
     return jsonify({
         "count": len(course_video),
         "course_video": [video.to_json() for video in course_video]
