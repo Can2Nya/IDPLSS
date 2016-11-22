@@ -121,6 +121,13 @@ export async function UserPutMainData(action) {
 	url += `${action.id}`
 	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
 }
+
+export async function UserPutSubData(action) {
+	let url = `${apiUrl}/api/`
+	if(action.type.search('createVideo') !== -1) url += `courses/${action.course_id}/video/${action.video_id}`
+	if(action.type.search('createProblem') !== -1) url += `test-list/${action.test_id}/problems/${action.problem_id}`
+	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
+}
 export async function UserDelMainData(action) {
 	let url = `${apiUrl}/api/`
 	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
@@ -129,7 +136,14 @@ export async function UserDelMainData(action) {
 	url += `${action.id}`
 	return xFetch(url,{method: 'DELETE' });
 }
+export async function UserDelSubData(action) {
+	console.log(1)
+	let url = `${apiUrl}/api/`
+	if(action.type.search('createVideo') !== -1) url += `courses/${action.course_id}/video/${action.video_id}`
+	if(action.type.search('createProblem') !== -1) url += `test-list/${action.test_id}/problems/${action.problem_id}`
 
+	return xFetch(url,{method: 'DELETE',});
+}
 export async function UserRecommend(action) {
 	let url = `${apiUrl}/api/recommend/`
 	if(action.type.search('video') !== -1) url += 'courses/1'

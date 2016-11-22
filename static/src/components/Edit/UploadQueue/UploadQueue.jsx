@@ -19,21 +19,21 @@ class SortItem extends React.Component{
 	render() {
 	return(
 		<div className={this.props.className}
-						style={this.props.style}
-						onMouseDown={this.props.onMouseDown}
-						onTouchStart={this.props.onTouchStart}>
-					<div>
-					{ this.props.children }
-					</div>
-				</div>
-			)
-		}
+			style={this.props.style}
+			onMouseDown={this.props.onMouseDown}
+			onTouchStart={this.props.onTouchStart}>
+			<div>
+			{ this.props.children }
+			</div>
+		</div>
+		)
+	}
 }
 
 let UploadQueue = ({ upload, user, form, dispatch }) => {
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
-	const { itemIndex, order,itemData, tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, modalState, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
+	const { isSubmit, itemIndex, order, itemData, tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, modalState, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
 	
 	// -----------form rule-------------------
 	const formItemLayout = {
@@ -41,28 +41,16 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		wrapperCol: { span: 20 },
 	};
 	// -----------action----------------------
-	const isChangeorAdd = () =>{
-		let itemdata = itemData.problem_description || itemData.video_name
-		if(!itemdata) {
-			handleAdd()
-		}
-		else {
-			dispatch({
-				type: 'upload/changeModalState',
-				modalState: !modalState
-			})
-		}
-	}
-	// const handleChangeOk = () =>{
-	// 	dispatch({
-	// 		type: 'upload/changeModalState',
-	// 		modalState: !modalState
-	// 	})
-	// }
-	const handleAdd = ()=>{
+	const validateField = () =>{
+		// 返回一个plain obj
+		let item = {}
 		if (isSelectMenuItem == '1' ) {
-			if(tmpFile.length <= 0){
+			if(!itemData.id && tmpFile.length <= 0){
 				message.error('请上传文件')
+				return;
+			}
+			if(!tmpFile[0].request.xhr.response){
+				message.error('请等待视频上传完成后点击完成')
 				return;
 			}
 			validateFields([
@@ -72,34 +60,30 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					if(errors){
 						return ;
 					}
-
-					dispatch({
-						type: 'upload/multiplyPlusUploadList',
-						uploadList: [
-						...uploadList,
-						{ 
-							file: tmpFile, 
+					if(itemData.id){
+						item = {
+						id: itemData.id,
 							// progress: uploadListProgress[tmpFile[0].preview] || 100,// 进度
 							video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							video_description: getFieldValue(`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							source_url: getFieldValue(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							author_id: loginUserList.user_id,
 							course_id: isSelectContext.id,
-						}]
-					})
-					dispatch({
-						type: 'upload/tmpPlus',
-						tmpFile: []
-					})
-					dispatch({
-						type: 'upload/changeTime',
-					})
-					dispatch({
-						type: 'upload/changeModalState',
-						modalState: false
-					})
-				})
-		};
+						}
+					}else{
+						item = {
+						file: tmpFile, 
+							// progress: uploadListProgress[tmpFile[0].preview] || 100,// 进度
+							video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							video_description: getFieldValue(`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							source_url: getFieldValue(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							author_id: loginUserList.user_id,
+							course_id: isSelectContext.id,
+						}
+					}
+				}
+			)
+		}
 		if (isSelectMenuItem == '3') {
 			let list = {}
 			validateFields([
@@ -138,11 +122,20 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							else images += `${value}:`
 						})
 					}
-					dispatch({
-						type: 'upload/multiplyPlusUploadList',
-						uploadList: [
-						...uploadList,
-						{ 
+					if(itemData.id){
+						item = {
+							...list,
+							id: itemData.id,
+							description_image: images,
+							problem_description: getFieldValue(`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`), 
+							problem_type: getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							author_id: loginUserList.user_id,
+							test_id: isSelectContext.id,
+						}
+					}else{
+						item = {
 							...list,
 							file: uploadListFiles, 
 							description_image: images,
@@ -152,21 +145,191 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							author_id: loginUserList.user_id,
 							test_id: isSelectContext.id,
-						}]
-					})
+						}
+					}
+				}
+			)
+		}
+		return item;
+	}
+	const isChangeorAdd = () =>{
+		let itemdata = itemData.problem_description || itemData.video_name
+		if(!itemdata) {
+			handleAdd()
+		}
+		else {
+			// dispatch({
+			// 	type: 'upload/changeModalState',
+			// 	modalState: !modalState
+			// })
+			handleChangeOk()
+		}
+	}
+	const handleChangeOk = () =>{
+		let newUploadlist = [];
+		let newIsSelectContextList = []
+		let newItemData = validateField()
+		if(order.length > 0){
+			newUploadlist = order.map((data,index)=>{
+				if(index == itemIndex) return newItemData
+				else return data
+			})
+			dispatch({
+				type: 'upload/uploadFileOrder',
+				order: newUploadlist
+			})
+		}else{
+			// 未排序情况
+			if(itemData.id){
+				// 修改已经上传的内容
+				newIsSelectContextList = isSelectContextList.map((data,index)=>{
+					if(itemData.id == data.id) { 
+						return newItemData
+					}
+					else return data
+				})
+				dispatch({
+					type: 'upload/get/success/isSelectContextList',
+					payload: newIsSelectContextList
+				})
+			}else{
+				newUploadlist = uploadList.map((data,index)=>{
+					if(itemData.file == data.file) return newItemData
+					else return data
+				})
+				dispatch({
+					type: 'upload/multiplyPlusUploadList',
+					uploadList: newUploadlist
+				})
+			}
+		}
+		dispatch({
+			type: 'upload/changeModalState',
+			modalState: !modalState
+		})
+	}
+	const handleAdd = () =>{
+		// if (isSelectMenuItem == '1' ) {
+		// 	if(tmpFile.length <= 0){
+		// 		message.error('请上传文件')
+		// 		return;
+		// 	}
+		// 	validateFields([
+		// 		`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 		`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 		],(errors, values)=>{
+		// 			if(errors){
+		// 				return ;
+		// 			}
+		// 			let item = {
+		// 				file: tmpFile, 
+		// 					// progress: uploadListProgress[tmpFile[0].preview] || 100,// 进度
+		// 					video_name: getFieldValue(`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					video_description: getFieldValue(`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					source_url: getFieldValue(`file-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					author_id: loginUserList.user_id,
+		// 					course_id: isSelectContext.id,
+		// 			}
+		let item = validateField()
+		console.log(item)
+		if(item.video_name || item.problem_description){
 					dispatch({
-						type: 'upload/changeTime',
+						type: 'upload/multiplyPlusUploadList',
+						uploadList: [...uploadList, item]
 					})
-					dispatch({
-						type: 'upload/multiplyPlus',
-						uploadListFiles: []
-					})
+					if(order.length > 0){
+						dispatch({
+							type: 'upload/uploadFileOrder',
+							order: [...order, item]
+						})
+					}
 					dispatch({
 						type: 'upload/changeModalState',
 						modalState: false
 					})
-				})
+					dispatch({
+						type: 'upload/tmpPlus',
+						tmpFile: []
+					})
+					dispatch({
+						type: 'upload/changeTime',
+					})
+		}else{
+			message.error('请填完所需项目')
 		}
+					
+		// 		})
+		// };
+		// if (isSelectMenuItem == '3') {
+		// 	let list = {}
+		// 	validateFields([
+		// 		`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 		`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 		`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 		`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+				
+		// 		],(errors, values)=>{
+		// 			if(errors){
+		// 				return ;
+		// 			}
+		// 			if(getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`) == 0){
+		// 				validateFields([
+		// 					`choice-a-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 					`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 					`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 					`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+		// 				],(errors, values)=>{
+		// 					if(errors){
+		// 						return ;
+		// 					}
+		// 					list = { 
+		// 						...list,
+		// 						choice_a: getFieldValue(`choice-a-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 						choice_b: getFieldValue(`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 						choice_c: getFieldValue(`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 						choice_d: getFieldValue(`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					}
+		// 				})
+		// 			}
+		// 			let images = ''
+		// 			if(getFieldValue(`file-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`).length > 0){
+		// 				getFieldValue(`file-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`).map((value,index) => {
+		// 					if(index == getFieldValue(`file-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`).length -1) images += `${value}`
+		// 					else images += `${value}:`
+		// 				})
+		// 			}
+		// 			let item = {
+		// 				...list,
+		// 					file: uploadListFiles, 
+		// 					description_image: images,
+		// 					problem_description: getFieldValue(`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`), 
+		// 					problem_type: getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+		// 					author_id: loginUserList.user_id,
+		// 					test_id: isSelectContext.id,
+		// 			}
+		// 			dispatch({
+		// 				type: 'upload/multiplyPlusUploadList',
+		// 				uploadList: [...uploadList, item]
+		// 			})
+		// 			dispatch({
+		// 				type: 'upload/uploadFileOrder',
+		// 				order: [...order, item]
+		// 			})
+		// 			dispatch({
+		// 				type: 'upload/changeModalState',
+		// 				modalState: false
+		// 			})
+		// 			dispatch({
+		// 				type: 'upload/changeTime',
+		// 			})
+		// 			dispatch({
+		// 				type: 'upload/multiplyPlus',
+		// 				uploadListFiles: []
+		// 			})
+		// 		})
+		// }
 	}
 	const handleChange = (Data,Index)=>{
 		// uploaditem 传上来的数据
@@ -180,6 +343,47 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			modalState: !modalState
 		})
 	}
+	const handleDelete = (Data,Index)=>{
+		// uploaditem 传上来的需要删除的数据
+		Modal.confirm({
+			title: '确认是否删除',
+			content: '该操作无法恢复',
+			okText: '删除',
+			cancelText: '取消',
+			onOk: (onOk) =>{
+				if(order.length > 0){
+					let newOrder = order.filter(list => list != Data)
+					dispatch({
+						type: 'upload/uploadFileOrder',
+						order: newOrder
+					})
+				}
+				if(Data.file){
+					dispatch({
+						type: 'upload/multiplyDeleteUploadList',
+						itemData: Data,
+					})
+				}else{
+					if(isSelectMenuItem == '1'){
+						dispatch({
+							type: 'upload/del/createVideo',
+							course_id: Data.course_id,
+							video_id: Data.id,
+						})
+					}
+					if(isSelectMenuItem == '3'){
+						dispatch({
+							type: 'upload/del/createProblem',
+							test_id: Data.test_id,
+							problem_id: Data.id,
+						})
+					}
+				}
+				onOk()
+			}
+		})
+		
+	}
 	const handleSort = (orderList) =>{
 		// let newList = {}
 		// orderList.map((val,index)=>{
@@ -192,74 +396,185 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		})
 	}
 	const handleSubmitAll = ()=>{
+		dispatch({
+			type: 'upload/changeSubmitState',
+			isSubmit: true,
+		})
 		if (order.length > 0) {
 			order.map((data,index)=>{
 				if(isSelectMenuItem == '3'){
-					dispatch({
-						type: 'upload/post/createProblem',
-						test_id: isSelectContext.id,
-						body: { ...data, problem_order: index}
-					})
+					if(data.id > 0){
+						dispatch({
+							type: 'upload/put/createProblem',
+							test_id: isSelectContext.id,
+							problem_id: data.id,
+							index: index,
+							total: order.length,
+							body: {
+								problem_description: data.problem_description || '',
+								description_image: data.description_image || '',
+								problem_type: data.problem_type || '',
+								choice_a: data.choice_a || '',
+								choice_b: data.choice_b || '',
+								choice_c: data.choice_c || '',
+								choice_d: data.choice_d || '',
+								right_answer: data.right_answer || '',
+								answer_explain: data.answer_explain || '',
+								problem_order: index
+							}
+						})
+					}else{
+						dispatch({
+							type: 'upload/post/createProblem',
+							test_id: isSelectContext.id,
+							index: index,
+							total: order.length,
+							body: {
+								problem_description: data.problem_description || '',
+								description_image: data.description_image || '',
+								problem_type: data.problem_type || '',
+								choice_a: data.choice_a || '',
+								choice_b: data.choice_b || '',
+								choice_c: data.choice_c || '',
+								choice_d: data.choice_d || '',
+								right_answer: data.right_answer || '',
+								answer_explain: data.answer_explain || '',
+								author_id: data.author_id,
+								test_id: data.test_id,
+								problem_order: index
+							}
+						})
+					}
 				}
 				if(isSelectMenuItem == '1'){
-					if(!data.file[0].request.xhr.response) {
+					if(data.file && !data.file[0].request.xhr.response) {
 						message.error('列表有文件未上传完成')
 						return ;
 					}
-					dispatch({
-						type: 'upload/post/createVideo',
-						course_id: isSelectContext.id,
-						body: { ...data, video_order: index}
-					})
+					if(data.id){
+						dispatch({
+							type: 'upload/put/createVideo',
+							course_id: isSelectContext.id,
+							video_id: data.id,
+							index: index,
+							total: order.length,
+							body: {
+								name: data.video_name || '' ,
+								description: data.video_description || '' ,
+								source_url: data.source_url || '' ,
+								video_order: index
+							}
+						})
+					}
+					else{
+						dispatch({
+							type: 'upload/post/createVideo',
+							course_id: isSelectContext.id,
+							index: index,
+							total: order.length,
+							body: {
+								video_name: data.video_name || '' ,
+								video_description: data.video_description || '' ,
+								source_url: data.source_url || '' ,
+								author_id: data.author_id,
+								course_id: data.course_id,
+								video_order: index
+							}
+						})
+					}
 				}
 			})
 		}
 		else{
 			let list = [];
 			list = list.concat(isSelectContextList,uploadList)
-			if(uploadList.length <= 0) {//先指操作为上传的区域,加入修改api后遍历list
+			if(list.length <= 0) {//先指操作为上传的区域,加入修改api后遍历list
 				message.error('列表为空')
 				return ;
 			}
-			uploadList.map((data,index)=>{
+			list.map((data,index)=>{
+				if(data.show && data.show == false) return ;
 				if(isSelectMenuItem == '3'){
-					dispatch({
-						type: 'upload/post/createProblem',
-						test_id: isSelectContext.id,
-						body: { 
-							problem_description: data.problem_description || '',
-							description_image: data.description_image || '',
-							problem_type: data.problem_type || '',
-							choice_a: data.choice_a || '',
-							choice_b: data.choice_b || '',
-							choice_c: data.choice_c || '',
-							choice_d: data.choice_d || '',
-							right_answer: data.right_answer || '',
-							answer_explain: data.answer_explain || '',
-							author_id: data.author_id,
-							test_id: data.test_id,
-							problem_order: index
-						}
-					})
+					if(data.id){
+						dispatch({
+							type: 'upload/put/createProblem',
+							test_id: isSelectContext.id,
+							problem_id: data.id,
+							index: index,
+							total: list.length,
+							body :{
+								problem_description: data.problem_description || '',
+								description_image: data.description_image || '',
+								problem_type: data.problem_type || '',
+								choice_a: data.choice_a || '',
+								choice_b: data.choice_b || '',
+								choice_c: data.choice_c || '',
+								choice_d: data.choice_d || '',
+								right_answer: data.right_answer || '',
+								answer_explain: data.answer_explain || '',
+								problem_order: index
+							}
+						})
+					}
+					else{
+						dispatch({
+							type: 'upload/post/createProblem',
+							test_id: isSelectContext.id,
+							index: index,
+							total: list.length,
+							body: { 
+								problem_description: data.problem_description || '',
+								description_image: data.description_image || '',
+								problem_type: data.problem_type || '',
+								choice_a: data.choice_a || '',
+								choice_b: data.choice_b || '',
+								choice_c: data.choice_c || '',
+								choice_d: data.choice_d || '',
+								right_answer: data.right_answer || '',
+								answer_explain: data.answer_explain || '',
+								author_id: data.author_id,
+								test_id: data.test_id,
+								problem_order: index
+							}
+						})
+					}
 				}
 				if(isSelectMenuItem == '1'){
-					if(!data.file[0].request.xhr.response) {
+					if(data.file && !data.file[0].request.xhr.response) {
 						message.error('列表有文件未上传完成')
 						return ;
 					}
-					console.log(data)
-					dispatch({
-						type: 'upload/post/createVideo',
-						course_id: isSelectContext.id,
-						body: {
-							video_name: data.video_name || '' ,
-							video_description: data.video_description || '' ,
-							source_url: data.source_url || '' ,
-							author_id: data.author_id,
-							course_id: data.course_id,
-							video_order: index
-						}
-					})
+					if(data.id){
+						dispatch({
+							type: 'upload/put/createVideo',
+							course_id: isSelectContext.id,
+							video_id: data.id,
+							index: index,
+							total: list.length,
+							body: {
+								name: data.video_name || '' ,
+								description: data.video_description || '' ,
+								source_url: data.source_url || '' ,
+								video_order: index
+							}
+						})
+					}
+					else{
+						dispatch({
+							type: 'upload/post/createVideo',
+							course_id: isSelectContext.id,
+							index: index,
+							total: list.length,
+							body: {
+								video_name: data.video_name || '' ,
+								video_description: data.video_description || '' ,
+								source_url: data.source_url || '' ,
+								author_id: data.author_id,
+								course_id: data.course_id,
+								video_order: index
+							}
+						})
+					}
 				}
 			})
 		}
@@ -378,7 +693,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 	}
 	const renderUploadItem = () =>{
 		let list = [];
-		list = list.concat(uploadList,isSelectContextList)
+		list = list.concat(isSelectContextList,uploadList)
 		if(list.length <= 0) return <div>点击左下添加内容吧</div>;
 		else{
 			// if(order.isOrder == true){
@@ -398,11 +713,15 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			// 	})
 
 			// }
-			if(order.length > 0 ){
+			if(order.length > 0){
+				console.log(order.length > 0)
+				// let newlist = []
+				// newlist = newlist.concat(order,uploadList)
+				// 排序后的情况
 				return order.map((data,index)=>{
 					return(
 					<SortItem className='dynamic-item' sortData={data} key={index} >
-					<UploadItem data={data} form={form} onChange={handleChange} index={index}/>
+					<UploadItem data={data} form={form} onChange={handleChange} onDelete={handleDelete} index={index}/>
 					</SortItem>
 					)
 				})
@@ -418,7 +737,12 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					// <UploadItem data={data} form={form} onChange={handleChange} index={index}/>
 					// </SortItem>
 					<SortItem className='dynamic-item' sortData={data} key={index} >
-					<UploadItem data={data} form={form} onChange={handleChange} index={index}/>
+					<UploadItem 
+					data={data} 
+					form={form} 
+					onChange={handleChange} 
+					onDelete={handleDelete}
+					index={index}/>
 					</SortItem>
 				)
 			})
@@ -460,7 +784,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						// 	else return null
 						// },
 						rules: [
-							{ required: true },
+							{ required: true ,min: 3},
 						],
 				})} style={{display: 'none'}} />
 				</Form.Item>
@@ -666,7 +990,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		</Sortable>
 		</div>
 		<Button type='ghost' onClick={handleChangeModalState.bind(this,'new')}>添加</Button>
-		<Button type='ghost' onClick={handleSubmitAll.bind(this)}>保存列表</Button>
+		<Button type='ghost' onClick={handleSubmitAll.bind(this)} loading={isSubmit}>保存列表</Button>
 		{ renderUploadPannel() }
 		</div>
 	)

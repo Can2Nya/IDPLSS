@@ -105,16 +105,22 @@ const Routes = ({ history, dispatch }) =>{
 					count: 'part',// 写到这里，记得all
 
 				})
+				
 				dispatch({
-					type: `user/get/${context}Recommend`
+					type: 'user/init/collect',
 				})
-				if(context != 'test') {
+				if(cookie.get('user_id') && cookie.get('authorization')){
 					dispatch({
-						type: 'user/get/collect',
-						context: context,
-						id: id,
-						method: 'GET'
+						type: `user/get/${context}Recommend`
 					})
+					if(context != 'test') {
+						dispatch({
+							type: 'user/get/collect',
+							context: context,
+							id: id,
+							method: 'GET'
+						})
+					}
 				}
 			}
 			// post detail
