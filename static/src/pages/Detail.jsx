@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Pagination, Row, Col, Icon, Tabs, Spin } from 'antd';
+import { Breadcrumb, Pagination, Row, Col, Icon, Tabs, Spin, message } from 'antd';
 import pathToRegexp from 'path-to-regexp';
 import Layout from '../layouts/Layout/Layout';
 
@@ -56,7 +56,20 @@ const Detail = ({ context, user, dispatch, location }) => {
 			})
 		});
 	}
-
+	const handleUserPreviewVideo = (courseId,videoId) =>{
+		if(!loginUserList.user_id) {
+			dispatch({
+				type: 'user/login/modal/toggle',
+				modalState: true,
+			})
+		}
+		if(!isCollectContext){
+			message.error('请先参与课程！')
+		}
+		else{
+			browserHistory.push(`/play/video/${courseId}/${videoId}/`)
+		}
+	}
 	const handleUserCollect = () =>{
 		if(!loginUserList.user_id) {
 			dispatch({
@@ -146,7 +159,10 @@ const Detail = ({ context, user, dispatch, location }) => {
 				if(!list.show) return
 				if(stateName == 'video'){
 					return(
-						<Link key={index} to={`/play/video/${isSelectContext.context.id}/${list.id}/`}><List>{ `第${index+1}课：${list['video_name']}` }</List></Link>
+						
+						<a key={index} onClick={handleUserPreviewVideo.bind(this,isSelectContext.context.id,list.id)}>
+						<List>{ `第${index+1}课：${list['video_name']}` }</List>
+						</a>
 					);
 				}
 				if(stateName == 'test'){

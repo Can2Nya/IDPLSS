@@ -188,6 +188,10 @@ const user = handleActions({
 		return { ...state }
 	},
 	// -------内容------------------
+	['user/init/collect'](state, action){
+		// context: Video,Text,test
+		return { ...state, isCollectContext: false }
+	},
 	['user/get/collect'](state, action){
 		// context: Video,Text,test
 		return { ...state }
