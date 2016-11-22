@@ -136,6 +136,12 @@ def course_video_detail(cid, vid):
             course_video.show = False
             db.session.add(course_video)
             db.session.commit()
+            all_video = VideoList.query.filter_by(course_id=cid, show=True).order_by(VideoList.video_order).all()
+            order = [x for x in range(1, len(all_video)+1)]
+            for x, y in zip(all_video, order):
+                x.video_order = y
+                db.session.add(x)
+            db.session.commit()
             return self_response('delete course video successfully')
         else:
             return forbidden('does not have permission to delete video')
