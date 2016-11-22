@@ -49,6 +49,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				message.error('请上传文件')
 				return;
 			}
+			if(!tmpFile[0].request.xhr.response){
+				message.error('请等待视频上传完成后点击完成')
+				return;
+			}
 			validateFields([
 				`title-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				`detail-Course-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
@@ -165,7 +169,6 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		let newUploadlist = [];
 		let newIsSelectContextList = []
 		let newItemData = validateField()
-		console.log(newItemData)
 		if(order.length > 0){
 			newUploadlist = order.map((data,index)=>{
 				if(index == itemIndex) return newItemData
@@ -181,12 +184,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				// 修改已经上传的内容
 				newIsSelectContextList = isSelectContextList.map((data,index)=>{
 					if(itemData.id == data.id) { 
-						console.log(1)
 						return newItemData
 					}
 					else return data
 				})
-				console.log(newIsSelectContextList)
 				dispatch({
 					type: 'upload/get/success/isSelectContextList',
 					payload: newIsSelectContextList
@@ -230,15 +231,18 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		// 					course_id: isSelectContext.id,
 		// 			}
 		let item = validateField()
+		console.log(item)
+		if(item.video_name || item.problem_description){
 					dispatch({
 						type: 'upload/multiplyPlusUploadList',
 						uploadList: [...uploadList, item]
 					})
-					dispatch({
-						type: 'upload/uploadFileOrder',
-						order: [...order, item]
-					})
-					
+					if(order.length > 0){
+						dispatch({
+							type: 'upload/uploadFileOrder',
+							order: [...order, item]
+						})
+					}
 					dispatch({
 						type: 'upload/changeModalState',
 						modalState: false
@@ -250,6 +254,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					dispatch({
 						type: 'upload/changeTime',
 					})
+		}else{
+			message.error('请填完所需项目')
+		}
+					
 		// 		})
 		// };
 		// if (isSelectMenuItem == '3') {
@@ -705,12 +713,12 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			// 	})
 
 			// }
-			if(order.length > 0 ){
+			if(order.length > 0){
+				console.log(order.length > 0)
 				// let newlist = []
 				// newlist = newlist.concat(order,uploadList)
 				// 排序后的情况
 				return order.map((data,index)=>{
-					if(data.show == false) return;
 					return(
 					<SortItem className='dynamic-item' sortData={data} key={index} >
 					<UploadItem data={data} form={form} onChange={handleChange} onDelete={handleDelete} index={index}/>
@@ -719,7 +727,6 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				})
 			}
 			return list.map((data,index) => {
-				if(data.show == false) return;
 				// console.log(data.file[0])
 				//  data有两种可能，一是原有一存在的视频，二是刚上传的东西【测试不存在视频】id表示已存在，其他名称为未存在
 				// 测试有另一种可能，
@@ -777,7 +784,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 						// 	else return null
 						// },
 						rules: [
-							{ required: true },
+							{ required: true ,min: 3},
 						],
 				})} style={{display: 'none'}} />
 				</Form.Item>
