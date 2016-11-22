@@ -156,6 +156,12 @@ def problem_operation(tid, pid):
             problem.show = False
             db.session.add(problem)
             db.session.commit()
+            all_problem = TestProblem.query.filter_by(test_list_id=tid, show=True).order_by(TestProblem.problem_order).all()
+            problem_count = [x for x in range(1, len(all_problem)+1)]
+            for x, y in zip(all_problem, problem_count):
+                x.problem_order = y
+                db.session.add(x)
+            db.session.commit()
             return self_response('delete problem successfully')
         else:
             return forbidden('does not have permission to delete this problem')
@@ -170,6 +176,7 @@ def problem_operation(tid, pid):
             problem.problem_description = modify_info['problem_description']
             problem.description_image = modify_info['description_image']
             problem.problem_type = modify_info['problem_type']
+            problem.problem_order = modify_info['problem_order']
             problem.answer_explain = modify_info['answer_explain']
             db.session.add(problem)
             db.session.commit()
