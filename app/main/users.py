@@ -502,7 +502,7 @@ def user_test_record():
 @get_current_user
 def self_courses():
     user = g.current_user
-    courses = Course.query.filter_by(author_id=user.id).all()
+    courses = Course.query.filter_by(author_id=user.id, show=True).all()
     return jsonify({
         "count": len(courses),
         "courses": [course.to_json() for course in courses]
@@ -514,7 +514,7 @@ def self_courses():
 @get_current_user
 def self_text_resources():
     user = g.current_user
-    text_resources = TextResource.query.filter_by(author_id=user.id).all()
+    text_resources = TextResource.query.filter_by(author_id=user.id, show=True).all()
     return jsonify({
         "count": len(text_resources),
         "text_resources": [text_resource.to_json() for text_resource in text_resources]
@@ -526,7 +526,7 @@ def self_text_resources():
 @get_current_user
 def self_posts():
     user = g.current_user
-    posts = Post.query.filter_by(author_id=user.id).all()
+    posts = Post.query.filter_by(author_id=user.id, show=True).all()
     return jsonify({
         "count": len(posts),
         "posts": [post.to_json() for post in posts]
@@ -538,7 +538,7 @@ def self_posts():
 @get_current_user
 def self_test():
     user = g.current_user
-    test_list = TestList.query.filter_by(author_id=user.id).all()
+    test_list = TestList.query.filter_by(author_id=user.id, show=True).all()
     return jsonify({
         "count": len(test_list),
         "test_list": [test.to_json() for test in test_list]
@@ -551,7 +551,7 @@ def self_test():
 @get_current_user
 def self_courses_video_list(cid):
     user = g.current_user
-    course = Course.query.filter_by(id=cid).first()
+    course = Course.query.filter_by(id=cid, show=True).first()
     course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id).all()
     return jsonify({
         "count": len(course_video),
@@ -564,7 +564,7 @@ def self_courses_video_list(cid):
 @get_current_user
 def self_test_problems(tid):
     user = g.current_user
-    problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid).all()
+    problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid, show=True).all()
     return jsonify({
         "count": len(problems),
         "problems": [problem.to_json() for problem in problems]
