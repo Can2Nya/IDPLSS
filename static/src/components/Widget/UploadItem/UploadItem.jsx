@@ -8,7 +8,7 @@ import Button from '../../Button/Button';
 // import config from '../../config/config.js';
 import styles from './UploadItem.less';
 
-let UploadItem = ({ upload, user, dispatch, form, data, index, onChange }) => {
+let UploadItem = ({ upload, user, dispatch, form, data, index, onChange, onDelete }) => {
 	// data为editpannel传入的数据【不然咱自己有要遍历列表
 	// form为队列（uploadqueue）传入
 	const { loginUserList, userZoneList, total } = user
@@ -51,12 +51,12 @@ let UploadItem = ({ upload, user, dispatch, form, data, index, onChange }) => {
 		</Col>
 		<Col span={5}>
 		<span>
-		<Button onClick={onChange.bind(this,data,index)}>
+		<a className={styles.button} onClick={onChange.bind(this,data,index)}>
 		<Icon type="edit" />
-		</Button>
-		<Button >
-		<Icon type="edit" />
-		</Button>
+		</a>
+		<a className={styles.button} onClick={onDelete.bind(this,data,index)}>
+		<Icon type="cross-circle" />
+		</a>
 		</span>
 		</Col>
 		</Row>

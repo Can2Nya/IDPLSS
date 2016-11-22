@@ -22,9 +22,9 @@ const upload = handleActions({
 	['upload/uploadFileOrder'](state, action) {
 		return { ...state, order: action.order };
 	},
-	['upload/multiplyDelete'](state, action) {
-		const newList = state.uploadListFiles.filter(file => file.lastModified != action.lastModified)
-		return { ...state, uploadListFiles: newList };
+	['upload/multiplyDeleteUploadList'](state, action) {
+		const newList = state.uploadListFiles.filter(list => list != action.Data)
+		return { ...state, uploadList: newList };
 	},
 	// ------------saga---------------------
 	// redux-saga返回的数据 在user中处理
@@ -58,6 +58,9 @@ const upload = handleActions({
 	  	return { ...state, loading: true, isSelectContextList: [] };
 	},
 	['upload/get/success/isSelectContextList'](state, action) {
+		let list = action.payload.map((data,index)=>{
+			if(!data.show) return;
+		})
 		return { ...state, isSelectContextList: action.payload, loading: false };
 	},
 	// post
@@ -95,7 +98,7 @@ const upload = handleActions({
 	['upload/put/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
-	// 
+	// del
 	['upload/del/createCourse'](state, action) {// 一级数据
 		return { ...state, };
 	},
@@ -114,7 +117,7 @@ const upload = handleActions({
 
 	// --------------状态-------------------
 	['upload/init'](state, action) {
-		return { ...state, files: [] };
+		return { ...state, };
 	},
 	['upload/setProgress'](state, action) {
 		return { ...state, progress: action.progress };
@@ -134,6 +137,9 @@ const upload = handleActions({
 	},
 	['upload/changeTime'](state, action) {
 		return { ...state, time: Date.now() };
+	},
+	['upload/changeSubmitState'](state, action) {
+		return { ...state, isSubmit: action.isSubmit };
 	},
 }, {
 	// 单文件【
@@ -158,6 +164,7 @@ const upload = handleActions({
 
 	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
+	isSubmit: false,// 是否真正提交表单
 	isSelectContextId: 0,// 选择的内容【课程／资料／测试】的id
 	isSelectContext: {},// 选择的内容[课程／资料／测试]
 	isSelectContextList: [],// 视频，问题

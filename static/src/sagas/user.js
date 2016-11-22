@@ -221,66 +221,131 @@ function* CreateData(action) {
 			if(action.type == 'upload/post/createProblem' || action.type == 'upload/post/createVideo'){
 				const { jsonResult } = yield call(req.UserCreateSubData, action);
 				if (jsonResult) {
-					message.success('创建成功')
+					if((action.index+1) == action.total){
+						message.success('保存列表成功！')
+						let nextAction = 'upload/get/user';
+						if(action.type == 'upload/post/createVideo') nextAction += 'VideoList'
+						if(action.type == 'upload/post/createProblem') nextAction += 'TestList'
+						yield put({
+							type: nextAction,
+							id: action.test_id || action.course_id
+						})
+						// 清空上传列表
+						yield put({
+							type: 'upload/multiplyPlusUploadList',
+							uploadList: []
+						})
+						yield put({
+							type: 'upload/changeSubmitState',
+							isSubmit: false,
+						})
+					}
 				}
-				let nextAction = 'user/get/user';
-				if(action.type == 'upload/post/createVideo') nextAction += 'VideoList'
-				if(action.type == 'upload/post/createProblem') nextAction += 'TestList'
-				yield put({
-					type: nextAction,
-				})
 			}else{
 				const { jsonResult } = yield call(req.UserCreateMainData, action);
 				if (jsonResult) {
 					message.success('创建成功')
+					let nextAction = 'user/get/user';
+					if(action.type == 'upload/post/createCourse') nextAction += 'Video'
+					if(action.type == 'upload/post/createText') nextAction += 'Text'
+					if(action.type == 'upload/post/createTest') nextAction += 'Test'
+					if(action.type == 'upload/post/createPost') nextAction =  `forum/get/categorySource`
+					yield put({
+						type: nextAction,
+						pagination: 1
+					})
+					yield put({
+						type: 'upload/changeModalState',
+						modalState: false
+					})
 				}
-				let nextAction = 'user/get/user';
-				if(action.type == 'upload/post/createCourse') nextAction += 'Video'
-				if(action.type == 'upload/post/createText') nextAction += 'Text'
-				if(action.type == 'upload/post/createTest') nextAction += 'Test'
-				if(action.type == 'upload/post/createPost') nextAction =  `forum/get/categorySource`
-				yield put({
-					type: nextAction,
-					pagination: 1
-				})
-				yield put({
-					type: 'upload/changeModalState',
-					modalState: false
-				})
+				
 			}
 			
 		};
 		if(action.type.search('put') !== -1) {
-			const { jsonResult } = yield call(req.UserPutMainData, action);
-			if (jsonResult) {
-				message.success('修改成功')
-			}
-			let nextAction = 'user/get/user';
-			if(action.type == 'upload/put/createCourse') nextAction += 'Video'
-			if(action.type == 'upload/put/createText') nextAction += 'Text'
-			if(action.type == 'upload/put/createTest') nextAction += 'Test'
-			yield put({
-				type: nextAction,
-				pagination: 1
-			})
-		}
-		if(action.type.search('del') !== -1){
-			const { jsonResult } = yield call(req.UserDelMainData, action);
+			if(action.type == 'upload/put/createProblem' || action.type == 'upload/put/createVideo'){
+				const { jsonResult } = yield call(req.UserPutSubData, action);
 				if (jsonResult) {
-					message.success('删除成功')
+					if((action.index+1) == action.total){
+						message.success('列表保存成功')
+						let nextAction = 'upload/get/user';
+						if(action.type == 'upload/put/createVideo') nextAction += 'VideoList'
+						if(action.type == 'upload/put/createProblem') nextAction += 'TestList'
+						yield put({
+							type: nextAction,
+							id: action.course_id || action.test_id,
+						})
+						// 清空上传列表
+						yield put({
+							type: 'upload/multiplyPlusUploadList',
+							uploadList: []
+						})
+						yield put({
+							type: 'upload/changeSubmitState',
+							isSubmit: false,
+						})
+					}
+				}
+			}
+			else{
+				const { jsonResult } = yield call(req.UserPutMainData, action);
+				if (jsonResult) {
+					message.success('修改成功')
+					let nextAction = 'upload/get/user';
+					if(action.type == 'upload/put/createVideo') nextAction += 'Video'
+					if(action.type == 'upload/put/createProblem') nextAction += 'Test'
+					yield put({
+						type: nextAction,
+						id: action.id
+					})
 				}
 				let nextAction = 'user/get/user';
-				if(action.type == 'upload/del/createCourse') nextAction += 'Video'
-				if(action.type == 'upload/del/createText') nextAction += 'Text'
-				if(action.type == 'upload/del/createTest') nextAction += 'Test'
-				if(action.type == 'upload/del/createPost') nextAction =  `forum/get/categorySource`
+				if(action.type == 'upload/put/createCourse') nextAction += 'Video'
+				if(action.type == 'upload/put/createText') nextAction += 'Text'
+				if(action.type == 'upload/put/createTest') nextAction += 'Test'
 				yield put({
 					type: nextAction,
 					pagination: 1
 				})
+			}
+			
 		}
+		if(action.type.search('del') !== -1){
+			if(action.type == 'upload/del/createProblem' || action.type == 'upload/del/createVideo'){
+				const { jsonResult } = yield call(req.UserDelSubData, action);
+				if (jsonResult) {
+					message.success('删除成功')
+					let nextAction = 'upload/get/user';
+					if(action.type == 'upload/del/createVideo') nextAction += 'VideoList'
+					if(action.type == 'upload/del/createProblem') nextAction += 'TestList'
+					yield put({
+						type: nextAction,
+						id: action.course_id || action.test_id,
+					})
+				}
+			}else{
+				const { jsonResult } = yield call(req.UserDelMainData, action);
+				if (jsonResult) {
+					message.success('删除成功')
+				}
+				let nextAction = 'user/get/user';
+					if(action.type == 'upload/del/createCourse') nextAction += 'Video'
+					if(action.type == 'upload/del/createText') nextAction += 'Text'
+					if(action.type == 'upload/del/createTest') nextAction += 'Test'
+					if(action.type == 'upload/del/createPost') nextAction =  `forum/get/categorySource`
+					yield put({
+						type: nextAction,
+						pagination: 1
+					})
+				}
+			}
 	} catch (err) {
 		message.error(err);
+		yield put({
+			type: 'upload/changeSubmitState',
+			isSubmit: false,
+		})
 	}
 }
 
@@ -456,11 +521,13 @@ function* watchCreateData() {
 		'upload/post/createPost',
 		'upload/post/createProblem',
 		'upload/post/createVideo',
-
+		// 
 		'upload/put/createCourse',
 		'upload/put/createText',
 		'upload/put/createTest',
-
+		'upload/put/createVideo',
+		'upload/put/createProblem',
+		// 
 		'upload/del/createCourse',
 		'upload/del/createText',
 		'upload/del/createTest',
