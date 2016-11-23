@@ -467,6 +467,21 @@ function* getUserLike(action) {
 	}
 }
 
+function* getSearch(action) {
+	try{
+		const { jsonResult } = yield call(req.Search, action);
+		if(jsonResult) {
+			yield put({
+				type: 'user/get/search/success',
+				payload: jsonResult.search_result,
+				count: jsonResult.count
+			})
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
 function* watchUserLogin() {
 	yield* takeLatest('user/login', login)
 }
@@ -556,6 +571,9 @@ function* watchUserStat() {
 function* watchUserLike() {
 	yield* takeLatest('user/get/like', getUserLike)
 }
+function* watchSearch() {
+	yield* takeLatest('user/get/search', getSearch)
+}
 
 /*function* watchUserGetJson() {
 	yield* takeLatest(['user/login','user/getInfo','user/register'], getJson)
@@ -577,6 +595,7 @@ export default function* () {
 	yield fork(watchUserCollect)
 	yield fork(watchUserStat)
 	yield fork(watchUserLike)
+	yield fork(watchSearch)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

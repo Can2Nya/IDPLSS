@@ -17,6 +17,7 @@ import PlayVideo from '../pages/PlayVideo';
 import PlayTest from '../pages/PlayTest';
 import NotFound from '../pages/NotFound';
 import Manage from '../pages/Manage';
+import Search from '../pages/Search';
 
 //import { initPageStore } from './initPageStore';
 
@@ -296,6 +297,18 @@ const Routes = ({ history, dispatch }) =>{
 				pagination: 1
 			})
 		}
+		// ---search init-------------------------
+		if(pathname.search('search')!== -1){
+			const match = pathToRegexp('/search/#!/:menu/:keyword/:pagination/').exec(pathname+hash)
+			dispatch({
+				type: 'user/get/search',
+				context: match[1],
+				pagination: match[3],
+				body:{
+					key_words: match[2]
+				}
+			})
+		}
 	})
 	return(
 	<Router history={history}>
@@ -328,6 +341,8 @@ const Routes = ({ history, dispatch }) =>{
 			<Route path="*" component={NotFound}  />
 		</Route>
 		<Route path="/manage/" component={Manage}>
+		</Route>
+		<Route path="/search/" component={Search}>
 		</Route>
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}

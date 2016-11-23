@@ -1,26 +1,32 @@
 @import (reference) '../../../config/config.less';
 
-
-.input{
-	& > div
-	{
+.wrapper{
+	border-radius: 20px !important;
+	border:1px solid @white;
+	input{
+		width: 80% !important;
 		background: transparent;
-		border-radius: 20px !important;
-		border:1px solid @white;
-		&:hover{
-			border-color: @yellow;
-		}
-		input{
-			color: @white;
+		color: @white;
+		border: 0;
+		display: inline-block;
+		&:focus{
+			border: 0;
+			box-shadow: none !important;
 		}
 	}
-}
-.btn{
-	background-color: transparent !important;
-	color: @white !important;
-	border: 0 !important;
-	border-radius: 0 !important;
-	&:hover{
-		color: @yellow !important;
+	a{
+		color: @white;
+	}
+	i{
+		margin: 8px 0 0 0 !important;
 	}
 }
+// .btn{
+// 	background-color: transparent !important;
+// 	color: @white !important;
+// 	border: 0 !important;
+// 	border-radius: 0 !important;
+// 	&:hover{
+// 		color: @yellow !important;
+// 	}
+// }
