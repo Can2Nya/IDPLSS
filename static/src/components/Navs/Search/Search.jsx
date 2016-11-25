@@ -24,7 +24,7 @@ let Search = ({ form }) => {
 		<Input.Group>
 			<Input placeholder="输入文字搜索"
 			{...getFieldProps('search',{
-				initialValue: ' ',
+				initialValue: '输入文字搜索',
 			})}
 			onPressEnter={handleSearchAction.bind(this)}
 			/>

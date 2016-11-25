@@ -144,11 +144,12 @@ const Routes = ({ history, dispatch }) =>{
 		// -test problem init------------------
 		if(pathname.search('play/test')!== -1){
 			const match = pathToRegexp('/play/test/:testId/:recordId/').exec(pathname);
-			dispatch({
-				type: 'test/init/problem',
-				testId: match[1],
-				testRecordId: match[2],
-			})
+			// dispatch({
+			// 	type: 'test/init/problem',
+			// 	testId: match[1],
+			// 	testRecordId: match[2],
+			// })
+			// 在saga调用此dispatch
 			dispatch({
 				type: 'test/get/series',
 				id: match[1],

@@ -110,10 +110,14 @@
 /*详细Detail*/
 .detail{
 	.tabpannel{
-		div[class*='ant-tabs-tab-inner']
-		{
+		div[class*='ant-tabs-tab-inner']{
 			color: @purple !important;
 			
+		}
+		div[class*='ant-tabs-tab-disabled']{
+			div[class*='ant-tabs-tab-inner']{
+				color: @gray !important;
+			}
 		}
 		div[class*='ant-tabs-ink-bar']{
 			background-color: @purple !important;
