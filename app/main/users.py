@@ -411,7 +411,7 @@ def user_text_resource_comments():
     if pagination.has_next:
         url_next = url_for('main.user_text_resource_comments', page=page+1, _external=True)
     return jsonify({
-        'video_comments': [comment.to_json() for comment in all_comments],
+        'comments': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -465,7 +465,7 @@ def user_test_list():
     if pagination.has_next:
         url_next = url_for('main.user_test_list', page=page+1, _external=True)
     return jsonify({
-        'posts': [test.to_json() for test in all_tests],
+        'test_list': [test.to_json() for test in all_tests],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
@@ -490,7 +490,7 @@ def user_test_record():
     if pagination.has_next:
         url_next = url_for('main.user_test_record', page=page+1, _external=True)
     return jsonify({
-        'posts': [record.to_json() for record in all_tests_record],
+        'test_record': [record.to_json() for record in all_tests_record],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
