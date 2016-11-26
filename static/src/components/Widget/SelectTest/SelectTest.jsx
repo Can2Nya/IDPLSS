@@ -63,13 +63,13 @@ const SelectTest = ({ time, result, status, data, index, form, onFormChange }) =
 					],
 				})}>
 				
-					<Radio key='1' value='a'>{ data.choice_a }</Radio>
+					<Radio key='1' value='a'>{ `a:${data.choice_a}` }</Radio>
 				
-					<Radio key='2' value='b'>{ data.choice_b }</Radio>
+					<Radio key='2' value='b'>{ `b:${data.choice_b}` }</Radio>
 				
-					<Radio key='3' value='c'>{ data.choice_c }</Radio>
+					<Radio key='3' value='c'>{ `c:${data.choice_c}`}</Radio>
 				
-					<Radio key='4' value='d'>{ data.choice_d }</Radio>
+					<Radio key='4' value='d'>{ `d:${data.choice_d}` }</Radio>
 				
 			</Radio.Group>
 			</Form.Item>

@@ -95,7 +95,7 @@ const text = handleActions({
 	['text/get/success/comment'](state, action) {
 		return { 
 			...state,
-			isSelectContext: { ...state.isSelectContext, comment: action.payload.posts, loading: false },
+			isSelectContext: { ...state.isSelectContext, comment: action.payload.comments, loading: false },
 		}
 	},
 	['text/post/comment'](state, action) {

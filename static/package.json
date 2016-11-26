@@ -23,6 +23,7 @@
     "rc-queue-anim": "^0.12.4",
     "rc-tween-one": "^0.8.5",
     "react": "^15.0.2",
+    "react-addons-perf": "^15.4.1",
     "react-anything-sortable": "^1.6.1",
     "react-dom": "^15.0.2",
     "react-qiniu": "^1.5.0",

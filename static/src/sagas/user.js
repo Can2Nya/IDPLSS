@@ -50,41 +50,54 @@ function* getUser(action) {// arg内有action参数
 				});
 			}
 			if(type == 'user/set/info'){
-				message.success('成功修改资料');
-				put({
-					type: 'user/get/info',
-					user_id: action.user_id,
-				})
+				if(action.mode == 'email'){
+					Modal.success({
+						title: '已发送一封确认邮件到您的邮箱',
+						context: '请在邮箱检查邮件'
+					})
+				}
+				if(action.mode == 'password'){
+					Modal.success({
+						title: '密码修改成功',
+					})
+					yield put({
+						type: 'user/get/passwordToken',
+						psdtoken: null
+					})
+				}
+				if(action.mode == 'recomfirm'){
+					 message.success('发送成功！')
+				}
+				else{
+					put({
+						type: 'user/get/info',
+						user_id: action.user_id,
+					})
+				}
+				
 			}
 		}
 	} catch (err) {
-		message.error(err);
-		// if(type == 'user/login'){
-		// 	yield put({
-		// 		type: 'user/login/failed',
-		// 	});
-		// }
+		console.log(err)
+		message.error('非法操作');
 	}
 }
 
-function* setUser(action) {
-	try {
-		const { jsonResult } = yield call(req.setUserState, action);
-		if (jsonResult) {
-			//yield put({
-				//type: 'user/login/success',
-				//payload: jsonResult,
-			//});
-			message.success(err);
-		}
-	} catch (err) {
-		message.error(err);
-		//yield put({
-		//  type: 'user/login/failed',
-		//  err,
-		//});
-	}
-}
+// function* setUser(action) {
+// 	try {
+// 		const { jsonResult } = yield call(req.setUserState, action);
+// 		if (jsonResult) {
+// 			dispatch({
+// 				type: 'user/get/loginInfo',
+// 				user_id: action.user_id
+// 			})
+// 			message.success(err);
+// 		}
+// 	} catch (err) {
+// 		message.error(err);
+		
+// 	}
+// }
 
 function* register(action) {
 	try {
@@ -164,7 +177,7 @@ function* getUserZoneData(action) {
 			if((action.type != 'user/get/userVideoList') || (action.type != 'user/get/userTestList')){
 				yield put({
 					type: 'user/get/zoneData/success',
-					payload: jsonResult.collection_courses ||  jsonResult.posts || jsonResult.posts_comments || jsonResult.collection_posts || jsonResult.courses || jsonResult.course_comments || jsonResult.text_resources || jsonResult.course_comments || jsonResult.collection_text_resources || jsonResult.test_list || jsonResult.resource_comments || jsonResult.test_record ,
+					payload: jsonResult.collection_courses ||  jsonResult.posts || jsonResult.posts_comments || jsonResult.collection_posts || jsonResult.courses || jsonResult.course_comments || jsonResult.text_resources || jsonResult.comments || jsonResult.collection_text_resources || jsonResult.test_list || jsonResult.resource_comments || jsonResult.test_record ,
 					total: jsonResult.count,
 				})
 			}
@@ -353,7 +366,7 @@ function* getUserRecommend(action) {
 	try {
 		const { jsonResult } = yield call(req.UserRecommend, action);
 		if (jsonResult) {
-			if(jsonResult.count){
+			if(jsonResult.count != undefined){
 				yield put({
 					type: 'user/get/recommend/success',
 					payload: jsonResult.recommend_courses || jsonResult.recommend_text_resources || jsonResult.recommend_tests,
@@ -408,7 +421,9 @@ function* getUserCollect(action) {
 					}
 					if(jsonResult.status.search('test finished') !== -1){
 						yield put({
-							type: 'test/set/problemisSubmit',
+							type: 'test/init/problem',
+							testRecordId: jsonResult.test_record_id,
+							testId: action.body.test_id,
 							isSubmit: true
 						})
 						Modal.confirm({
@@ -426,7 +441,9 @@ function* getUserCollect(action) {
 					else {
 						yield put({
 							type: 'test/init/problem',
-							testRecordId: jsonResult.test_record_id
+							testRecordId: jsonResult.test_record_id,
+							testId: action.body.test_id,
+							isSubmit: false
 						})
 						browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
 					}

@@ -100,7 +100,14 @@ const user = handleActions({
 	// },
 	// --用户中心-----------------------------------------------
 	['user/set/info'](state, action){// 设置用户信息
+		// 修改用户信息：user_id,body（必须
+		// 修改密码模式：mode: setpassword,body,token
+		// 发送邮件查找密码：mode: email，body
+		// 重新邮箱激活：mode: recomfirm,body
 		return { ...state }
+	},
+	['user/get/passwordToken'](state, action){
+		return { ...state, psdtoken: action.psdtoken }
 	},
 	// 以下action需要pagination 字段
 	['user/get/userPost'](state, action){// 获取用户帖子
@@ -238,13 +245,14 @@ const user = handleActions({
 		return { ...state, isSelectMenuItem: action.isSelectMenuItem }
 	},
 }, {
+	psdtoken: null,// 重设密码的token
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
 	modalState: false,//modal是否被激活
-	stepState: 0,//注册步骤状态
 
+	stepState: 0,//注册步骤状态
 	isAllowStepChange: false,//可以允许改变步骤
-	isloginFormSubmit: false,//login表单是否被提交【这名字咱要改惹
+	isloginFormSubmit: false,//login表单是否被提交
 	isregisterFormSubmit: false,//register表单是否被提交
 	isregisterConfirm: false,//是否邮箱验证成功
 	isCollectContext: false,//是否参加内容【课程／文本／测试】

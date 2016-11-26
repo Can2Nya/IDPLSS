@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Pagination, Spin, Row, Col, Icon, Tabs } from 'antd';
+import { Breadcrumb, Pagination, Spin, Row, Col, Icon, Tabs, Card, Progress } from 'antd';
 import cookie from 'js-cookie';
 
 import Layout from '../layouts/Layout/Layout';
@@ -59,6 +59,11 @@ const User = ({ location, dispatch, user }) => {
 	const handlePostDelete = (commentid, authorid, e) =>{
 		// if ((loginUserList.user_type == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
+			let stateName;
+			switch(isSelectSubTab){
+				case '0': stateName = 'Video';
+				case '1': stateName = 'Text';
+			}
 			dispatch({
 				type: `${stateName}/delete/comment`,
 				id: id,
@@ -129,10 +134,13 @@ const User = ({ location, dispatch, user }) => {
 					if(!data.show) return
 					return(
 						<Col span={24} key={index}> 
-						<Comment key={index} data={data} user={{ 
+						<Comment key={index} data={data} 
+						user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
-						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
+						logintype: loginUserList.user_type
+						}}  
+						onDelete={handlePostDelete.bind(this)}/>
 						</Col>
 					);
 				})
@@ -150,6 +158,16 @@ const User = ({ location, dispatch, user }) => {
 					</Col>
 					);
 				})
+		}
+		if(isSelectTab == '4' && isSelectSubTab == '2'){
+			return userZoneList.map((data,index) =>{
+				if(!data.show) return;
+				return(
+					<Col span={24} key={index}> 
+						<TestCover type='big' data={data}/>
+					</Col>
+				)
+			})
 		}
 		return userZoneList.map((data,index) =>{
 			if(!data.show) return
@@ -171,9 +189,18 @@ const User = ({ location, dispatch, user }) => {
 				case '2':
 				if(!data.show) return;
 				return(
-						<Col span={24} key={index}> 
-						<TestCover type='big' data={data}/>
-						</Col>
+					<Col span={8} lg={6} key={index}> 
+					<Card 
+					title={data.test_title} 
+					bodyStyle={{ textAlign: 'center' }}
+					extra={<Link to={{pathname:`/detail/test/${data.test_id}/`,hash:`#!/series/1/`}}>详情</Link>} 
+					style={{ width: '100%' }}>
+						<Progress type="circle" strokeWidth={9} percent={data.test_accuracy * 100} format={percent => `${data.test_accuracy * 100}%`}/>
+						<p style={{ margin: '10px 0 15px 0'}}>正确率</p>
+						<p>{`问题个数：${data.answers_count}`}</p>
+						<p>{`测试完成情况：${data.is_finished ? '已完成' : '未完成'}`}</p>
+					</Card>
+					</Col>
 				)
 			}
 		})
