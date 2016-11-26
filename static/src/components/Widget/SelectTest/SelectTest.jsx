@@ -14,7 +14,7 @@ const SelectTest = ({ time, result, status, data, index, form, onFormChange }) =
 		if(status){
 			return <Collapse>
 					<Collapse.Panel header={`正确答案：${data.right_answer}`} key="1">
-					<p>{data.problem_description}</p>
+					<p>{data.answer_explain}</p>
 					</Collapse.Panel>
 					</Collapse>
 		}
@@ -22,11 +22,16 @@ const SelectTest = ({ time, result, status, data, index, form, onFormChange }) =
 
 	const renderProblemStatus = () =>{
 		if(result.length > 0){	
-			return result[index] ? (
-				<Icon type="check-circle" />
-			):(
-				<Icon type="cross-circle" />
-			)
+			return result.map(data =>{
+				if (data.id == index){
+					return data.status ? (
+						<Icon type="check-circle" />
+					):(
+						<Icon type="cross-circle" />
+					)
+				}
+			})
+			
 		}
 	}
 	const renderProblemImage = () =>{
@@ -52,16 +57,19 @@ const SelectTest = ({ time, result, status, data, index, form, onFormChange }) =
 			<Form.Item>
 				<Radio.Group
 				{...getFieldProps(`test-${data.id}`,{
-					onChange: onFormChange
+					onChange: onFormChange,
+					rules: [
+						{ required: true, message: '该题未填写答案' },
+					],
 				})}>
 				
-					<Radio key='1' value={ `${data.choice_a}` }>{ data.choice_a }</Radio>
+					<Radio key='1' value='a'>{ data.choice_a }</Radio>
 				
-					<Radio key='2' value={ `${data.choice_b}` }>{ data.choice_b }</Radio>
+					<Radio key='2' value='b'>{ data.choice_b }</Radio>
 				
-					<Radio key='3' value={ `${data.choice_c}` }>{ data.choice_c }</Radio>
+					<Radio key='3' value='c'>{ data.choice_c }</Radio>
 				
-					<Radio key='4' value={ `${data.choice_d}` }>{ data.choice_d }</Radio>
+					<Radio key='4' value='d'>{ data.choice_d }</Radio>
 				
 			</Radio.Group>
 			</Form.Item>

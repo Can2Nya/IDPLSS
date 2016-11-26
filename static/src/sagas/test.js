@@ -125,8 +125,9 @@ function* TestAnswer(action) {
 				if(jsonResult.status == 'False') newStatus = false;
 				yield put({
 					type: 'test/post/success/problemResult',
-					payload: newStatus
+					payload: {index: action.index, status: newStatus}
 				})
+
 				if(action.index == action.total){
 					yield put({
 						type: 'test/get/problemResult',

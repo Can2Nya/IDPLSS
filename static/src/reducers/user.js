@@ -220,8 +220,22 @@ const user = handleActions({
 		}
 	},
 	['user/get/like'](state, action){
-		// context: Video,Text,test
+		// context: video,text,test,post
 		return { ...state }
+	},
+	// ----------搜索-----------------
+	['user/get/search'](state, action){
+		// 触发需要
+		// context: video,text,test,post
+		const cata = {'video':'0','text':'1','test':'2','post':'3'}
+		return { ...state, keyWord: action.body.key_words, loading: true, isSelectMenuItem: cata[action.context] }
+	},
+	['user/get/search/success'](state, action){
+		// context: Video,Text,test
+		return { ...state, searchList: action.payload, total: action.count, loading: false }
+	},
+	['user/changeMenuItem'](state, action){
+		return { ...state, isSelectMenuItem: action.isSelectMenuItem }
 	},
 }, {
 	loginUserList: [],// 已登录信息(自己的信息)
@@ -242,7 +256,12 @@ const user = handleActions({
 	userZoneSubList: [], // 二级数据存放【例如videolist，problemlist
 	recommend: [],// 用户自己接收的推荐
 	barData: [],// 条形图数据
-	radarData: [],// 饼图
+	radarData: [],// 雷达图
+	// 搜索
+	isSelectMenuItem: '0', // 选择分类
+	keyWord: '',// 搜索关键子
+	searchList: [],//  搜索返回结果
+	loading: false,// 
 });
 
 export default user;

@@ -53,7 +53,7 @@ const ContextTitle = ({ location, data, type }) => {
 			<div className={styles.time}>{renderTime()}</div>
 		</Col>
 		<Col span={5}>
-			<div className={styles.favor}><Icon type="heart-o" />  喜欢</div>
+			{/*<div className={styles.favor}><Icon type="heart-o" />  喜欢</div>*/}
 		</Col>
 		</Row>
 		</Col>

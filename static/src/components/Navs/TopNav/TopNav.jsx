@@ -44,9 +44,9 @@ const TopNav = ({ config }) => {
 				<div className={styles.col}>
 					<Search />
 				</div>
-				{/*<div className={styles.col}  style={{marginLeft:'30px'}}>
-					<Massage />
-				</div>*/}
+				<div className={styles.col}  style={{marginLeft:'30px'}}>
+					{/*<Massage />*/}
+				</div>
 				<div className={styles.col}>
 					<User />
 				</div>

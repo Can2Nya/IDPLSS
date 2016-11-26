@@ -79,12 +79,16 @@ const test = handleActions({
 		return { ...state, };
 	},
 	['test/get/success/series'](state, action) {
+		let count = 0;
+		action.payload.map(data=>{
+			if(data.problem_type == 0) count++;
+		})
 		return { 
 			...state,
 			isSelectContext: { 
 				...state.isSelectContext, 
 				list: action.payload, 
-				total: action.count,
+				total: count,
 				// next: action.payload.next
 			},
 		}
@@ -139,11 +143,22 @@ const test = handleActions({
 			},
 		};
 	},
-	
+	['test/set/problemisSubmit'](state, action) {
+		console.log(action)
+		const { isSelectContext } = state
+		return { 
+			...state, 
+			isSelectContext: { 
+				...isSelectContext,
+				isSelectContext: {
+					...isSelectContext.isSelectContext,
+					isSubmit: action.isSubmit,
+				}
+			},
+		};
+	},
 	['test/post/problemResult'](state, action) {
 		const { isSelectContext } = state
-		// data['problemId'] = action.id
-		// data['body'] = action.data
 		return { 
 			...state, 
 			isSelectContext: { 

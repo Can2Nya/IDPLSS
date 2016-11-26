@@ -89,7 +89,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			validateFields([
 				`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
-				`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+				// `rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 				
 				],(errors, values)=>{
@@ -102,6 +102,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 							`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 							`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+							`rightAnswer-Select-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
 						],(errors, values)=>{
 							if(errors){
 								return ;
@@ -112,6 +113,20 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 								choice_b: getFieldValue(`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 								choice_c: getFieldValue(`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 								choice_d: getFieldValue(`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+								right_answer: getFieldValue(`rightAnswer-Select-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`)
+							}
+						})
+					}
+					if(getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`) == 1){
+						validateFields([
+							`rightAnswer-Subjectivity-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`,
+						],(errors,values)=>{
+							if(errors){
+								return ;
+							}
+							list = {
+								...list,
+								right_answer: getFieldValue(`rightAnswer-Subjectivity-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`)
 							}
 						})
 					}
@@ -129,7 +144,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							description_image: images,
 							problem_description: getFieldValue(`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`), 
 							problem_type: getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
-							right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							// right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							author_id: loginUserList.user_id,
 							test_id: isSelectContext.id,
@@ -250,6 +265,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					dispatch({
 						type: 'upload/tmpPlus',
 						tmpFile: []
+					})
+					dispatch({
+						type: 'upload/multiplyPlus',
+						uploadListFiles: []
 					})
 					dispatch({
 						type: 'upload/changeTime',
@@ -880,6 +899,32 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					})}
 				/>
 			</Form.Item>
+			<Form.Item
+			{...formItemLayout}
+			label='正确答案'
+			>
+				{/*<Input type='text'
+					{...getFieldProps(`rightAnswer-Select-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
+						initialValue: itemData.answer_explain || null,
+						rules: [
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+						],
+					})}
+				/>*/}
+				<Select style={{ width: 120 }}
+				{...getFieldProps(`rightAnswer-Select-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
+						initialValue: itemData.answer_explain || 'a',
+						rules: [
+							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+						],
+				})}
+				>
+					<Select.Option value="a">a</Select.Option>
+					<Select.Option value="b">b</Select.Option>
+					<Select.Option value="c">c</Select.Option>
+					<Select.Option value="d">d</Select.Option>
+				</Select>
+			</Form.Item>
 			</div>
 		)
 		
@@ -916,21 +961,23 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				</Radio.Group>
 			</Form.Item>
 
-			{ getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`) == 0? renderTestChoice() : null }
+			{ getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`) == 0? renderTestChoice() : (
+				<Form.Item
+				{...formItemLayout}
+				label='正确答案'
+				>
+					<Input type='text'
+						{...getFieldProps(`rightAnswer-Subjectivity-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
+							initialValue: itemData.answer_explain || null,
+							rules: [
+								{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
+							],
+						})}
+					/>
+				</Form.Item>
+			) }
 
-			<Form.Item
-			{...formItemLayout}
-			label='正确答案'
-			>
-				<Input type='text'
-					{...getFieldProps(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.answer_explain || null,
-						rules: [
-							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
-						],
-					})}
-				/>
-			</Form.Item>
+			
 			<Form.Item
 			{...formItemLayout}
 			label='正确答案的解释'
