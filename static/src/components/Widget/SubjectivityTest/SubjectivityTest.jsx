@@ -14,7 +14,7 @@ const SubjectivityTest = ({ time, result, status, data, index, form, onFormChang
 		if(status){
 			return <Collapse>
 					<Collapse.Panel header={`正确答案：${data.right_answer}`} key="1">
-					<p>{data.problem_description}</p>
+					<p>{data.answer_explain}</p>
 					</Collapse.Panel>
 					</Collapse>
 		}
@@ -40,7 +40,7 @@ const SubjectivityTest = ({ time, result, status, data, index, form, onFormChang
 			<div className={styles.title}>
 			{`Q${index}: ${data.problem_description}`}
 			<span>
-			{ renderProblemStatus() }
+			{/* renderProblemStatus() */}
 			</span>
 			<div>
 			{/* data.description_image.split(':').map((image,index)=>{
@@ -52,7 +52,10 @@ const SubjectivityTest = ({ time, result, status, data, index, form, onFormChang
 			<Form.Item>
 			<Input type='textarea' rows={5}
 			{...getFieldProps(`test-${data.id}`,{
-				onChange: onFormChange
+				onChange: onFormChange,
+				rules: [
+					{ required: true, message: '该题未填写答案' },
+				],
 			})}
 			/>
 			</Form.Item>

@@ -190,3 +190,12 @@ export async function UserLike(action) {
 
 	return xFetch(url,{method: 'GET',});
 }
+export async function Search(action) {
+	let url = `${apiUrl}/api/`
+	if(action.context == 'video') url += `courses/search?page=${action.pagination || 1}`
+	if(action.context == `text`) url += `text-resources/search?page=${action.pagination || 1}`
+	if(action.context == `test`) url += `test-list/search?page=${action.pagination || 1}`
+	if(action.context == `post`) url += `posts/search?page=${action.pagination || 1}`
+
+	return xFetch(url,{method: 'POST',  body: JSON.stringify(action.body)});
+}

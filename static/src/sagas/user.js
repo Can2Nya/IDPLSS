@@ -407,11 +407,29 @@ function* getUserCollect(action) {
 						// })
 					}
 					if(jsonResult.status.search('test finished') !== -1){
-						Modal.success({
+						yield put({
+							type: 'test/set/problemisSubmit',
+							isSubmit: true
+						})
+						Modal.confirm({
 							title: '您已完成该测试',
+							content: '是否查看答案？',
+							okText: '是',
+							cancelText: '返回',
+							onOk: (ok)=>{
+								browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
+								ok()
+							}
+
 						})
 					}
-					else browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
+					else {
+						yield put({
+							type: 'test/init/problem',
+							testRecordId: jsonResult.test_record_id
+						})
+						browserHistory.push(`/play/test/${action.body.test_id}/${jsonResult.test_record_id}/`)
+					}
 				}
 				else{
 					yield put({
@@ -461,6 +479,21 @@ function* getUserLike(action) {
 		const { jsonResult } = yield call(req.UserLike, action);
 		if (jsonResult) {
 			message.success('收到一个赞！')
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
+function* getSearch(action) {
+	try{
+		const { jsonResult } = yield call(req.Search, action);
+		if(jsonResult) {
+			yield put({
+				type: 'user/get/search/success',
+				payload: jsonResult.search_result,
+				count: jsonResult.count
+			})
 		}
 	} catch (err) {
 		message.error(`网络错误:${err}`);
@@ -556,6 +589,9 @@ function* watchUserStat() {
 function* watchUserLike() {
 	yield* takeLatest('user/get/like', getUserLike)
 }
+function* watchSearch() {
+	yield* takeLatest('user/get/search', getSearch)
+}
 
 /*function* watchUserGetJson() {
 	yield* takeLatest(['user/login','user/getInfo','user/register'], getJson)
@@ -577,6 +613,7 @@ export default function* () {
 	yield fork(watchUserCollect)
 	yield fork(watchUserStat)
 	yield fork(watchUserLike)
+	yield fork(watchSearch)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

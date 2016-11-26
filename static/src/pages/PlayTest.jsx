@@ -16,17 +16,17 @@ import styles from './commont.less';
 
 // import { data } from '../services/test.js';//向test传送的数据
 
-let PlayTest = ({ test, user, form, dispatch, location }) =>{
+let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 	const { loginUserList } = user
 	const { getFieldProps, getFieldsValue, validateFields, getFieldValue } = form;
 	const { isSelectContext, isSelectPagination, time } = test
 	const { result, submitCount, testRecordId, isSubmit, isComplete, isRolling, accuracy } = isSelectContext.isSelectContext
 	// ---------------------fuc----------------------
-	const isAllowTest = () =>{
-		if(isSelectContext.list.length <= 0){
-			browserHistory.push(`/detail/test/${isSelectContext.id}/#!/series/1/`)
-		}
-	}
+	// const isAllowTest = () =>{
+	// 	if(isSelectContext.list.length <= 0){
+	// 		browserHistory.push(`/detail/test/${isSelectContext.id}/#!/series/1/`)
+	// 	}
+	// }
 	// --------------------action--------------------
 
 	const handleRolling = (affixed) =>{
@@ -64,23 +64,31 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 		})
 	}
 	const handleSubmitProblem = () =>{
-		let rez = getFieldsValue()
-		isSelectContext.list.map((problem,index)=>{
-			dispatch({
-				type: "test/post/problemResult",
-				id: problem.id,
-				test_record_id: testRecordId,
-				index: index+1,
-				total: isSelectContext.total,
-				body: { 
-					user_answer: rez[`test-${problem.id}`], 
-					problem_type: problem.problem_type, 
-					answerer_id: loginUserList.user_id, 
+		validateFields((errors, values)=>{
+			if(errors) return ;
+			let rez = getFieldsValue()
+			isSelectContext.list.map((problem,index)=>{
+				if (problem.problem_type == 1 || problem.problem_type == '1') return;
+
+				// let problemindex = index + 1;
+				// if(problemindex == isSelectContext.length) problemindex = isSelectContext.total
+				dispatch({
+					type: "test/post/problemResult",
+					id: problem.id,
 					test_record_id: testRecordId,
-					test_id: isSelectContext.id
-				}
+					index: index + 1,
+					total: isSelectContext.total,
+					body: { 
+						user_answer: rez[`test-${problem.id}`], 
+						problem_type: problem.problem_type, 
+						answerer_id: loginUserList.user_id, 
+						test_record_id: testRecordId,
+						test_id: isSelectContext.id
+					}
+				})
 			})
 		})
+		
 		// console.log(submitCount)
 		// if(submitCount == isSelectContext.total){
 			// dispatch({
@@ -152,7 +160,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 	const renderPrecent = (value) =>{
 		if(value == 0) return value;
 		else{
-			return (value*1.0/isSelectContext.total) * 100
+			return (value*1.0/isSelectContext.list.length) * 100
 		}
 	}
 	const renderProgressCls = classNames({
@@ -170,7 +178,6 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 	// ------------------end-------------------------
 	return (
 		<Layout location={location}>
-		{ isAllowTest() }
 		<div className={styles.playTest}>
 
 		<div className={styles.contain}>
@@ -193,7 +200,7 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 		</span>
 		</Col>
 		<Col span={22}>
-		<Progress percent={renderPrecent(isComplete)} strokeWidth={20} status="active" format={() => `${isComplete}/${isSelectContext.total}`} />
+		<Progress percent={renderPrecent(isComplete)} strokeWidth={20} status="active" format={() => `${isComplete}/${isSelectContext.list.length}`} />
 		</Col>
 		</Row>
 		</div>
@@ -225,21 +232,35 @@ let PlayTest = ({ test, user, form, dispatch, location }) =>{
 	);
 }
 
-PlayTest.PropTypes = {
+RenderPlayTest.PropTypes = {
 
 };
 
-PlayTest = Form.create()(PlayTest);
+RenderPlayTest = Form.create()(RenderPlayTest);
+
+const PlayTest = React.createClass({
+	shouldComponentUpdate(nextProps, nextState){
+		return nextProps != this.state
+	},
+	componentDidMount()	{
+		const { loginUserList } = this.props.user
+		const { isSelectContext} = this.props.test
+		if(isSelectContext.list.length <= 0 || loginUserList.lengt <= 0){
+			browserHistory.push(`/detail/test/${isSelectContext.id}/#!/series/1/`)
+		}
+	},
+	render(){
+		return <RenderPlayTest test={this.props.test} user={this.props.user} dispatch={this.props.dispatch} location={this.props.location}/>
+	}
+})
 
 function mapStateToProp({ test, user }){
-	// const { loginUserList } = user
-	// if(loginUserList.length <= 0){
-	// 	browserHistory.push('/login/')
-	// }
 	return{
 		test: test,
 		user: user
 	}
 }
+
+// connect(mapStateToProp)(RenderPlayTest);
 
 export default connect(mapStateToProp)(PlayTest);
