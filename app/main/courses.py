@@ -283,7 +283,7 @@ def search_course():
     search_info = request.json
     key_word = search_info['key_words']
     page = request.args.get('page', 1, type=int)
-    pagination = Course.query.filter(Course.course_name.like('%'+key_word+'%')).paginate(
+    pagination = Course.query.filter(Course.course_name.like('%'+key_word+'%'), Course.show == True).paginate(
         page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
         error_out=False
     )
