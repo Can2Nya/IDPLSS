@@ -140,7 +140,7 @@ def text_resource_comments(rid):
     if pagination.has_next:
         url_next = url_for('main.text_resource_comments', rid=rid, page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in all_comments],
+        'comments': [comment.to_json() for comment in all_comments],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total
