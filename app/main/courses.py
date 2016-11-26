@@ -283,7 +283,7 @@ def search_course():
     search_info = request.json
     key_word = search_info['key_words']
     page = request.args.get('page', 1, type=int)
-    pagination = Course.query.filter(Course.course_name.like('%'+key_word+'%'), Course.show == True).paginate(
+    pagination = Course.query.filter(Course.course_name.like('%'+key_word+'%')).paginate(
         page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
         error_out=False
     )
@@ -295,7 +295,7 @@ def search_course():
     if pagination.has_next:
         url_next = url_for('main.search_course', page=page+1, _external=True)
     return jsonify({
-        'search_result': [course.to_json() for course in all_courses],
+        'search_result': [course.to_json() for course in all_courses if course.show == True],
         'prev': url_prev,
         'next': url_next,
         'count': pagination.total

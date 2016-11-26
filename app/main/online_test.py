@@ -266,11 +266,13 @@ def clean_record(tid):
 @get_current_user
 def over_test(tid):
     user = g.current_user
-    test_record = TestRecord.query.filter_by(answerer_id=user.id, id=tid).first()
+    print "user id is %s test id is %s " % (user.id, tid)
+    test_record = TestRecord.query.filter_by(answerer_id=user.id, test_list_id=tid).first()
     if test_record is None:
         return not_found()
     else:
         all_answer = AnswerRecord.query.filter_by(answerer_id=user.id, test_list_id=tid, test_record_id=test_record.id).all()
+        print "len ans is %s" % len(all_answer)
         right_count = 0
         choice_count = 0
         for ans in all_answer:
