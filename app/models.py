@@ -966,6 +966,7 @@ class TestRecord(db.Model):
             "answerer_name": id_change_user(self.answerer_id).name,
             "answers_count": self.answers.count(),
             "test_id": self.test_list_id,
+            "test_title": TestList.query.get_or_404(self.test_list_id).test_title,
             "is_finished": self.is_finished
         }
         return json_test_record
