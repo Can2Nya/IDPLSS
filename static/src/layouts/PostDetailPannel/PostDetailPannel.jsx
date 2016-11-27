@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Row, Col, Button, Tabs } from 'antd';
+import { Row, Col, Button, Tabs, Icon } from 'antd';
 import classNames from 'classnames';
+
 
 import InputForm from '../../components/InputForm/InputForm';
 import Comment from '../../components/Comment/Comment';
@@ -9,7 +10,7 @@ import Comment from '../../components/Comment/Comment';
 import config from '../../config/config.js'
 import styles from './PostDetailPannel.less';
 
-const PostDetailPannel = ({ children, data }) => {
+const PostDetailPannel = ({ children, data, onPostEdit, onPostDel }) => {
 	const PostDetailPannelCls = () =>{
 		/*var style = {};
 		if(type == 'video') style[[styles.video]] = true;
@@ -39,11 +40,12 @@ const PostDetailPannel = ({ children, data }) => {
 		<div className={styles.title}>
 		{ data.title }
 		</div>
-		<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >
+		
 		<div className={styles.username}>
-		{ data.author_name }
+		<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >{ data.author_name }</Link>
+		{ ` at ${data.timestamp}` }
 		</div>
-		</Link>
+		
 		<div className={styles.text}>
 		<p>{ data.body }</p>
 		<div>
@@ -54,7 +56,8 @@ const PostDetailPannel = ({ children, data }) => {
 		</Row>
 		<div className={styles.tool}>
 			<div className={styles.icon}>
-			<span>&#xe602; 删除</span><span>&#xe60b; 点赞</span>
+			<a onClick={onPostDel}><span>&#xe602;删除</span></a>
+			<a onClick={onPostEdit}><span><Icon type="edit" />修改</span></a>
 			</div>
 		</div>
 		{ children }

@@ -175,7 +175,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 		}
 		if(location.hash.search('comment')!== -1){
 			if(isSelectContext.comment.length <= 0){
-				return <div>暂时还未有评论</div>;
+				return <div style={{ textAlign: 'center', marginTop: '150px', width: '100%'}}>暂时还未有评论</div>;
 			}
 			return isSelectContext.comment.map((comment,index) =>{
 				if(!comment.show) return

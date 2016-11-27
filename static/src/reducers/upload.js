@@ -98,6 +98,9 @@ const upload = handleActions({
 	['upload/put/createProblem'](state, action) {// 二级数据
 		return { ...state, };
 	},
+	['upload/put/createPost'](state, action) {// 一级数据
+		return { ...state, };
+	},
 	// del
 	['upload/del/createCourse'](state, action) {// 一级数据
 		return { ...state, };
@@ -112,6 +115,9 @@ const upload = handleActions({
 		return { ...state, };
 	},
 	['upload/del/createProblem'](state, action) {// 二级数据
+		return { ...state, };
+	},
+	['upload/del/createPost'](state, action) {// 一级数据
 		return { ...state, };
 	},
 
