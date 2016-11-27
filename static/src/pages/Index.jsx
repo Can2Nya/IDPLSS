@@ -48,7 +48,7 @@ const Index = ({ video, text, test, location }) => {
 		else{
 			return recommend.list.map((data,index)=>{
 				if (!data.show) return;
-				return <Col span={24} key={index}>
+				return <Col span={12} key={index}>
 				<TestCover data={data} type='big' />
 				</Col>
 			})

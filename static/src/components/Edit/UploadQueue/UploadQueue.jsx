@@ -156,7 +156,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							description_image: images,
 							problem_description: getFieldValue(`detail-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`), 
 							problem_type: getFieldValue(`type-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
-							right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
+							// right_answer: getFieldValue(`rightAnswer-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							answer_explain: getFieldValue(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`),
 							author_id: loginUserList.user_id,
 							test_id: isSelectContext.id,
@@ -432,12 +432,12 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							body: {
 								problem_description: data.problem_description || '',
 								description_image: data.description_image || '',
-								problem_type: data.problem_type || '',
+								problem_type: data.problem_type,
 								choice_a: data.choice_a || '',
 								choice_b: data.choice_b || '',
 								choice_c: data.choice_c || '',
 								choice_d: data.choice_d || '',
-								right_answer: data.right_answer || '',
+								right_answer: data.right_answer,
 								answer_explain: data.answer_explain || '',
 								problem_order: index
 							}
@@ -451,12 +451,12 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 							body: {
 								problem_description: data.problem_description || '',
 								description_image: data.description_image || '',
-								problem_type: data.problem_type || '',
+								problem_type: data.problem_type,
 								choice_a: data.choice_a || '',
 								choice_b: data.choice_b || '',
 								choice_c: data.choice_c || '',
 								choice_d: data.choice_d || '',
-								right_answer: data.right_answer || '',
+								right_answer: data.right_answer,
 								answer_explain: data.answer_explain || '',
 								author_id: data.author_id,
 								test_id: data.test_id,
@@ -853,7 +853,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 			<Input type='textarea' rows={3}
 					{...getFieldProps(`choice-a-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.chioce_a || null,
+						initialValue: itemData.choice_a || null,
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -866,7 +866,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 			<Input type='textarea' rows={3}
 					{...getFieldProps(`choice-b-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.chioce_b || null,
+						initialValue: itemData.choice_b || null,
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -879,7 +879,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 			<Input type='textarea' rows={3}
 					{...getFieldProps(`choice-c-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.chioce_c || null,
+						initialValue: itemData.choice_c || null,
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -892,7 +892,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 			<Input type='textarea' rows={3}
 					{...getFieldProps(`choice-d-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.chioce_d || null,
+						initialValue: itemData.choice_d || null,
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -913,7 +913,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				/>*/}
 				<Select style={{ width: 120 }}
 				{...getFieldProps(`rightAnswer-Select-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.answer_explain || 'a',
+						initialValue: itemData.right_answer || 'a',
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -968,7 +968,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				>
 					<Input type='text'
 						{...getFieldProps(`rightAnswer-Subjectivity-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-							initialValue: itemData.answer_explain || null,
+							initialValue: itemData.right_answer || null,
 							rules: [
 								{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 							],
@@ -984,7 +984,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			>
 				<Input type='textarea' rows={3}
 					{...getFieldProps(`explain-Test-${itemData.id || itemData.problem_description || itemData.video_name || time}-${itemIndex}`, {
-						initialValue: itemData.right_answer || null,
+						initialValue: itemData.answer_explain || null,
 						rules: [
 							{ required: true, min: 1, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],

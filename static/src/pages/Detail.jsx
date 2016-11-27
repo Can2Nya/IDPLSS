@@ -153,7 +153,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 		}
 		if(location.hash.search('series')!== -1){
 			if(isSelectContext.list.length <= 0){
-				return <div>暂时还未有内容</div>;
+				return <div style={{ hight: '100%', textAlign: 'canter'}}>暂时还未有内容</div>;
 			}
 			return isSelectContext.list.map((list,index) =>{
 				if(!list.show) return

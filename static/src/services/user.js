@@ -2,7 +2,6 @@ import xFetch from './xFetch';
 
 var apiUrl = 'http://api.jxnugo.com'
 // let apiUrl = '127.0.0.1:5000'
-// export var data = {}
 
 export async function userLogin(action) {
 	return xFetch(`${apiUrl}/api/user/verify`,{method: 'POST',
@@ -11,10 +10,25 @@ export async function userLogin(action) {
 }
 
 export async function getUserState(action) {
-	// action为saga call() 传的参数
+	if(action.mode == 'password'){
+		return xFetch(`${apiUrl}/api/user/find-password/verify/${action.psdtoken}`,{method: 'POST',
+			body:JSON.stringify(action.body),
+		});
+	}
+	if(action.mode == 'email') {
+		return xFetch(`${apiUrl}/api/user/find-password`,{method: 'POST',
+			body:JSON.stringify(action.body),
+		});
+	}
+	if(action.mode == 'recomfirm'){
+		return xFetch(`${apiUrl}/api/user/resend-confirm-email`,{method: 'POST',
+			body:JSON.stringify(action.body),
+		});
+	}
 	if(action.type == 'user/get/info' || action.type == 'user/get/loginInfo'){
 		return xFetch(`${apiUrl}/api/user/${action.user_id}/info`,{method: 'GET',});
-	}else{
+	}
+	if(action.type == 'user/set/info'){
 		return xFetch(`${apiUrl}/api/user/${action.user_id}/info`,{method: 'PUT',
 			body:JSON.stringify(action.body),
 		});
@@ -40,6 +54,7 @@ export async function userRegister(action) {
 }
 
 export async function userRegisterConfirm(action) {
+
 	return xFetch(`${apiUrl}/api/user/confirm/${action.confirm_code}`,{method: 'GET',});
 }
 
@@ -81,7 +96,6 @@ export async function UserisFollowedBy(action) {
 	});
 }
 export async function UserUpLoadInfo(action) {
-	console.log(action)
 	let url = `${apiUrl}/api/`
 	if(action.type == 'upload/get/token') url += 'user/qiniu-token'
 	else{
@@ -137,7 +151,6 @@ export async function UserDelMainData(action) {
 	return xFetch(url,{method: 'DELETE' });
 }
 export async function UserDelSubData(action) {
-	console.log(1)
 	let url = `${apiUrl}/api/`
 	if(action.type.search('createVideo') !== -1) url += `courses/${action.course_id}/video/${action.video_id}`
 	if(action.type.search('createProblem') !== -1) url += `test-list/${action.test_id}/problems/${action.problem_id}`
@@ -190,6 +203,7 @@ export async function UserLike(action) {
 
 	return xFetch(url,{method: 'GET',});
 }
+
 export async function Search(action) {
 	let url = `${apiUrl}/api/`
 	if(action.context == 'video') url += `courses/search?page=${action.pagination || 1}`
@@ -199,3 +213,4 @@ export async function Search(action) {
 
 	return xFetch(url,{method: 'POST',  body: JSON.stringify(action.body)});
 }
+

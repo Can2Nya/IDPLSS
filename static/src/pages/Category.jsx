@@ -171,9 +171,12 @@ const Category = ({ location, dispatch, context }) => {
 		isSelect={isSelectCategory}
 		changeCategory={handleChangeCategory.bind(this)}
 		/>
-		<div className={styles.margin}>
-		<Recommend type={stateName} />
-		</div>
+		{ stateName == 'forum'? null: (
+			<div className={styles.margin}>
+			<Recommend type={stateName} />
+			</div>
+		)}
+		
 		</Col>
 
 		<Col span={16} lg={18}>

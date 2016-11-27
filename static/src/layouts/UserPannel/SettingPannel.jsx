@@ -11,8 +11,8 @@ import Button from '../../components/Button/Button';
 import config from '../../config/config.js';
 import styles from './Pannel.less';
 
-let SettingPannel = ({ upload, form, dispatch, data, title }) => {
-
+let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
+	const { psdtoken } = user
 	const { files, token, progress } = upload
 	const { getFieldProps, validateFields, getFieldValue, setFieldsValue } = form;
 	// const uploadConfig = merged(config.upload,{
@@ -23,8 +23,8 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 	// ---------------form rule----------------
 
 	const formItemLayout = {
-		labelCol: { span: 4 },
-		wrapperCol: { span: 14 },
+		labelCol: { span: 6 },
+		wrapperCol: { span: 18 },
 	};
 
 	const nameProps = getFieldProps('name', {
@@ -92,16 +92,10 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 	}
 	const handleSubmit = (event) =>{
 		event.preventDefault();
-		validateFields((errors, values) =>{
+		validateFields(['name','sex','avatar','about_me'],(errors, values) =>{
 			if(errors){
 				return ;
 			}
-			// data['body'] = form.getFieldsValue(['user_name','user_email','user_password']);//传输表单信息
-
-			// dispatch({
-			// 	type:'user/register',
-			// 	body: form.getFieldsValue(['user_name','user_email','user_password'])
-			// })
 			dispatch({
 				type: 'user/set/info',
 				user_id: cookie.get('user_id'),
@@ -113,7 +107,38 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 				}
 			})
 		});
-		
+	}
+	const handlePostEmail = (event) =>{
+		event.preventDefault();
+		validateFields(['confirmEmail'],(errors, values) =>{
+			if(errors){
+				return ;
+			}
+			dispatch({
+				type: 'user/set/info',
+				mode: 'email',
+				body: {
+					user_email: getFieldValue('confirmEmail'), 
+				}
+			})
+		})
+
+	}
+	const handlePostPassword = (event) =>{
+		event.preventDefault();
+		validateFields(['password'],(errors, values) =>{
+			if(errors){
+				return ;
+			}
+			dispatch({
+				type: 'user/set/info',
+				mode: 'password',
+				token: token,
+				body: {
+					user_password: getFieldValue('password')
+				}
+			})
+		})
 	}
 	// ----------------render------------------
 	const renderAvatar = () =>{
@@ -135,30 +160,14 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 		return <div className={styles.uploadavatar} style={{ backgroundImage: `url(${f.preview})`}}></div>
 
 	}
-	// const UploadAvatar = React.createClass({
-	// 	componentDidMount()	{
-	// 		console.log(Qiniu)
-	// 		// Qiniu.uploader(uploadConfig)
-	// 	},
-	// 	render(){
-	// 		return(
-	// 		<a>
-	// 		<Qiniu onDrop={this.onDrop} size={150} token={this.state.token} uploadKey={this.state.uploadKey} onUpload={this.onUpload}>
-	// 		<div className={styles.uploadavatar}>
-	// 			<Icon type='plus' />
-	// 			<div>上传头像</div>
-	// 		</div>
-	// 		</Qiniu>
-	// 		</a>
-	// 		)
-	// 	}
-	// })
 
 	return(
 		<div className={styles.settingpannel}>
-		<Row>
 		<Form>
-		<Col span={5}>
+		<div className={styles.cuttingline}>基本信息修改</div>
+		<Row>
+		
+		<Col span={4}>
 			<Form.Item 
 			help="仅限png,jpg,1m以内"
 			hasFeedback>
@@ -177,7 +186,7 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 				<Input type='text' {...avatarProps()} style={{display: 'none'}} />
 			</Form.Item>
 		</Col>
-		<Col span={19}>
+		<Col span={20}>
 			<Form.Item 
 			{ ...formItemLayout }
 			label="昵称"
@@ -203,17 +212,56 @@ let SettingPannel = ({ upload, form, dispatch, data, title }) => {
 
 				<Input type="textarea" {...aboutProps} />
 			</Form.Item>
-			{/*<Form.Item 
-			{ ...formItemLayout }
-			label="新密码"
-			hasFeedback>
-				<Input type='password' {...passwordProps}/>
-			</Form.Item>*/}
+			
 			
 		</Col>
-		<Button type='ghost' onClick={handleSubmit.bind(this)} >提交</Button>
-		</Form>
+		<div style={{ textAlign: 'center' }}>
+			<Button type='ghost' onClick={handleSubmit.bind(this)}  >保存</Button>
+		</div>
+		
 		</Row>
+
+		<div className={styles.cuttingline}>密码修改</div>
+		{/* psdtoken ?
+		
+		(<Form.Item 
+			{ ...formItemLayout }
+			label="新密码"
+		hasFeedback>
+			<Input type='password' {...getFieldProps('password', {
+				rules: [
+					{ required: true },
+				],
+			})}/>
+			<Button type='ghost' onClick={handlePostPassword.bind(this)}  >修改</Button>
+		</Form.Item>):
+		(<Form.Item 
+			{ ...formItemLayout }
+			label="输入该账户邮箱以验证账户"
+		hasFeedback>
+
+			<Input type='text' {...getFieldProps('confirmEmail', {
+				rules: [
+					{ required: true },
+				],
+			})} />
+			<Button type='ghost' onClick={handlePostEmail.bind(this)}  >发送</Button>
+		</Form.Item>)
+		
+		*/}
+		<Form.Item 
+			{ ...formItemLayout }
+			label="输入该账户邮箱以验证账户"
+		hasFeedback>
+
+			<Input type='text' {...getFieldProps('confirmEmail', {
+				rules: [
+					{ required: true , type: 'email', message: '请输入正确的邮箱地址',},
+				],
+			})} />
+			<Button type='ghost' onClick={handlePostEmail.bind(this)}  >发送</Button>
+		</Form.Item>
+		</Form>
 		</div>
 	)
 };

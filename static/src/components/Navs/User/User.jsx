@@ -13,9 +13,14 @@ import config from '../../../config/config';
 import styles from './User.less';
 
 let User = ({ user, dispatch, textStyle, form }) => {
-	const { loginUserList, modalState, loginFormisSubmit } = user;
+	const { psdtoken, loginUserList, modalState, loginFormisSubmit } = user;
 	
-	const { getFieldProps } = form;
+	const { validateFields, getFieldProps, getFieldValue } = form;
+	const formItemLayout = {
+		labelCol: { span: 6 },
+		wrapperCol: { span: 18 },
+	};
+
 	const handleModelToggle = () =>{
 		dispatch({
 			type: 'user/login/modal/toggle',
@@ -35,6 +40,31 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			type: 'user/logout',
 		})
 	}
+
+	const handleReComfrim = ()=>{
+		dispatch({
+			type: 'user/set/info',
+			mode: 'recomfirm',
+			body: {
+				user_email: loginUserList.user_email
+			}
+		})
+	}
+	const handlePostPassword = () =>{
+		validateFields(['password'],(errors, values) =>{
+			if(errors){
+				return ;
+			}
+			dispatch({
+				type: 'user/set/info',
+				mode: 'password',
+				psdtoken: psdtoken,
+				body: {
+					user_password: getFieldValue('password')
+				}
+			})
+		})
+	}
 	const renderUser = () =>{
 		
 		if(loginUserList.length <= 0) return(
@@ -42,9 +72,14 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			<Link to='/register/'><span className={styles.item} style={textStyle}>注册</span></Link>
 			<a><span className={styles.item} style={textStyle} onClick={handleModelToggle.bind(this)} >登录</span></a>
 
-			<Modal title='登录' visible={modalState} confirmLoading={loginFormisSubmit} 
-				   onCancel={handleModelToggle.bind(this)}
-				   onOk={handleLogin.bind(this)}>
+			<Modal title='登录' 
+			visible={modalState} 
+			confirmLoading={loginFormisSubmit} 
+			onCancel={handleModelToggle.bind(this)}
+			onOk={handleLogin.bind(this)}
+			okText='登陆'
+			cancelText='忘记密码？'
+			>
 
 				<Form horizontal>
 					<QueueAnim 
@@ -56,10 +91,14 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		          >
 
 					{modalState?[
-						<Form.Item label="用户名" key='1' >
+						<Form.Item 
+						{ ...formItemLayout }
+						label="用户名" key='1' >
 							<Input {...getFieldProps('username',{})} type='text' />
 						</Form.Item>,//这个逗号非常重要！！！
-						<Form.Item label="密码" key='2' >
+						<Form.Item 
+						{ ...formItemLayout }
+						label="密码" key='2' >
 							<Input {...getFieldProps('password',{})} type='password' onPressEnter={handleLogin.bind(this)} />
 						</Form.Item>,
 					] : null}
@@ -69,6 +108,39 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			</Modal>
 			</div>
 			);
+		if(!loginUserList.user_role_iduser_confirmed){// 
+			return(
+				<Modal title='阿呀！出错了' visible={true} onOk={handleReComfrim.bind(this)}>
+					<p>您的账户似乎没经过邮箱激活</p>
+					<p>点确定发送验证到你的邮箱{`${loginUserList.user_email}`}</p>
+					<p>反正你不点我也不会消失</p>
+				</Modal>
+			)
+		}
+		if(psdtoken){
+			return(
+				<Modal title='修改密码' visible={true} onOk={handlePostPassword}
+				onCancel={()=>{
+					dispatch({
+						type: 'user/get/passwordToken',
+						psdtoken: null
+					})
+				}}>
+				<Form>
+				<Form.Item 
+				{ ...formItemLayout }
+				label="新密码"
+				hasFeedback>
+				<Input type='password' {...getFieldProps('password', {
+				rules: [
+				{ required: true },
+				],
+				})}/>
+				</Form.Item>
+				</Form>
+			</Modal>
+			)
+		}
 		else {
 			const renderList =() =>{
 				return(
