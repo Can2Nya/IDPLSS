@@ -11,7 +11,7 @@ export async function userLogin(action) {
 
 export async function getUserState(action) {
 	if(action.mode == 'password'){
-		return xFetch(`${apiUrl}/api/user/find-password/verify/${action.psdtoken}`,{method: 'POST',
+		return xFetch(`${apiUrl}/api/user/reset-password/${action.psdtoken}`,{method: 'POST',
 			body:JSON.stringify(action.body),
 		});
 	}
@@ -132,6 +132,7 @@ export async function UserPutMainData(action) {
 	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
 	if(action.type.search('createText') !== -1) url += 'text-resources/'
 	if(action.type.search('createTest') !== -1) url += 'test-list/detail/'
+	if(action.type.search('createPost') !== -1)	url += 'posts/'
 	url += `${action.id}`
 	return xFetch(url,{method: 'PUT' ,body:JSON.stringify(action.body)});
 }
@@ -147,6 +148,7 @@ export async function UserDelMainData(action) {
 	if(action.type.search('createCourse') !== -1) url += 'courses/detail/'
 	if(action.type.search('createText') !== -1) url += 'text-resources/'
 	if(action.type.search('createTest') !== -1) url += 'test-list/detail/'
+	if(action.type.search('createPost') !== -1)	url += 'posts/'
 	url += `${action.id}`
 	return xFetch(url,{method: 'DELETE' });
 }

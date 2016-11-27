@@ -139,7 +139,7 @@ const forum = handleActions({
 		return { ...state, isSelectPagination: action.isSelectPagination }
 	},
 	['forum/ToggleForumModal'](state, action) {
-		return { ...state, modalState: !action.modalState }
+		return { ...state, modalState: action.modalState }
 	},
 }, {
 	stateName: 'forum',

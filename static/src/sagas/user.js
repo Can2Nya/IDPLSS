@@ -308,6 +308,13 @@ function* CreateData(action) {
 					let nextAction = 'upload/get/user';
 					if(action.type == 'upload/put/createVideo') nextAction += 'Video'
 					if(action.type == 'upload/put/createProblem') nextAction += 'Test'
+					if(action.type == 'upload/put/createPost') {
+						nextAction = 'forum/get/detail'
+						yield put({
+							type: 'forum/ToggleForumModal',
+							modalState: false
+						})
+					}
 					yield put({
 						type: nextAction,
 						id: action.id
@@ -337,22 +344,25 @@ function* CreateData(action) {
 						id: action.course_id || action.test_id,
 					})
 				}
-			}else{
+			}else
+			{
 				const { jsonResult } = yield call(req.UserDelMainData, action);
 				if (jsonResult) {
 					message.success('删除成功')
-				}
-				let nextAction = 'user/get/user';
+					let nextAction = 'user/get/user';
 					if(action.type == 'upload/del/createCourse') nextAction += 'Video'
 					if(action.type == 'upload/del/createText') nextAction += 'Text'
 					if(action.type == 'upload/del/createTest') nextAction += 'Test'
-					if(action.type == 'upload/del/createPost') nextAction =  `forum/get/categorySource`
+					if(action.type == 'upload/del/createPost'){
+						browserHistory.push('/category/forum/')
+					}
 					yield put({
 						type: nextAction,
 						pagination: 1
 					})
 				}
 			}
+		}
 	} catch (err) {
 		message.error(err);
 		yield put({
@@ -575,6 +585,7 @@ function* watchCreateData() {
 		'upload/put/createCourse',
 		'upload/put/createText',
 		'upload/put/createTest',
+		'upload/put/createPost',
 		'upload/put/createVideo',
 		'upload/put/createProblem',
 		// 

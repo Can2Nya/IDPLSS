@@ -9,10 +9,12 @@ import Button from '../Button/Button';
 
 import styles from './PostForm.less';
 
-let PostForm = ({ user, upload, dispatch, form }) => {
+let PostForm = ({ user, forum, upload, dispatch, form }) => {
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
-	const { tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, modalState, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
+	const { context } = forum.isSelectContext
+	const { modalState } = forum
+	const { tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
 	// -------------action------------------
 
 	const handleToggleForumModal = () =>{//表单modal显示
@@ -24,7 +26,10 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 		}
 		else{
 			dispatch({
-				type: 'upload/changeModalState',
+				type: 'upload/changeTime',
+			})
+			dispatch({
+				type: 'forum/ToggleForumModal',
 				modalState: !modalState
 			})
 			dispatch({
@@ -45,10 +50,20 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 					else images += `${value}:`
 				})
 			}
-			dispatch({
-				type: 'upload/post/createPost',
-				body: {body: getFieldValue(`detail-${time}`), post_category: getFieldValue(`postCategory-${time}`), author_id: loginUserList.user_id, title: getFieldValue(`title-${time}`), images: images }
-			})
+
+			if(context.id){
+				dispatch({
+					type: 'upload/put/createPost',
+					id: context.id,
+					body: {body: getFieldValue(`detail-${time}`), category: getFieldValue(`postCategory-${time}`), title: getFieldValue(`title-${time}`), images: images }
+				})
+			}else{
+				dispatch({
+					type: 'upload/post/createPost',
+					body: {body: getFieldValue(`detail-${time}`), post_category: getFieldValue(`postCategory-${time}`), author_id: loginUserList.user_id, title: getFieldValue(`title-${time}`), images: images }
+				})
+			}
+			
 			dispatch({
 				type: 'upload/changeTime',
 			})
@@ -127,6 +142,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			wrapperCol={{ span:21 }}
 			>
 				<Input {...getFieldProps(`title-${time}`, {
+					initialValue: context.title || null,
 					rules: [
 						{ required: true, min: 2, max: 30, message: ['至少为 2 个字符','最多为 30 个字符'] },
 					],
@@ -140,6 +156,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			wrapperCol={{ span: 16 }}
 			>
 				<Select {...getFieldProps(`postCategory-${time}`, {
+					initialValue: context.post_category || null,
 					rules: [
 						{ required: true, message: '请选择分类', type: 'number'},
 					],
@@ -161,6 +178,7 @@ let PostForm = ({ user, upload, dispatch, form }) => {
 			<Form.Item>
 				<Input type='textarea' rows={6} placeholder="编辑想说的内容" 
 					{...getFieldProps(`detail-${time}`, {
+						initialValue: context.body || null,
 						rules: [
 							{ required: true, min: 2, max: 1000, message: ['至少为 2 个字符','最多为 1000 个字符'] },
 						],
@@ -208,10 +226,11 @@ PostForm.propTypes = {
 
 PostForm = Form.create()(PostForm)
 
-function mapStateToProp({ user, upload }){
+function mapStateToProp({ user, upload, forum }){
 	return{
 		user: user,
 		upload: upload,
+		forum: forum,
 	};
 }
 
