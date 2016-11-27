@@ -10,7 +10,7 @@ const TimeLine = ({ data, onChangeVideo }) => {
 		<div className={styles.pannel} >
 		<Row>
 		<Col span={4}>
-			<div className={styles.subtitle}>{`第${data.video_order+1}课`}</div>
+			<div className={styles.subtitle}>{`第${data.video_order}课`}</div>
 		</Col>
 		<Col span={20}>
 		<div className={styles.dot}>
