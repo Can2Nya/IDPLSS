@@ -23,6 +23,9 @@ def register():
     user_name = reg_info['user_name']
     user_email = reg_info['user_email']
     pass_word = reg_info['user_password']
+    interested_field = reg_info['interested_field']
+    sex = reg_info['sex']
+    subject = reg_info['subject']
     if not user_name or not user_email or not pass_word:
         return bad_request('user_name or user_email or password cat not be empty')
     user = User.query.filter_by(user_name=user_name).first()
@@ -31,7 +34,7 @@ def register():
     user = User.query.filter_by(email=user_email).first()
     if user is not None:
         return bad_request('email can not be repeated')
-    u = User(user_name=user_name, email=user_email, pass_word=pass_word)
+    u = User(user_name=user_name, email=user_email, pass_word=pass_word, subject=subject, interested_field=interested_field, sex=sex)
     db.session.add(u)
     db.session.commit()
     token = u.generate_confirm_token()
