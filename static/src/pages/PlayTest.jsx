@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Row, Col, Progress, Affix, Form, Radio, Modal } from 'antd';
+import { Row, Col, Progress, Pagination, Affix, Form, Radio, Modal } from 'antd';
 import classNames from 'classnames';
 import QueueAnim from 'rc-queue-anim';//动画效果
 
@@ -35,6 +35,14 @@ let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 			isRolling: affixed
 		})
 		
+	}
+	const handleChangePagination = (page) =>{
+		dispatch({
+			type: 'test/get/series',
+			count: 'part',
+			id: isSelectContext.id,
+			pagination: page
+		})
 	}
 	const handleCountProblem = () =>{
 		// if(problemId == 15){
@@ -221,6 +229,7 @@ let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 
 			<Form>
 			{ renderProblem() }
+			<Pagination current={20} total={isSelectContext.list.length} onChange={handleChangePagination} />
 			<Button type="ghost" disabled={isSubmit} onClick={handleSubmitProblem.bind(this)} >提交题目</Button>
 			</Form>
 		</div>
