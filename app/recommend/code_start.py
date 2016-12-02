@@ -1,5 +1,5 @@
 # coding: utf-8
-from app.models import  Course, TextResource, TestList
+from app.models import Course, TextResource, TestList
 
 
 def code_start_course(user):
@@ -34,7 +34,8 @@ def code_start_text_resource(user):
     interested_filed = user.interested_field.split(":")
     text_resource_list = []
     for field in interested_filed:
-        t_resource = TextResource.query.filter_by(resource_category=int(field), show=True).order_by(TextResource.timestamp.desc()).first()
+        t_resource = TextResource.query.filter_by(resource_category=int(field), show=True).\
+            order_by(TextResource.timestamp.desc()).first()
         if t_resource is not None and t_resource.show is True:
             text_resource_list.append(t_resource)
     if len(text_resource_list) < 3:
@@ -53,7 +54,8 @@ def code_start_test(user):
     interested_filed = user.interested_field.split(":")
     test_list = []
     for field in interested_filed:
-        test = TestList.query.filter_by(test_category=int(field), show=True).order_by(TestList.timestamp.desc()).first()
+        test = TestList.query.filter_by(test_category=int(field), show=True).\
+            order_by(TestList.timestamp.desc()).first()
         if test is not None and test.show is True:
             test_list.append(test)
     if len(test_list) < 3:

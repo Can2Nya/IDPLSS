@@ -1,6 +1,8 @@
 # coding: utf-8
 from functools import wraps
-from flask import request, jsonify, g, make_response, abort, Response
+
+from flask import request, g, make_response
+
 from app.models import Permission, User
 
 

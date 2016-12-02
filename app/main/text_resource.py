@@ -1,12 +1,13 @@
 # coding: utf-8
 from flask import request, g, url_for, current_app, jsonify
-from app.models import db, User, TextResource, TextResourceComment, Permission, TextResourceBehavior
-from app.main.decorators import permission_required, get_current_user, user_login_info
-from app.main.authentication import auth
+
 from app.main import main
-from app.main.responses import bad_request, not_found, forbidden
+from app.main.authentication import auth
 from app.utils.responses import self_response
 from app.utils.model_tools import have_school_permission
+from app.main.responses import bad_request, not_found, forbidden
+from app.main.decorators import permission_required, get_current_user, user_login_info
+from app.models import db, User, TextResource, TextResourceComment, Permission, TextResourceBehavior
 
 
 @main.route('/api/text-resources', methods=['GET'])
@@ -33,7 +34,8 @@ def text_resources():
 @main.route('/api/text-resources/category/<int:cate_id>', methods=['GET'])
 def text_resources_category(cate_id):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(resource_category=cate_id, show=True).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.\
+        filter_by(resource_category=cate_id, show=True).order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -54,7 +56,8 @@ def text_resources_category(cate_id):
 @main.route('/api/text-resources/category/<int:cate_id>/type/<int:tid>', methods=['GET'])
 def text_resources_category_type(cate_id, tid):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(resource_category=cate_id, resource_type=tid, show=True).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(resource_category=cate_id, resource_type=tid, show=True).\
+        order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -128,7 +131,8 @@ def new_text_resource():
 @main.route('/api/text-resources/<int:rid>/comments')
 def text_resource_comments(rid):
     page = request.args.get('page', 1, type=int)
-    pagination = TextResourceComment.query.filter_by(text_resource_id=rid, show=True).order_by(TextResourceComment.timestamp.desc()).paginate(
+    pagination = TextResourceComment.query.filter_by(text_resource_id=rid, show=True).\
+        order_by(TextResourceComment.timestamp.desc()).paginate(
         page, per_page=current_app.config['IDPLSS_COMMENTS_PER_PAGE'],
         error_out=False
     )
@@ -223,7 +227,8 @@ def search_text_resource():
     search_info = request.json
     key_word = search_info['key_words']
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter(TextResource.resource_name.like('%'+key_word+'%'), TextResource.show == True).paginate(
+    pagination = TextResource.query.\
+        filter(TextResource.resource_name.like('%'+key_word+'%'), TextResource.show == True).paginate(
         page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
         error_out=False
     )

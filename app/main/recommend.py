@@ -1,19 +1,17 @@
 # coding:utf-8
 from flask import jsonify, g
+
+from app import redis_store
 from app.main import main
 from app.main.decorators import user_login_info
-from app.models import User, Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
-from app.recommend.code_start import code_start_course, code_start_text_resource, code_start_test
-from app.recommend.course_recommend import user_similarity_recommend, course_similarity_recommend
-from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
-from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
+from app.main.tasks import get_course, get_tests, get_text_resources
 from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
-from app import redis_store
+from app.recommend.code_start import code_start_course, code_start_text_resource, code_start_test
+from app.models import Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
 
-from .. import celery
+
 # local val
-redis_timeout = 80000  # 缓存的过期时间
-recommend_count = 3  # 推荐的数量
+RECOMMEND_COUNT = 3  # 推荐的数量
 
 
 @main.route('/api/recommend/popular-courses', methods=['GET'])
@@ -90,7 +88,7 @@ def recommend_courses(type_id):
 
                 else:                                           # 如果缓存中有数据,则直接获取返回
                     courses = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         course_name = str(user.id)+"_"+str(x)+"_user_course"
                         cid = redis_store.get(course_name)
                         if cid is not None:
@@ -112,7 +110,7 @@ def recommend_courses(type_id):
 
                 else:                                           # 如果缓存中有数据,则直接获取返回
                     courses = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         course_name = str(user.id)+"_"+str(x)+"_item_course"
                         cid = redis_store.get(course_name)
                         if cid is not None:
@@ -164,7 +162,7 @@ def recommend_text_resources(type_id):
 
                 else:                                           # 如果缓存中有文本数据,则直接获取返回
                     resources_list = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         resource_name = str(user.id)+"_"+str(x)+"_user_resource"
                         cid = redis_store.get(resource_name)
                         if cid is not None:
@@ -186,7 +184,7 @@ def recommend_text_resources(type_id):
 
                 else:                                           # 如果缓存中有数据,则直接获取返回
                     resources_list = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         resource_name = str(user.id)+"_"+str(x)+"_item_resource"
                         cid = redis_store.get(resource_name)
                         if cid is not None:
@@ -238,7 +236,7 @@ def recommend_test(type_id):
 
                 else:                                           # 如果缓存中有数据,则直接获取返回
                     tests = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         test_name = str(user.id)+"_"+str(x)+"_user_test"
                         cid = redis_store.get(test_name)
                         if cid is not None:
@@ -260,7 +258,7 @@ def recommend_test(type_id):
 
                 else:                                           # 如果缓存中有数据,则直接获取返回
                     tests = []
-                    for x in range(1, recommend_count+1):
+                    for x in range(1, RECOMMEND_COUNT+1):
                         test_name = str(user.id)+"_"+str(x)+"_item_test"
                         cid = redis_store.get(test_name)
                         if cid is not None:
@@ -271,75 +269,5 @@ def recommend_test(type_id):
                         "status": "successfully"
 
                     })
-
-
-@celery.task
-def get_tests(user, type_id):
-    user = user
-    type_id = type_id
-    count = 1
-    if type_id == 0:  # 根据UserCf计算
-        tests = test_user_similarity_recommend(user, 10, 3)
-        for x in range(1, len(tests)+1):
-            if tests[x-1] is not None:
-                test_name = str(user.id)+"_"+str(count)+"_user_test"
-                redis_store.set(test_name, tests[x-1].id, redis_timeout)
-                count += 1
-        print "test UserCf calc finish"
-    else:     # 根据ItemCf计算
-        tests = test_similarity_recommend(user, 10, 3)
-        for x in range(1, len(tests)+1):
-            if tests[x-1] is not None:
-                test_name = str(user.id)+"_"+str(count)+"_item_test"
-                redis_store.set(test_name, tests[x-1].id, redis_timeout)
-                count += 1
-        print "test ItemCf calc finish"
-
-
-@celery.task
-def get_course(user, type_id):
-    user = user
-    type_id = type_id
-    count = 1
-    if type_id == 0:  # 根据UserCf计算
-        courses = user_similarity_recommend(user, 10, 3)
-        for x in range(1, len(courses)+1):
-            if courses[x-1] is not None:
-                course_name = str(user.id)+"_"+str(count)+"_user_course"
-                redis_store.set(course_name, courses[x-1].id, redis_timeout)
-                count += 1
-        print "course UserCf calc finish"
-    else:
-        courses = course_similarity_recommend(user, 10, 3)
-        for x in range(1, len(courses)+1):
-            if courses[x-1] is not None:
-                course_name = str(user.id)+"_"+str(count)+"_item_course"
-                redis_store.set(course_name, courses[x-1].id, redis_timeout)
-                count += 1
-        print "course  ItemCf calc finish"
-
-
-@celery.task
-def get_text_resources(user, type_id):
-    user = user
-    type_id = type_id
-    count = 1
-    if type_id == 0:  # 根据UserCf计算
-        text_resources = text_resources_user_recommend(user, 10, 3)
-        for x in range(1, len(text_resources)+1):
-            if text_resources[x-1] is not None:
-                resource_name = str(user.id)+"_"+str(count)+"_user_resource"
-                redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
-                count += 1
-        print "resource UserCf calc finish"
-    else:
-        text_resources = text_resources_recommend(user, 10, 3)
-        for x in range(1, len(text_resources)+1):
-            if text_resources[x-1] is not None:
-                resource_name = str(user.id)+"_"+str(count)+"_item_resource"
-                redis_store.set(resource_name, text_resources[x-1].id, redis_timeout)
-                count += 1
-                print redis_store.get(resource_name)
-        print "resource ItemCf calc finish"
 
 

@@ -1,15 +1,26 @@
 # coding: utf-8
 from __future__ import division
 from flask import jsonify, request, g, make_response, current_app, url_for
+
 from app.main import main
-from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
-    TextResource, VideoList, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, CourseBehavior, TextResourceBehavior, TestBehavior
-from app.main.authentication import auth
-from app.main.decorators import permission_required, get_current_user
-from app.utils.responses import self_response
-from app.main.responses import bad_request, update_status, not_found
 from app.utils.mail import send_email
+from app.main.tasks import get_key_words
+from app.main.authentication import auth
 from app.utils.pagination import QueryPagination
+from app.utils.responses import self_response
+from app.main.decorators import permission_required, get_current_user
+from app.main.responses import bad_request, update_status, not_found
+from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
+    TextResource, VideoList, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, \
+    CourseBehavior, TextResourceBehavior, TestBehavior
+
+
+
+
+from app import redis_store
+import pickle
+
+from app.utils.log import logger
 
 
 @main.route('/api/user/register', methods=['POST'])
@@ -34,7 +45,9 @@ def register():
     user = User.query.filter_by(email=user_email).first()
     if user is not None:
         return bad_request('email can not be repeated')
-    u = User(user_name=user_name, email=user_email, pass_word=pass_word, subject=subject, interested_field=interested_field, sex=sex)
+    u = User(user_name=user_name, email=user_email,
+             pass_word=pass_word, subject=subject,
+             interested_field=interested_field, sex=sex)
     db.session.add(u)
     db.session.commit()
     token = u.generate_confirm_token()
@@ -273,7 +286,8 @@ def user_collection_posts():
 def user_posts_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = PostComment.query.filter_by(author_id=user.id, show=True).order_by(PostComment.timestamp.desc()).paginate(
+    pagination = PostComment.query.filter_by(author_id=user.id, show=True).\
+        order_by(PostComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -323,7 +337,8 @@ def user_courses():
 def user_course_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = CourseComment.query.filter_by(author_id=user.id, show=True).order_by(CourseComment.timestamp.desc()).paginate(
+    pagination = CourseComment.query.filter_by(author_id=user.id, show=True).\
+        order_by(CourseComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
@@ -377,7 +392,8 @@ def user_collection_courses():
 def user_text_resources():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = TextResource.query.filter_by(author_id=user.id, show=True).order_by(TextResource.timestamp.desc()).paginate(
+    pagination = TextResource.query.filter_by(author_id=user.id, show=True).\
+        order_by(TextResource.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -402,7 +418,8 @@ def user_text_resources():
 def user_text_resource_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = TextResourceComment.query.filter_by(author_id=user.id, show=True).order_by(TextResourceComment.timestamp.desc()).paginate(
+    pagination = TextResourceComment.query.filter_by(author_id=user.id, show=True).\
+        order_by(TextResourceComment.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_COMMENTS_PER_PAGE"],
         error_out=False
     )
@@ -443,7 +460,8 @@ def user_collection_text_resources():
     if new_list.has_prev_page():
         prev_url = url_for('main.user_collection_text_resources', page=page-1, _external=True)
     return jsonify({
-        "collection_text_resources": [t_resource.to_json() for t_resource in slice_t_resources if t_resource.show is not False],
+        "collection_text_resources": [t_resource.to_json() for t_resource in slice_t_resources
+                                      if t_resource.show is not False],
         "next": next_url,
         "prev": prev_url,
         "count": sum_all
@@ -481,7 +499,8 @@ def user_test_list():
 def user_test_record():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
-    pagination = TestRecord.query.filter_by(answerer_id=user.id, show=True).order_by(TestRecord.timestamp.desc()).paginate(
+    pagination = TestRecord.query.filter_by(answerer_id=user.id, show=True).\
+        order_by(TestRecord.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -517,7 +536,8 @@ def self_courses():
 @get_current_user
 def self_text_resources():
     user = g.current_user
-    text_resources = TextResource.query.filter_by(author_id=user.id, show=True).order_by(TextResource.timestamp.desc()).all()
+    text_resources = TextResource.query.filter_by(author_id=user.id, show=True).\
+        order_by(TextResource.timestamp.desc()).all()
     return jsonify({
         "count": len(text_resources),
         "text_resources": [text_resource.to_json() for text_resource in text_resources]
@@ -555,7 +575,8 @@ def self_test():
 def self_courses_video_list(cid):
     user = g.current_user
     course = Course.query.filter_by(id=cid, show=True).first()
-    course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id, show=True).order_by(VideoList.video_order).all()
+    course_video = VideoList.query.filter_by(author_id=user.id, course_id=course.id, show=True).\
+        order_by(VideoList.video_order).all()
     return jsonify({
         "count": len(course_video),
         "course_video": [video.to_json() for video in course_video]
@@ -567,7 +588,8 @@ def self_courses_video_list(cid):
 @get_current_user
 def self_test_problems(tid):
     user = g.current_user
-    problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid, show=True).order_by(TestProblem.problem_order).all()
+    problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid, show=True).\
+        order_by(TestProblem.problem_order).all()
     return jsonify({
         "count": len(problems),
         "problems": [problem.to_json() for problem in problems]
@@ -657,3 +679,16 @@ def time_frequency():
         temp_dict['value'] = v
         result_list.append(temp_dict)
     return jsonify({"result": result_list})
+
+
+@main.route('/api/user/words-cloud', methods=['GET'])
+@auth.login_required
+@get_current_user
+def words_cloud():
+    user = g.current_user
+    key_words = redis_store.get(str(user.id)+"_words_cloud")
+    if key_words is None:
+        get_key_words(user)
+        return jsonify({"key_words": []})
+    res = pickle.loads(key_words)
+    return jsonify({"key_words": res})

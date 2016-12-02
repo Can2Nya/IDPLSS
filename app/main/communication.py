@@ -1,12 +1,13 @@
 # coding: utf-8
 from flask import jsonify, request, current_app, url_for, g
+
 from app.main import main
-from app.main.responses import not_found, forbidden
 from app.main.authentication import auth
 from app.utils.responses import self_response
-from app.main.decorators import permission_required, get_current_user, user_login_info
-from app.models import db, User, Follow, Post, Role, PostComment, Permission
+from app.main.responses import not_found, forbidden
+from app.models import db, Post, PostComment, Permission
 from app.utils.model_tools import have_school_permission
+from app.main.decorators import permission_required, get_current_user, user_login_info
 
 
 @main.route('/api/posts', methods=['GET'])

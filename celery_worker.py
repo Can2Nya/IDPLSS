@@ -1,6 +1,5 @@
 # coding: utf-8
-import os
-from app import celery, create_app
+from app import create_app, celery
 
 app = create_app()
 app.app_context().push()

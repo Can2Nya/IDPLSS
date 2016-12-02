@@ -1,7 +1,8 @@
 # coding: utf-8
-from app.models import TextResource, TextResourceBehavior, User
-import pandas as pd
 import math
+import pandas as pd
+
+from app.models import TextResource, TextResourceBehavior, User
 
 
 def user_index_calc(user):
@@ -24,9 +25,6 @@ def user_index_calc(user):
         for t_resource in target_collections:
             if TextResourceBehavior.query.filter_by(user_id=u.id, text_resource_id=t_resource.id).first():
                 index_dict[t_resource.id].append(u.id)
-                # continue
-        # print 'calc user %s over' % u.id
-    # print "index_dict is %s " % index_dict
     for cid, user_list in index_dict.items():
         for uid in user_list:
             if user_count_dict.get(uid) is None:
@@ -36,7 +34,8 @@ def user_index_calc(user):
     # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
-        result_dict[uid] /= math.sqrt(len(target_collections.count()*len(TextResourceBehavior.query.filter_by(user_id=uid).all())))
+        result_dict[uid] /= \
+            math.sqrt(len(target_collections.count()*len(TextResourceBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
     # print "result dict is %s" % w_sort
     return w_sort, target_collections
@@ -51,8 +50,6 @@ def text_resources_user_recommend(user, k, n):
     :return:
     """
     similarity_result, target_t_resources = user_index_calc(user)
-    # print "user collect text resources is %s" % target_t_resources
-    # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
     all_resources = TextResource.query.filter_by(show=True).all()
     if not all_resources != target_t_resources:
@@ -102,8 +99,6 @@ def text_resource_index_pandas_calc(user_resources, _other_users):
         for b in u_behaviors:
             c = TextResource.query.filter_by(id=b.text_resource_id, show=True).first()
             index_dict[u.id].append(c.id)
-        # print 'u %s over' % u.id
-    # print "---data frame is \n %s" % resources_data_frame
     for t_resource in target_user_resources:
         for uid, u_resources_id in index_dict.items():  # 利用倒排表进行数据处理,遍历其它用户有正反馈的课程
             if t_resource.id in u_resources_id:
@@ -113,7 +108,6 @@ def text_resource_index_pandas_calc(user_resources, _other_users):
                             resources_data_frame.loc[t_resource.id, cid] += 1
                         except KeyError:
                             pass
-    # print "data frame is--- \n %s" % resources_data_frame
     for u_resource in target_user_resources:
         for o_resource in other_resources:
             try:
@@ -147,26 +141,21 @@ def text_resources_recommend(user, k, n):
     result_dict = dict()
     similarity_data_frame = text_resource_index_pandas_calc(target_collections, other_users)
     for index, t_resource in enumerate(target_collections):
-        # print similarity_data_frame.sort_values(by=t_resource.id, ascending=False)
         no_repeate_list = []
         for y in range(0, k):
             cid = t_resource.id
             r = similarity_data_frame.sort_values(by=cid, ascending=False).iloc[y, index]
-            # print r
             if r > 0:
                 result_list = similarity_data_frame[cid][similarity_data_frame[cid] == r].index.tolist()
-                # print "result list is %s" % result_list
                 for i in result_list:  # 数据过滤,清楚重复的索引
                     if i not in no_repeate_list:
                         no_repeate_list.append(i)
-        # print "no repe list is %s" % no_repeate_list
         for r_index in no_repeate_list:     # 根据公式计算每门课程的相似度
             if result_dict.get(r_index) is None:
                 result_dict[r_index] = similarity_data_frame.loc[r_index, t_resource.id]
             else:
                 result_dict[r_index] += similarity_data_frame.loc[r_index, t_resource.id]
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    # print w_sort   # 保存排好序的各个课程相似度
     recommend_text_resources = []
     for x in w_sort[:n]:
         recommend_text_resources.append(TextResource.query.filter_by(id=x[0], show=True).first())

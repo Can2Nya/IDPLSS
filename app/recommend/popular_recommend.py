@@ -1,6 +1,5 @@
 # coding: utf-8
-from flask import jsonify
-from app.models import Course, TextResource, TestList, User
+from app.models import Course, TextResource, TestList
 
 
 def popular_course():
@@ -35,7 +34,7 @@ def popular_text_resource():
     l = []
     recommend_list = []
     all_text_resources = TextResource.query.filter_by(show=True).all()
-    [l.append(t_resource.download_sum) for t_resource in all_text_resources if t_resource is not None]  # 将文本资料下载学习添加到list中
+    [l.append(t_resource.download_sum) for t_resource in all_text_resources if t_resource is not None]
     if len(l) < 3:
         for t in all_text_resources:
             recommend_list.append(t)

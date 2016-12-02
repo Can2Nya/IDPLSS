@@ -1,12 +1,14 @@
 # coding: utf-8
-from flask import Flask, g
+from flask import Flask
+from celery import Celery
 from flask_moment import Moment
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from config import configs, ENV
 from flask_redis import FlaskRedis
-from celery import Celery
+
+
+from config import configs, ENV
 
 
 mail = Mail()
@@ -15,7 +17,8 @@ db = SQLAlchemy()
 cors = CORS()
 redis_store = FlaskRedis()
 
-celery = Celery(__name__, broker=configs[ENV].CELERY_BROKER_URL)
+celery = Celery(__name__, broker=configs[ENV].CELERY_BROKER_URL,
+                backend=configs[ENV].CELERY_RESULT_BACKEND)
 
 
 def create_app():

@@ -1,12 +1,13 @@
 # coding: utf-8
 from flask import g, request, url_for, current_app, jsonify
-from app.models import Course, CourseComment, VideoList, db, Permission, collectionCourses, CourseBehavior, User
-from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
-from app.utils.responses import self_response
-from app.utils.model_tools import calc_count, have_school_permission
-from app.main.decorators import get_current_user, permission_required, user_login_info
+
 from app.main import main
 from app.main.authentication import auth
+from app.utils.responses import self_response
+from app.utils.model_tools import have_school_permission
+from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
+from app.main.decorators import get_current_user, permission_required, user_login_info
+from app.models import Course, CourseComment, VideoList, db, Permission, CourseBehavior, User
 
 
 @main.route('/api/courses', methods=['GET'])

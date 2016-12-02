@@ -1,12 +1,14 @@
 # coding: utf-8
 from flask_httpauth import HTTPBasicAuth
-from flask import jsonify, request, g, current_app, abort, make_response
+from flask import jsonify, request, g, current_app, abort
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
+
+from app.main import main
+from app.utils.log import logger
+from app.main.decorators import get_current_user
 from app.models import db, User, Permission, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
-from app.main import main
-from app.main.decorators import get_current_user
-from app.utils.responses import self_response
+
 auth = HTTPBasicAuth()
 
 
@@ -24,7 +26,7 @@ def verify_password(username_or_email_or_token, password):
     user = User.query.filter_by(user_name=username_or_email_or_token).first()
     if user is None:
         user = User.query.filter_by(email=username_or_email_or_token).first()
-    if not user:
+    if not user or user.confirmed is False:
         return False
     return user.verify_password(password)
 
@@ -35,7 +37,7 @@ def auth_error():
     捕获未授权验证的错误
     :return: unauthorized 401
     """
-    return unauthorized('Invalid credentidls from auth error handler')
+    return unauthorized('Invalid credentidls')
     # TODO(Ddragon):修改unauthorized的错误描述
 
 

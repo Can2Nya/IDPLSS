@@ -1,7 +1,7 @@
 # coding: utf-8
-from app.models import TestList, TestBehavior, User
-import pandas as pd
 import math
+import pandas as pd
+from app.models import TestList, TestBehavior, User
 
 
 def test_user_index_calc(user):
@@ -29,9 +29,6 @@ def test_user_index_calc(user):
         for test in target_collections:
             if TestBehavior.query.filter_by(user_id=u.id, test_id=test.id).first():
                 index_dict[test.id].append(u.id)
-                # continue
-        # print 'calc user %s over' % u.id
-    # print "index_dict is %s " % index_dict
     for cid, user_list in index_dict.items():
         for uid in user_list:
             if user_count_dict.get(uid) is None:
@@ -56,8 +53,6 @@ def test_user_similarity_recommend(user, k, n):
     :return:
     """
     similarity_result, target_tests = test_user_index_calc(user)
-    # print "user tests is %s" % target_tests
-    # print "return result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
     all_tests = TestList.query.all()
     # calc = 0
@@ -153,26 +148,21 @@ def test_similarity_recommend(user, k, n):
     result_dict = dict()
     similarity_data_frame = test_index_pandas_calc(target_collections, other_users)
     for index, test in enumerate(target_collections):
-        # print similarity_data_frame.sort_values(by=test.id, ascending=False)
         no_repeate_list = []
         for y in range(0, k):
             cid = test.id
             r = similarity_data_frame.sort_values(by=cid, ascending=False).iloc[y, index]
-            # print r
             if r > 0:
                 result_list = similarity_data_frame[cid][similarity_data_frame[cid] == r].index.tolist()
-                # print "result list is %s" % result_list
                 for i in result_list:  # 数据过滤,清除重复的索引
                     if i not in no_repeate_list:
                         no_repeate_list.append(i)
-        # print "no repe list is %s" % no_repeate_list
         for r_index in no_repeate_list:     # 根据公式计算每门课程的相似度
             if result_dict.get(r_index) is None:
                 result_dict[r_index] = similarity_data_frame.loc[r_index, test.id]
             else:
                 result_dict[r_index] += similarity_data_frame.loc[r_index, test.id]
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    # print w_sort   # 保存排好序的各个课程相似度
     recommend_tests = []
     for x in w_sort[:n]:
         recommend_tests.append(TestList.query.filter_by(id=x[0], show=True).first())
