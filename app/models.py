@@ -1,11 +1,13 @@
 # coding: utf-8
+import random
+from datetime import datetime
+
 from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
-from datetime import datetime
-from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform
+
 from app import db
-import random
+from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform
 
 
 class Permission:
@@ -182,7 +184,8 @@ class User(db.Model):
         import forgery_py
         random.seed()
         for i in range(count):
-            u = User(name='user_'+str(i), user_name=forgery_py.internet.user_name(True), email=forgery_py.internet.email_address(), confirmed=True,
+            u = User(name='user_'+str(i), user_name=forgery_py.internet.user_name(True),
+                     email=forgery_py.internet.email_address(), confirmed=True,
                      pass_word='123456',  about_me=forgery_py.lorem_ipsum.sentence(), member_since=forgery_py.date.date(True))
             db.session.add(u)
             try:
@@ -523,7 +526,8 @@ class Course(db.Model):
         for i in range(count):
             p = Course(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
                        course_name=forgery_py.lorem_ipsum.title(), like=random.randint(1, 1000), collect_sum=random.randint(0, 200),
-                       course_category=random.randint(0, 6), show=True, author_id=random.randint(1, 100), images="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png")
+                       course_category=random.randint(0, 6), show=True, author_id=random.randint(1, 100),
+                       images="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png")
             db.session.add(p)
             db.session.commit()
 
@@ -585,8 +589,10 @@ class VideoList(db.Model):
         random.seed()
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
-            p = VideoList(video_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
-                      video_order=random.randint(1, 10), video_name=forgery_py.lorem_ipsum.title(), show=True, author_id=u.id, course_id=random.randint(1, 100))
+            p = VideoList(video_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)),
+                          timestamp=forgery_py.date.date(True),
+                      video_order=random.randint(1, 10), video_name=forgery_py.lorem_ipsum.title(),
+                          show=True, author_id=u.id, course_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -691,8 +697,10 @@ class TextResource(db.Model):
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = TextResource(description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True),
-                             resource_name=forgery_py.lorem_ipsum.title(), resource_type=random.choice([1, 3, 4]), download_sum=random.randint(1, 200),
-                             like=random.randint(1, 1000), resource_category=random.randint(0, 6), show=True, author_id=u.id, source_url="www.baidu.com")
+                             resource_name=forgery_py.lorem_ipsum.title(),
+                             resource_type=random.choice([1, 3, 4]), download_sum=random.randint(1, 200),
+                             like=random.randint(1, 1000), resource_category=random.randint(0, 6), show=True,
+                             author_id=u.id, source_url="www.baidu.com")
             db.session.add(p)
             db.session.commit()
 
@@ -806,8 +814,10 @@ class TestList(db.Model):
         random.seed()
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
-            p = TestList(test_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)), timestamp=forgery_py.date.date(True), test_title=forgery_py.lorem_ipsum.title(), key_words="computer science",
-                         like=random.randint(1, 100), test_category=random.randint(0, 6), show=True, author_id=u.id, image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png", \
+            p = TestList(test_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)),
+                         timestamp=forgery_py.date.date(True), test_title=forgery_py.lorem_ipsum.title(), key_words="computer science",
+                         like=random.randint(1, 100), test_category=random.randint(0, 6), show=True,
+                         author_id=u.id, image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png", \
                 test_sum=random.randint(0, 200))
             db.session.add(p)
             db.session.commit()

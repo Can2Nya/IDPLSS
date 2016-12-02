@@ -1,12 +1,13 @@
 # coding:utf-8
 from flask import current_app, jsonify, g, request, url_for
-from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, Permission, TestBehavior
-from app.main.decorators import get_current_user, permission_required, user_login_info
-from app.main.responses import not_found, forbidden
-from app.main.authentication import auth
+
 from app.main import main
+from app.main.authentication import auth
 from app.utils.responses import self_response
+from app.main.responses import not_found, forbidden
 from app.utils.model_tools import have_school_permission
+from app.main.decorators import get_current_user, permission_required, user_login_info
+from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, Permission, TestBehavior
 
 
 @main.route('/api/test-list', methods=['GET'])

@@ -1,15 +1,18 @@
 # coding: utf-8
-from flask import jsonify, request, render_template, g, render_template
-from app.main import main
-from app.main.authentication import auth
-from app.main.decorators import permission_required, admin_required, get_current_user
-from app.models import Permission
-from app.utils.responses import self_response
-from app.main.responses import test_response
-from app.utils.model_tools import have_school_permission
-from app.recommend.code_start import code_start_course
-from app.recommend.course_recommend import user_index_calc
 import datetime
+
+from flask import jsonify, request, render_template, g, render_template
+
+from app.main import main
+from app.models import Permission
+from app.main.authentication import auth
+from app.main.responses import test_response
+from app.utils.responses import self_response
+from app.recommend.code_start import code_start_course
+from app.utils.model_tools import have_school_permission
+from app.recommend.course_recommend import user_index_calc
+from app.main.decorators import permission_required, admin_required, get_current_user
+
 
 
 @main.route('/', methods=['GET'])
