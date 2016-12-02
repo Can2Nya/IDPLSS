@@ -128,8 +128,12 @@ const test = handleActions({
 	// 	};
 	// },
 	['test/init/problem'](state, action) {
+		console.log(action)
 		const { isSelectContext } = state
 		const { isSubmit } = isSelectContext.isSelectContext
+		let issubmit = false;
+		if(action.isSubmit != undefined) issubmit = action.isSubmit;
+		else issubmit = isSubmit
 		return { 
 			...state, 
 			isSelectContext: { 
@@ -138,7 +142,7 @@ const test = handleActions({
 				isSelectContext: {
 					...isSelectContext.isSelectContext,
 					testRecordId: action.testRecordId,
-					isSubmit: action.isSubmit || isSubmit,
+					isSubmit: issubmit,
 					result: [],
 				}
 			},

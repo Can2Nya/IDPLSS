@@ -131,7 +131,8 @@ function* TestAnswer(action) {
 				if(action.index == action.total){
 					yield put({
 						type: 'test/get/problemResult',
-						id: action.test_record_id
+						// id: action.test_record_id
+						id: action.body.test_id
 					});
 				}
 				

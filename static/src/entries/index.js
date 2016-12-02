@@ -10,6 +10,7 @@ import sequenceAction from 'redux-sequence-action';//排序action中间件
 import reducers from '../reducers/index';
 import SagaManager from '../sagas/SagaManager';
 import Perf from 'react-addons-perf';
+import whyDidYouUpdate from 'why-did-you-update';
 import './index.less';
 
 //////////////////////
@@ -42,6 +43,7 @@ if (module.hot) {
 // Render
 
 const history = syncHistoryWithStore(browserHistory, store);
+// whyDidYouUpdate(React)
 
 let render = () => {
   const Routes = require('../routes/index');

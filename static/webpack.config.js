@@ -23,7 +23,7 @@ module.exports = function(webpackConfig) {
     // new HtmlWebpackPlugin({
     //   hash: true,
     //   template: "./src/entries/index.html",
-    //   filename: "index.html",
+    //   filename: "index1.html",
     //   files: {
     //     "css": [ "index.css" ],
     //     "js": [ "index.js", "index.js"]

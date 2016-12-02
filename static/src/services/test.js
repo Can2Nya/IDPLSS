@@ -36,11 +36,13 @@ export async function getTestDetailList(action) {
 // }
 export async function TestAnswer(action) {
 	if(action.type == 'test/post/problemResult'){
+		console.log(1)
 		return xFetch(`${apiUrl}/api/test-list/test-answer/${action.id}`,{method: 'POST',
 			body: JSON.stringify(action.body),
 		});
 	}
 	if(action.type == 'test/get/problemResult'){
+		console.log(2)
 		return xFetch(`${apiUrl}/api/test-list/over-test/${action.id}`,{method: 'GET',});
 	}
 	

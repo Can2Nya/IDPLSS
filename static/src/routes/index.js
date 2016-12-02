@@ -161,7 +161,8 @@ const Routes = ({ history, dispatch }) =>{
 			dispatch({
 				type: 'test/get/series',
 				id: match[1],
-				count: 'all',
+				count: 'part',
+				pagination: 1,
 			})
 		}
 		// -video init------------------
