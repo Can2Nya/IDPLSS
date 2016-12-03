@@ -44,6 +44,7 @@ if (module.hot) {
 
 const history = syncHistoryWithStore(browserHistory, store);
 // whyDidYouUpdate(React)
+window.Perf = Perf
 
 let render = () => {
   const Routes = require('../routes/index');
