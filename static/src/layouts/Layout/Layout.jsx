@@ -12,10 +12,7 @@ import MidNav from '../../components/Navs/MidNav/MidNav';
 import TopNav from '../../components/Navs/TopNav/TopNav';
 import Footer from '../../components/Footer/Footer';
 
-
-const Layout = ({ children, location, type }) => {//type后期再换上
-	
-	const layout = [{
+const layout = [{
 			id: 1,
 			pathname: ['/','index'],
 		},
@@ -28,7 +25,15 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 			pathname: ['play','user','login']
 		},]
 
-	const layoutId = () =>{
+// const Layout = ({ children, location, type }) => {//type后期再换上
+const Layout = React.createClass({
+	getInitialState() {
+		return {
+			layoutid: 0,
+			height: document.body.offsetHeight || document.documentElement.clientHeight
+		}	
+	},
+	layoutId(){
 			let newLayoutid;
 			layout.map(layoutList => {
 				layoutList.pathname.map(layoutPath => {
@@ -39,18 +44,31 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 					}
 				);
 			});
-			return newLayoutid;
-		}
-	const renderLayout = () => {
+			// return newLayoutid;
+			this.setState({
+				layoutid: newLayoutid
+			})
+	},
+	componentWillMount(){
+		this.layoutId()
+	},
+	
+	scrollarea(){
+		// return document.body.offsetHeight || document.documentElement.clientHeight
+		this.setState({
+			height: document.body.offsetHeight || document.documentElement.clientHeight
+		})
+	},
+	renderLayout() {
 
-		switch(layoutId()){
+		switch(this.state.layoutid){
 			case 1: return(
 				<div className={styles.contain}>
-				<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+				<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
 				<div >
 					<Banner config={config} />
 					<MidNav />
-					{ children }
+					{ this.props.children }
 					<Footer config={config} />
 				</div>
 				</Scrollbars>
@@ -59,10 +77,10 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 			case 2: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
 					<div >
 					<div className={styles.body}>
-					{ children }
+					{ this.props.children }
 					</div>
 					<Footer config={config} />
 					</div>
@@ -72,27 +90,25 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 			case 3: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
 					<div className={styles.body} >
-					{ children }
+					{ this.props.children }
 					</div>
 					</Scrollbars>
 				</div>
 				);
 		}
 		
+	},
+	render(){
+		return (
+			<div>
+				{this.renderLayout()}
+			</div>
+		);
 	}
-	return (
-		<div>
-			{/*banner*/}
-			{renderLayout()}
-			{/*导航*/}
-			{/*内容*/}
-			
-			{/*页脚*/}
-		</div>
-	);
-};
+	
+})
 
 Layout.propTypes = {
 	//children: PropTypes.element.isRequired,
