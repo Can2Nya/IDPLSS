@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { Row } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars'
 import config from '../../config/config.js';
 
 import styles from './Layout.less';
@@ -45,27 +46,37 @@ const Layout = ({ children, location, type }) => {//type后期再换上
 		switch(layoutId()){
 			case 1: return(
 				<div className={styles.contain}>
+				<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+				<div >
 					<Banner config={config} />
 					<MidNav />
 					{ children }
 					<Footer config={config} />
 				</div>
+				</Scrollbars>
+				</div>
 				);
 			case 2: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
+					<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+					<div >
 					<div className={styles.body}>
 					{ children }
 					</div>
 					<Footer config={config} />
+					</div>
+					</Scrollbars>
 				</div>
 				);
 			case 3: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<div className={styles.body}>
+					<Scrollbars style={{height: `${document.body.offsetHeight || document.documentElement.clientHeight}`}}>
+					<div className={styles.body} >
 					{ children }
 					</div>
+					</Scrollbars>
 				</div>
 				);
 		}
