@@ -48,7 +48,9 @@ const user = handleActions({
 	['user/login/modal/toggle'](state, action) {
 		return { ...state, modalState: action.modalState, isloginFormSubmit: false };
 	},
-
+	['user/repsd/modal/toggle'](state, action) {
+		return { ...state, repsd: action.repsd, isloginFormSubmit: false };
+	},
 	['user/logout'](state, action){
 		cookie.remove('authorization')
 		cookie.remove('user_id')
@@ -249,7 +251,7 @@ const user = handleActions({
 	loginUserList: [],// 已登录信息(自己的信息)
 	userList: [],//用户信息(别人的)
 	modalState: false,//modal是否被激活
-
+	repsd: false,//找回密码模式
 	stepState: 0,//注册步骤状态
 	isAllowStepChange: false,//可以允许改变步骤
 	isloginFormSubmit: false,//login表单是否被提交
