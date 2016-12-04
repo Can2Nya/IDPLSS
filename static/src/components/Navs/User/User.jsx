@@ -9,11 +9,12 @@ import base64 from 'base-64';
 import { Popover, Modal, Form, Input } from 'antd';
 import QueueAnim from 'rc-queue-anim';//动画效果
 
+import Button from '../../Button/Button';
 import config from '../../../config/config';
 import styles from './User.less';
 
 let User = ({ user, dispatch, textStyle, form }) => {
-	const { psdtoken, loginUserList, modalState, loginFormisSubmit } = user;
+	const { repsd, psdtoken, loginUserList, modalState, loginFormisSubmit } = user;
 	
 	const { validateFields, getFieldProps, getFieldValue } = form;
 	const formItemLayout = {
@@ -27,6 +28,27 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			modalState: !modalState,
 		})
 	}
+	const handleprPsdToggle = () =>{
+		dispatch({
+			type: 'user/repsd/modal/toggle',
+			repsd: !repsd
+		})
+	}
+	const handlePostEmail = () =>{
+		validateFields(['confirmEmail'],(errors, values) =>{
+			if(errors){
+				return ;
+			}
+			dispatch({
+				type: 'user/set/info',
+				mode: 'email',
+				body: {
+					user_email: getFieldValue('confirmEmail'), 
+				}
+			})
+		})
+
+	}
 	const handleLogin = ()=>{
 		const data = form.getFieldsValue();
 		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
@@ -36,9 +58,16 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		})
 	}
 	const handleLogout = ()=>{
-		dispatch({
-			type: 'user/logout',
+		Modal.confirm({
+			title: '确认退出吗？',
+			onOk: (ok)=>{
+				dispatch({
+					type: 'user/logout',
+				})
+				ok()
+			}
 		})
+		
 	}
 
 	const handleReComfrim = ()=>{
@@ -66,7 +95,55 @@ let User = ({ user, dispatch, textStyle, form }) => {
 		})
 	}
 	const renderUser = () =>{
-		
+		if(psdtoken){
+			return(
+				<Modal title='修改密码' visible={true} onOk={handlePostPassword}
+				onCancel={()=>{
+					dispatch({
+						type: 'user/get/passwordToken',
+						psdtoken: null
+					})
+				}}>
+				<Form>
+				<Form.Item 
+				{ ...formItemLayout }
+				label="新密码"
+				hasFeedback>
+				<Input type='password' {...getFieldProps('password', {
+				rules: [
+				{ required: true },
+				],
+				})}/>
+				</Form.Item>
+				</Form>
+			</Modal>
+			)
+		}
+		if(repsd){
+			return(
+				<Modal title='输入用户名／邮箱查找密码' visible={true} onOk={handlePostEmail}
+				onCancel={()=>{
+					dispatch({
+						type: 'user/repsd/modal/toggle',
+						repsd: false
+					})
+				}}>
+				<Form>
+				<Form.Item 
+					{ ...formItemLayout }
+					label="输入邮箱找回密码"
+				hasFeedback>
+
+				<Input type='text' {...getFieldProps('confirmEmail', {
+					rules: [
+						{ required: true , type: 'email', message: '请输入正确的邮箱地址',},
+					],
+				})} />
+				</Form.Item>
+				</Form>
+			</Modal>
+			)
+		}
 		if(loginUserList.length <= 0) return(
 			<div className={styles.text}>
 			<Link to='/register/'><span className={styles.item} style={textStyle}>注册</span></Link>
@@ -76,9 +153,14 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			visible={modalState} 
 			confirmLoading={loginFormisSubmit} 
 			onCancel={handleModelToggle.bind(this)}
-			onOk={handleLogin.bind(this)}
+			/*onOk={handleLogin.bind(this)}*/
+			/*onCancel={handleprPsdToggle.bind(this)}
 			okText='登陆'
-			cancelText='忘记密码？'
+			cancelText='忘记密码？'*/
+			footer={[
+				<Button key='2' type="ghost" onClick={handleprPsdToggle.bind(this)}>忘记密码？</Button>,
+				<Button key='1' type="primary" onClick={handleLogin.bind(this)}>登陆</Button>
+			]}
 			>
 
 				<Form horizontal>
@@ -115,30 +197,6 @@ let User = ({ user, dispatch, textStyle, form }) => {
 					<p>点确定发送验证到你的邮箱{`${loginUserList.user_email}`}</p>
 					<p>反正你不点我也不会消失</p>
 				</Modal>
-			)
-		}
-		if(psdtoken){
-			return(
-				<Modal title='修改密码' visible={true} onOk={handlePostPassword}
-				onCancel={()=>{
-					dispatch({
-						type: 'user/get/passwordToken',
-						psdtoken: null
-					})
-				}}>
-				<Form>
-				<Form.Item 
-				{ ...formItemLayout }
-				label="新密码"
-				hasFeedback>
-				<Input type='password' {...getFieldProps('password', {
-				rules: [
-				{ required: true },
-				],
-				})}/>
-				</Form.Item>
-				</Form>
-			</Modal>
 			)
 		}
 		else {
