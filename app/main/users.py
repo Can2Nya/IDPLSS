@@ -627,7 +627,7 @@ def interested_field():
         temp_dict = dict()
         temp_dict['category'] = k
         try:
-            temp_dict['value'] = (v/count)
+            temp_dict['value'] = round((v/count), 2)
         except ZeroDivisionError:
             temp_dict['value'] = 0
         result_list.append(temp_dict)

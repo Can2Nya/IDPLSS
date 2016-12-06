@@ -286,7 +286,7 @@ def over_test(tid):
             else:
                 pass
         try:
-            accuracy = right_count/float(choice_count)
+            accuracy = round(right_count/float(choice_count), 2)
         except ZeroDivisionError:
             accuracy = 0
         test_record.test_accuracy = accuracy
