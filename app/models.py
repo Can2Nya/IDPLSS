@@ -196,8 +196,9 @@ class User(db.Model):
     @staticmethod
     def add_user():
         user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True,
-                     interested_field="1:2:3")
-        user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True, interested_field="1")
+                     interested_field="1:2:3", user_type=4)
+        user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True,
+                     interested_field="1", user_type=0)
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
