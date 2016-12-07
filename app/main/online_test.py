@@ -236,15 +236,17 @@ def new_test_record():
 def judge_test_answer(pid):
     problem = TestProblem.query.get_or_404(pid)
     answer_info = request.json
+    problem_type = answer_info['problem_type']
     answer_info['problem_id'] = problem.id
     answer_info['right_answer'] = problem.right_answer
     ans_record = AnswerRecord.from_json(answer_info)
     db.session.add(ans_record)
     db.session.commit()
-    if answer_info.get('user_answer') == problem.right_answer:
+    if problem_type == 0 and answer_info.get('user_answer') == problem.right_answer:
         return self_response('True')
     else:
         return self_response('False')
+
 
 
 @main.route('/api/test-list/clean-record/<int:tid>', methods=['GET'])
@@ -269,35 +271,33 @@ def over_test(tid):
     user = g.current_user
     print "user id is %s test id is %s " % (user.id, tid)
     test_record = TestRecord.query.filter_by(answerer_id=user.id, test_list_id=tid).first()
-    if test_record is None:
+    if not test_record:
         return not_found()
-    else:
-        all_answer = AnswerRecord.query.filter_by(answerer_id=user.id, test_list_id=tid, test_record_id=test_record.id).all()
-        print "len ans is %s" % len(all_answer)
-        right_count = 0
-        choice_count = 0
-        for ans in all_answer:
-            if ans.problem_type == 0:
-                if ans.user_answer == ans.right_answer:
-                    right_count += 1
-                else:
-                    pass
-                choice_count += 1
+    all_answer = AnswerRecord.query.filter_by(answerer_id=user.id, test_list_id=tid, test_record_id=test_record.id).all()
+    right_count = 0
+    choice_count = 0
+    for ans in all_answer:
+        if ans.problem_type == 0:
+            if ans.user_answer == ans.right_answer:
+                right_count += 1
             else:
                 pass
-        try:
-            accuracy = round(right_count/float(choice_count), 2)
-        except ZeroDivisionError:
-            accuracy = 0
-        test_record.test_accuracy = accuracy
-        test_record.is_finished = True
-        db.session.add(test_record)
-        db.session.commit()
-        return jsonify({
-            "status": "calc accuracy complete",
-            "choice_problems_count": choice_count,
-            "accuracy": accuracy
-        })
+            choice_count += 1
+        else:
+            pass
+    try:
+        accuracy = round(right_count/float(choice_count), 2)
+    except ZeroDivisionError:
+        accuracy = 0
+    test_record.test_accuracy = accuracy
+    test_record.is_finished = True
+    db.session.add(test_record)
+    db.session.commit()
+    return jsonify({
+        "status": "calc accuracy complete",
+        "choice_problems_count": choice_count,
+        "accuracy": accuracy
+    })
 
 
 @main.route('/api/test-list/search', methods=['POST'])
