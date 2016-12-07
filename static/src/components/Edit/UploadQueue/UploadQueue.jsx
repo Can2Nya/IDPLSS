@@ -49,7 +49,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 				message.error('请上传文件')
 				return;
 			}
-			if(!tmpFile[0].request.xhr.response){
+			if(tmpFile.length > 0 && !tmpFile[0].request.xhr.response){
 				message.error('请等待视频上传完成后点击完成')
 				return;
 			}
@@ -246,7 +246,6 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 		// 					course_id: isSelectContext.id,
 		// 			}
 		let item = validateField()
-		console.log(item)
 		if(item.video_name || item.problem_description){
 					dispatch({
 						type: 'upload/multiplyPlusUploadList',
@@ -611,21 +610,34 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 			modalState: !modalState
 		})
 	}
-	const handleDrop = (file) =>{
+	const handleDrop = (files) =>{
 		if(isSelectMenuItem == '3'){
 			dispatch({
 				type: 'upload/multiplyPlus',
-				uploadListFiles: uploadListFiles.concat(file)
+				uploadListFiles: uploadListFiles.concat(files)
 			})
 		}else{
 			dispatch({
 				type: 'upload/tmpPlus',
-				tmpFile: file
+				tmpFile: files
 			})
 		}
-		file.uploadPromise = (e) =>{
-			console.log(e)// 后期再加上文件上传判断
-		}
+		files.map((f)=>{
+			f.uploadPromise.catch((e)=>{
+				Modal.error({
+					title: '网络错误',
+					context: '请重新点击上传或检查网络是否连接正确'
+				})
+				dispatch({
+					type: 'upload/tmpPlus',
+					tmpFile: []
+				})
+				dispatch({
+					type: 'upload/multiplyPlus',
+					uploadListFiles: []
+				})
+			})
+		})
 	}
 	const handleUpload = (files) =>{
 		let progresses = {};
@@ -651,10 +663,11 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 	}
 
 	const videoValue = () =>{
-		if (itemData.source_url) return itemData.source_url;
 		if (tmpFile.length > 0){
 			if (tmpFile[0].request.xhr.response) return JSON.parse(tmpFile[0].request.xhr.response).key;
 		}
+		if (itemData.source_url) return itemData.source_url;
+		return null
 	}
 
 	const testImageValue = () =>{
@@ -675,6 +688,10 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 
 	// --------render-------------------------
 	const renderUploadText = () =>{
+		if(tmpFile.length > 0 ){
+			if(!tmpFile[0].request.xhr.response) return <Progress percent={uploadListProgress[tmpFile[0].preview].toFixed(0)} strokeWidth={5} status="active" />
+			else return <div>{tmpFile[0].name}</div>
+		}
 			if(itemData.video_name) return <div>{itemData.video_name}</div>
 			if(tmpFile.length <= 0 ){
 				return (
@@ -684,10 +701,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 					</div>
 				)
 			}
-			if(tmpFile.length > 0 ){
-				if(!tmpFile[0].request.xhr.response) return <Progress percent={uploadListProgress[tmpFile[0].preview].toFixed(0)} strokeWidth={5} status="active" />
-				else return <div>{tmpFile[0].name}</div>
-			}
+			
 		
 	}
 
@@ -733,7 +747,6 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 
 			// }
 			if(order.length > 0){
-				console.log(order.length > 0)
 				// let newlist = []
 				// newlist = newlist.concat(order,uploadList)
 				// 排序后的情况

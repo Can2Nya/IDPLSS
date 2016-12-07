@@ -27,7 +27,7 @@ const Recommend = ({ user, type }) => {
 				if(!data.show) return ;
 				return (
 					<Card key={index} style={{ width: '80%',margin: '10px 0' }}>
-					<Link to={{ pathname: `/detail/${type}/${data.id}/`, hash: '#!/${renderHash()}/1/'}}>
+					<Link to={{ pathname: `/detail/${type}/${data.id}/`, hash: `#!/${renderHash()}/1/`}}>
 					<p className={styles.title}>{data.test_title || data.course_name || data.resource_name}</p>
 					</Link>
 					<Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} >

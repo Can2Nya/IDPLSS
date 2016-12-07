@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Row, Col, Form, Input, Select, Icon, Progress } from 'antd';
+import { Row, Col, Form, Input, Select, Icon, Progress, Modal } from 'antd';
 import classnames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
 import Qiniu from 'react-qiniu'
@@ -28,7 +28,8 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 	});
 	const fileValue = () =>{
 		if(files.length <= 0 || !files[0].request.xhr.response) return `${isSelectContext.source_url || isSelectContext.images}`;
-		else return `${JSON.parse(files[0].request.xhr.response).key}`
+		if(files.length > 0 || files[0].request.xhr.response) return `${JSON.parse(files[0].request.xhr.response).key}`
+		return null
 	}
 	const handlePreSubmitData = (formType)=>{
 		
@@ -83,6 +84,18 @@ let EditMainData = ({ upload, user, form, dispatch }) => {
 		dispatch({
 			type: 'upload/drop',
 			files: files
+		})
+		files.map((f)=>{
+			f.uploadPromise.catch((e)=>{
+				Modal.error({
+					title: '网络错误',
+					context: '请重新点击上传或检查网络是否连接正确'
+				})
+				dispatch({
+					type: 'upload/drop',
+					files: []
+				})
+			})
 		})
 	}
 	const handleUpload = (files) =>{

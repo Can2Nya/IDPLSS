@@ -123,7 +123,7 @@ const upload = handleActions({
 
 	// --------------状态-------------------
 	['upload/init'](state, action) {
-		return { ...state, };
+		return { ...state, tmpFile:[], uploadListFiles: [], isEdit: false,};
 	},
 	['upload/setProgress'](state, action) {
 		return { ...state, progress: action.progress };
@@ -168,7 +168,7 @@ const upload = handleActions({
 	// order:{ isOrder: false },//uploadList 中文件排序
 	order: [],
 
-	isSelectMenuItem: '2',
+	isSelectMenuItem: '1',
 	isEdit: false, // ture为进入编辑页面
 	isSubmit: false,// 是否真正提交表单
 	isSelectContextId: 0,// 选择的内容【课程／资料／测试】的id

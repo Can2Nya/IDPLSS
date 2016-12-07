@@ -309,9 +309,22 @@ const Routes = ({ history, dispatch }) =>{
 			dispatch({
 				type: 'upload/init'
 			})
+			// dispatch({
+			// 	type: 'user/get/userText',
+			// 	pagination: 1
+			// })
+			const match = pathToRegexp('#!/:cata/').exec(hash)
+			let action = 'user/get/user';
+			if(match[1] == 1) action += 'Video'
+			if(match[1] == 2) action += 'Text'
+			if(match[1] == 3) action += 'Test'
 			dispatch({
-				type: 'user/get/userText',
+				type: action,
 				pagination: 1
+			})
+			dispatch({
+				type: 'upload/changeMenuItem',
+				item: `${match[1]}`
 			})
 		}
 		// ---search init-------------------------

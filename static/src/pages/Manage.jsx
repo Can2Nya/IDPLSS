@@ -33,14 +33,14 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		dispatch({
 			type: 'upload/init',
 		})
-		let action = 'user/get/user';
-		if(e.key == '1') action += 'Video'
-		if(e.key == '2') action += 'Text'
-		if(e.key == '3') action += 'Test'
-		dispatch({
-			type: action,
-			pagination: 1
-		})
+		// let action = 'user/get/user';
+		// if(e.key == '1') action += 'Video'
+		// if(e.key == '2') action += 'Text'
+		// if(e.key == '3') action += 'Test'
+		// dispatch({
+		// 	type: action,
+		// 	pagination: 1
+		// })
 		dispatch({
 			type: 'upload/changeEditState',
 			isEdit: false,
@@ -53,6 +53,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 			type: 'upload/multiplyPlusUploadList',
 			uploadList: []
 		})
+		browserHistory.push(`/manage/#!/${e.key}/`)
 	}
 
 	const handleChangeEditState = (id) =>{
@@ -129,6 +130,19 @@ const Manage = ({ upload, user, dispatch, location }) => {
 			type: 'upload/drop',
 			files: files
 		})
+		files.map((f)=>{
+			f.uploadPromise.catch((e)=>{
+				Modal.error({
+					title: '网络错误',
+					context: '请重新点击上传或检查网络是否连接正确'
+				})
+				dispatch({
+					type: 'upload/drop',
+					files: []
+				})
+			})
+		})
+		
 	}
 	const handleUpload = (files) =>{
 		let progresses = {};
@@ -207,12 +221,12 @@ const Manage = ({ upload, user, dispatch, location }) => {
 
 	const renderIsEdit = ()=>{
 		return isEdit ? [
-		<div className={styles.relative} key='2'>
+		<div className={styles.page} key='2'>
 		<div className={styles.displayBlock}>
 		<EditPannel onBackClick={handleChangeEditState.bind(this)}/>
 		</div>
 		</div> ] : [
-		<div className={styles.relative} key='1'>
+		<div className={styles.page} key='1'>
 		<div className={styles.displayBlock}>
 			<UploadButton 
 						time={time}
