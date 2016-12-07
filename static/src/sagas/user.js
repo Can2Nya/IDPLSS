@@ -68,11 +68,12 @@ function* getUser(action) {// arg内有action参数
 				if(action.mode == 'recomfirm'){
 					 message.success('发送成功！')
 				}
-				else{
-					put({
+				if(action.mode == 'setInfo'){
+					yield put({
 						type: 'user/get/info',
 						user_id: action.user_id,
 					})
+					message.success('修改成功！')
 				}
 				
 			}
