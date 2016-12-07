@@ -19,7 +19,7 @@ const BarChart = React.createClass({
 		let chart = new G2.Chart({
 			id: `bar-${this.state.time}`,
 			width : 650,
-			height : 350,
+			height : 500,
 			plotCfg: {
 				margin: [60, 60, 80, 120]
 			}

@@ -5,7 +5,14 @@ import { data } from '../services/forum.js';//向forum传送的数据
 
 const forum = handleActions({
 	['forum/init/categorySource'](state, action){
-		return{ ...state, loading: true }
+		return { 
+			...state,
+			isSelectContext: { 
+				context: {},
+				total: 0,
+				comment: [],
+			},
+		}
 	},
 	['forum/init/commplete/categorySource'](state, action){
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false}
@@ -106,7 +113,6 @@ const forum = handleActions({
 		};
 	},
 	['forum/get/success/comment'](state, action) {
-		console.log('2')
 		return { 
 			...state,
 			isSelectContext: { 

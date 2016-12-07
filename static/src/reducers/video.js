@@ -5,7 +5,19 @@ import { data } from '../services/video.js';//向video传送的数据
 
 const video = handleActions({
 	['video/init/categorySource'](state, action){
-		return{ ...state, loading: true }
+		return{ ...state, 
+			isSelectContext: {
+				total: 0,
+				id: 0,
+				context: {},
+				list: [],
+				comment: [],
+				isSelectContext: {
+					isSelectVideo: 0,
+					context: {}, 
+				}
+			}	
+		}
 	},
 	['video/init/commplete/categorySource'](state, action){
 		return{ ...state, isSelectCategory: action.category, isSelectPagination: action.pagination, loading: false }

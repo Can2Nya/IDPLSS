@@ -10,9 +10,9 @@ const UserBanner = ({ data }) => {
 		const identityText = ['访客','学生','教师','校级管理员','管理员']
 		return identityText[data.user.user_type]
 	}
-	const renderUserAvator = {
-		backgroundImage: "url("+data.config.qiniu+'/'+data.user.user_avatar+")"
-	}
+	// const renderUserAvator = {
+	// 	backgroundImage: "url("+data.config.qiniu+'/'+data.user.user_avatar+")"
+	// }
 	return (
 		<div className={styles.pannel} >
 		<div className={styles.avatar} style={{ backgroundImage: `url(${data.config.qiniu}/${data.user.user_avatar})` }}>

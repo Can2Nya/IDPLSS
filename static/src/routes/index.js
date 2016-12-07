@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import pathToRegexp from 'path-to-regexp';
 import cookie from 'js-cookie';
 
-import App from '../components/App';
 import Index from '../pages/Index'
 import Category from '../pages/Category';
 import Detail from '../pages/Detail';
@@ -225,10 +224,18 @@ const Routes = ({ history, dispatch }) =>{
 					type: 'user/get/stat',
 					mode: 'interestedField'
 				})
+				dispatch({
+					type: 'user/get/stat',
+					mode: 'cloud'
+				})
 				
 				dispatch({
 					type: 'user/changeSelectTab',
 					isSelectTab: '0'
+				})
+				dispatch({
+					type: 'user/changeSelectSubTab',
+					isSelectSubTab: match[3]
 				})
 			}
 			
@@ -356,7 +363,6 @@ const Routes = ({ history, dispatch }) =>{
 		</Route>
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}
-		<Route path="/demo" component={App}/>
 		<Route path="*" component={NotFound}/>
 
 	</Router>

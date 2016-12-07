@@ -187,13 +187,14 @@ const user = handleActions({
 		return { ...state, recommend: action.payload }
 	},
 	['user/get/stat'](state, action){
-		// mode: 时间频率frequency，学习领域interested-field
+		// mode: 时间频率frequency，学习领域interested-field, 云词：cloud
 		return { ...state }
 	},
 	['user/get/stat/success'](state, action){
 		// mode: 时间频率frequency，学习领域interested-field
 		if(action.mode == 'frequency') return { ...state, barData: action.payload }
 		if(action.mode == 'interestedField') return { ...state, radarData: action.payload }
+		if(action.mode == 'cloud') return { ...state, cloudData: action.payload }
 		return { ...state }
 	},
 	// -------内容------------------
@@ -267,6 +268,7 @@ const user = handleActions({
 	recommend: [],// 用户自己接收的推荐
 	barData: [],// 条形图数据
 	radarData: [],// 雷达图
+	cloudData: [], // 云词
 	// 搜索
 	isSelectMenuItem: '0', // 选择分类
 	keyWord: '',// 搜索关键子

@@ -1,7 +1,7 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
 import { connect } from 'react-redux';
-import { Breadcrumb, Pagination, Spin, Row, Col, Icon, Tabs, Card, Progress } from 'antd';
+import { Breadcrumb, Pagination, Spin, Row, Col, Icon, Tabs, Card, Progress, Menu } from 'antd';
 import cookie from 'js-cookie';
 
 import Layout from '../layouts/Layout/Layout';
@@ -10,13 +10,12 @@ import TabPannel from '../layouts/UserPannel/TabPannel';
 import SettingPannel from '../layouts/UserPannel/SettingPannel';
 
 import Title from '../components/Title/Title';
-import Menu from '../components/Menu/Menu';
 import UserBanner from '../components/UserBanner/UserBanner';
 import Comment from '../components/Comment/Comment';
 import InputForm from '../components/InputForm/InputForm';
 
-import BarChart from '../components/Chart/BarChart/BarChart';
-import RadarChart from '../components/Chart/RadarChart/RadarChart';
+// import BarChart from '../components/Chart/BarChart/BarChart';
+// import RadarChart from '../components/Chart/RadarChart/RadarChart';
 import VideoCover from '../components/Widget/VideoCover/VideoCover';
 import TestCover from '../components/Widget/TestCover/TestCover';
 import TextCover from '../components/Widget/TextCover/TextCover';
@@ -26,7 +25,7 @@ import config from '../config/config';
 import styles from './commont.less';
 
 const User = ({ location, dispatch, user }) => {
-	const { radarData, barData, userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
+	const { cloudData, radarData, barData, userList, loginUserList, total, userZoneList, isSelectTab, isSelectSubTab, loading } = user
 
 	const userMenu = {
 		'0': '#!/dynamic',
@@ -52,9 +51,9 @@ const User = ({ location, dispatch, user }) => {
 		console.log(e[0])*/
 		dispatch({
 			type: 'user/changeSelectSubTab',
-			isSelectSubTab: e[0]
+			isSelectSubTab: e[0] || e.key
 		})
-		window.location.hash = `${userMenu[isSelectTab]}/${e[0]}/`;
+		window.location.hash = `${userMenu[isSelectTab]}/${e[0] || e.key}/`;
 	}
 	const handlePostDelete = (commentid, authorid, e) =>{
 		// if ((loginUserList.user_type == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
@@ -205,16 +204,16 @@ const User = ({ location, dispatch, user }) => {
 			}
 		})
 	}
-	const renderBarChart = () =>{
-		if(barData && barData.length > 0){
-			return <BarChart data={barData}/>
-		}
-	}
-	const renderRadarChart = () =>{
-		if(radarData && radarData.length > 0){
-			return <RadarChart data={radarData}/>
-		}
-	}
+	// const renderBarChart = () =>{
+	// 	if(barData && barData.length > 0){
+	// 		return <BarChart data={barData}/>
+	// 	}
+	// }
+	// const renderRadarChart = () =>{
+	// 	if(radarData && radarData.length > 0){
+	// 		return <RadarChart data={radarData}/>
+	// 	}
+	// }
 	return (
 		<Layout location={location}>
 		<div className={styles.user}>
@@ -228,11 +227,23 @@ const User = ({ location, dispatch, user }) => {
 			<Tabs onTabClick={handleTabsLink.bind(this)} activeKey={isSelectTab}>
 			{ cookie.get('user_id') == userList.user_id ? [
 				<Tabs.TabPane tab='基本信息' key='0'>
-					<DynamicPannel data={{ 'user': userList }} >
-						<div>
+					<DynamicPannel 
+					activeKey={isSelectSubTab}
+					data={{ 'user': userList, barData: barData, radarData: radarData, cloudData: cloudData }} >
+					<Menu onClick={handleSubTabsLink.bind(this)}
+					style={{ width: '100%' }}
+					/*defaultOpenKeys={['sub1']}*/
+					selectedKeys={[isSelectSubTab]}
+					mode="inline"
+					>
+						<Menu.Item key="0"><Icon type="bar-chart" />我的学习频率</Menu.Item>
+						<Menu.Item key="1"><Icon type="area-chart" />我的兴趣趋向</Menu.Item>
+						<Menu.Item key="2"><Icon type="cloud" />我的关键词</Menu.Item>
+					</Menu>
+						{/*<div>
 						{ renderBarChart() }
 						{ renderRadarChart() }
-						</div>
+						</div>*/}
 					</DynamicPannel>
 				</Tabs.TabPane>,
 				/*<Tabs.TabPane tab='我参与的' key='2'>

@@ -1,6 +1,6 @@
 import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Breadcrumb, Spin, Pagination, Row, Col, Icon } from 'antd';
+import { Breadcrumb, Spin, Pagination, Row, Col, Icon, Modal } from 'antd';
 import { connect } from 'react-redux';
 import pathToRegexp from 'path-to-regexp';
 import Layout from '../layouts/Layout/Layout';
@@ -14,7 +14,7 @@ import PostDetailPannel from '../layouts/PostDetailPannel/PostDetailPannel';
 import styles from './commont.less';
 
 const PostDetail = ({ forum, user, dispatch, location }) => {
-	const { stateName, isSelectContext, modalState } = forum
+	const { stateName, isSelectContext, /*modalState*/ } = forum
 	const { total, context, comment } = isSelectContext
 	const { id } = context
 	// -------------action----------------
@@ -35,10 +35,16 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 	const handleCommentDelete = (commentid, authorid, e) =>{
 		if ((user.loginUserList.user_type == 2 && user.loginUserList.user_id == context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
-			dispatch({
-				type: `forum/delete/comment`,
-				id: id,
-				comment_id: commentid,
+			Modal.confirm({
+				title: '确认删除么？',
+				context: '该操作不能撤销',
+				onOk: ()=>{
+					dispatch({
+						type: `forum/delete/comment`,
+						id: id,
+						comment_id: commentid,
+					})
+				}
 			})
 		}
 
@@ -46,9 +52,15 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 	const handlePostDelete = () =>{
 		if ((user.loginUserList.user_id == context.author_id) || (user.loginUserList.user_type >= 3)){
 			// 第二道防线
-			dispatch({
-				type: 'upload/del/createPost',
-				id: id,
+			Modal.confirm({
+				title: '确认删除么？',
+				context: '该操作不能撤销',
+				onOk: ()=>{
+					dispatch({
+						type: 'upload/del/createPost',
+						id: id,
+					})
+				}
 			})
 		}
 	}
@@ -63,8 +75,8 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 				type: 'upload/changeTime',
 			})
 			dispatch({
-				type: 'forum/ToggleForumModal',
-				modalState: !modalState
+				type: 'upload/changeModalState',
+				modalState: true
 			})
 			dispatch({
 				type: 'upload/get/token'
@@ -76,11 +88,11 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 	}
 	// ------------render------------------------
 	const renderCommentList = () =>{
-		if(isSelectContext.loading){
-			return <Spin />;
-		}
+		// if(isSelectContext.loading){
+		// 	return <Spin />;
+		// }
 		if(comment.length <= 0 || !comment){
-			return;
+			return <div style={{textAlign: 'center', marginTop: '100px'}}>暂无回复</div>;
 		}
 		return comment.map((comment,index) =>{
 			if(!comment.show) return
@@ -109,9 +121,13 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 				</Breadcrumb>
 			</div>
 			<Col span={16} lg={17} >
-				<PostDetailPannel data={context} onPostEdit={handlePostEdit.bind(this)} onPostDel={handlePostDelete.bind(this)}>
+				<PostDetailPannel user={user.loginUserList} data={context} onPostEdit={handlePostEdit.bind(this)} onPostDel={handlePostDelete.bind(this)}>
 					<InputForm user={user} onSubmit={handleCommentSubmit.bind(this)}/>
+					<Spin spinning={isSelectContext.loading}>
+					<div style={{ minHeight: '200px' }}>
 					{ renderCommentList() }
+					</div>
+					</Spin>
 					<Pagination total={total} current={20} onChange={handleChangePagination.bind(this)}/>
 				</PostDetailPannel>
 			</Col>
@@ -131,9 +147,9 @@ PostDetail.PropTypes = {
 
 };
 
-function mapStateToProp({forum,user},{ location,}){//参数一可追加
+function mapStateToProp({forum,user,upload},{ location,}){//参数一可追加
 	return {
-	 	forum: forum,//context为当前读取的store（video，text，test）
+	 	forum: forum,
 		user: user,
 	};
 };

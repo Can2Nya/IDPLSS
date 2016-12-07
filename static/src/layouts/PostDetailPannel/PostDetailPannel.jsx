@@ -10,7 +10,7 @@ import Comment from '../../components/Comment/Comment';
 import config from '../../config/config.js'
 import styles from './PostDetailPannel.less';
 
-const PostDetailPannel = ({ children, data, onPostEdit, onPostDel }) => {
+const PostDetailPannel = ({ children, user, data, onPostEdit, onPostDel }) => {
 	const PostDetailPannelCls = () =>{
 		/*var style = {};
 		if(type == 'video') style[[styles.video]] = true;
@@ -28,6 +28,14 @@ const PostDetailPannel = ({ children, data, onPostEdit, onPostDel }) => {
 			if(data.images) return data.images.split(':').map((image,index)=>{
 				return <img key={index} height={200} src={`${config.qiniu}/${image}`} />
 			})
+		}
+	}
+	const renderEidtButton = ()=>{
+		if ((user.user_id == data.author_id) || (user.user_type >= 3)){
+			return <div className={styles.icon}>
+			<a onClick={onPostDel}><span>&#xe602;删除</span></a>
+			<a onClick={onPostEdit}><span><Icon type="edit" />修改</span></a>
+			</div>
 		}
 	}
 	return (
@@ -55,10 +63,7 @@ const PostDetailPannel = ({ children, data, onPostEdit, onPostDel }) => {
 		</Col>
 		</Row>
 		<div className={styles.tool}>
-			<div className={styles.icon}>
-			<a onClick={onPostDel}><span>&#xe602;删除</span></a>
-			<a onClick={onPostEdit}><span><Icon type="edit" />修改</span></a>
-			</div>
+			{ renderEidtButton() }
 		</div>
 		{ children }
 		</div>
