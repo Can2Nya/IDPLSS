@@ -45,27 +45,13 @@ let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 		})
 	}
 	const handleCountProblem = () =>{
-		// if(problemId == 15){
-		// 	if(isSelectContext.next !== null){
-		// 		dispatch({
-		// 			type: 'test/changePagination',
-		// 			isSelectPagination: isSelectPagination +1,
-		// 		})
-		// 		dispatch({
-		// 			type: 'test/get/series',
-		// 		})
-		// 		dispatch({
-		// 			type: "test/changeProblem",
-		// 			problemId: 0
-		// 		})
-		// 	}
-		// }
 		let complete = 0;
-		validateFields((errors, values)=>{
+		let values = getFieldsValue()
+		// validateFields((errors, values)=>{
 			isSelectContext.list.map((problem)=>{
-				if(values[`test-${problem.id}`]) ++complete;
+				if(values[`test-${problem.id}`]) complete++;
 			})
-		})
+		// })
 		dispatch({
 			type: "test/countProblem",
 			isComplete: complete,
@@ -75,55 +61,55 @@ let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 		validateFields((errors, values)=>{
 			if(errors) return ;
 			let rez = getFieldsValue()
+			let submitCount = 0;
 			isSelectContext.list.map((problem,index)=>{
-				if (problem.problem_type == 1 || problem.problem_type == '1') return;
-
-				// let problemindex = index + 1;
-				// if(problemindex == isSelectContext.length) problemindex = isSelectContext.total
-				dispatch({
-					type: "test/post/problemResult",
-					id: problem.id,
-					test_record_id: testRecordId,
-					index: index + 1,
-					total: isSelectContext.total,
-					body: { 
-						user_answer: rez[`test-${problem.id}`], 
-						problem_type: problem.problem_type, 
-						answerer_id: loginUserList.user_id, 
+				// // 只有全部是主观题的情况
+				// if (index == (isSelectContext.list.length - 1) && submitCount == 0){
+				// 	dispatch({
+				// 		type: 'test/get/problemResult',
+				// 		id: testRecordId
+				// 	});
+				// }
+				// 
+				// if (problem.problem_type == 1 || problem.problem_type == '1'){
+				// 	dispatch({
+				// 		type: "test/post/problemResult",
+				// 		id: problem.id,
+				// 		test_record_id: testRecordId,
+				// 		index: index + 1,
+				// 		total: isSelectContext.total,
+				// 		body: { 
+				// 			user_answer: rez[`test-${problem.id}`], 
+				// 			problem_type: problem.problem_type, 
+				// 			answerer_id: loginUserList.user_id, 
+				// 			test_record_id: testRecordId,
+				// 			test_id: isSelectContext.id
+				// 		}
+				// 	})
+				// }
+				// if (problem.problem_type == 2 || problem.problem_type == '2'){
+					dispatch({
+						type: "test/post/problemResult",
+						id: problem.id,
 						test_record_id: testRecordId,
-						test_id: isSelectContext.id
-					}
-				})
+						index: index + 1,
+						total: isSelectContext.total,
+						body: { 
+							user_answer: rez[`test-${problem.id}`], 
+							problem_type: problem.problem_type, 
+							answerer_id: loginUserList.user_id, 
+							test_record_id: testRecordId,
+							test_id: isSelectContext.id
+						}
+					})
+					// submitCount++;
+				// }
 			})
 		})
-		
-		// console.log(submitCount)
-		// if(submitCount == isSelectContext.total){
-			// dispatch({
-			// 	type: 'test/get/problemResult',
-			// 	id: testRecordId,
-			// })
-		// }
 	}
 	// --------------------render--------------------
 	const renderProblem = () =>{
-		// // const data = isSelectContext.list[id];
-		// if(isSelectContext.total == isComplete){
-		// 	{
-		// 		return (
-		// 			<div>你已完成测试</div>
-		// 		)
-		// 	}
-		// }
-		// return status? (
-		// 	<div key={`${problemId}`} className={styles.position}>
-		// 	<SelectTest status={isCorrect} data={isSelectContext.list[problemId]} index={problemId} value={answer} onAnswerChange={handleAnswerChange.bind(this)}/>
-		// 	</div>
-		// ):(
-		// 	<div key={`${problemId}`} className={styles.position}>
-		// 	<SelectTest data={isSelectContext.list[problemId]} index={problemId} value={answer} onAnswerChange={handleAnswerChange.bind(this)}/>
-		// 	</div>
-		// )
+		
 		return isSelectContext.list.map((problem,index)=>{
 			if(!problem.show) return;
 			if(problem.problem_type == 0){
@@ -228,8 +214,10 @@ let RenderPlayTest = ({ test, user, form, dispatch, location }) =>{
 			</QueueAnim>*/}
 
 			<Form>
+			<div style={{ minHeight: '100px', margin: '20px 0'}}>
 			{ renderProblem() }
 			<Pagination current={20} total={isSelectContext.list.length} onChange={handleChangePagination} />
+			</div>
 			<Button type="ghost" disabled={isSubmit} onClick={handleSubmitProblem.bind(this)} >提交题目</Button>
 			</Form>
 		</div>

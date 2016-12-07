@@ -168,7 +168,7 @@ const upload = handleActions({
 	// order:{ isOrder: false },//uploadList 中文件排序
 	order: [],
 
-	isSelectMenuItem: '1',
+	isSelectMenuItem: '2',
 	isEdit: false, // ture为进入编辑页面
 	isSubmit: false,// 是否真正提交表单
 	isSelectContextId: 0,// 选择的内容【课程／资料／测试】的id

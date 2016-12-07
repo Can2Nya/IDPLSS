@@ -50,7 +50,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 
 	}
 	const handleLogin = ()=>{
-		validateFields(['confirmEmail'],(errors, values) =>{
+		validateFields(['username','password'],(errors, values) =>{
 			if(errors) return;
 			const data = form.getFieldsValue();
 			cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
