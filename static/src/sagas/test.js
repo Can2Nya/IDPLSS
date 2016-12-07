@@ -150,7 +150,7 @@ function* TestAnswer(action) {
 			};
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('网络错误');
 		// yield put({
 		//   type: 'test/get/failed/recommend',
 		//   err,

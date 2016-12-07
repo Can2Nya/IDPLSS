@@ -253,9 +253,14 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						mode="inline"
 					  >
 						<Menu.SubMenu key="sub1" title={<span><Icon type="mail" /><span>稿件资料</span></span>}>
-							<Menu.Item key="1">课程视频管理</Menu.Item>
-							<Menu.Item key="2">文本资料管理</Menu.Item>
-							<Menu.Item key="3">试题测验管理</Menu.Item>
+							{ loginUserList.user_type >= 3? [
+								<Menu.Item key="1">课程视频管理</Menu.Item>,
+								<Menu.Item key="2">文本资料管理</Menu.Item>,
+								<Menu.Item key="3">试题测验管理</Menu.Item>,
+								] : (
+									<Menu.Item key="2">文本资料管理</Menu.Item>
+								)}
+							
 						</Menu.SubMenu>
 						{/*<Menu.SubMenu key="sub2" title={<span><Icon type="appstore" /><span>评论管理</span></span>}>
 							<Menu.Item key="5">课程视频</Menu.Item>

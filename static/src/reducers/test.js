@@ -79,16 +79,17 @@ const test = handleActions({
 		return { ...state, };
 	},
 	['test/get/success/series'](state, action) {
-		let count = 0;
-		action.payload.map(data=>{
-			if(data.problem_type == 0) count++;
-		})
+		// 选择题个数
+		// let count = 0;
+		// action.payload.map(data=>{
+		// 	if(data.problem_type == 0) count++;
+		// })
 		return { 
 			...state,
 			isSelectContext: { 
 				...state.isSelectContext, 
 				list: action.payload, 
-				total: count,
+				total: action.count,
 				// next: action.payload.next
 			},
 		}
@@ -128,7 +129,6 @@ const test = handleActions({
 	// 	};
 	// },
 	['test/init/problem'](state, action) {
-		console.log(action)
 		const { isSelectContext } = state
 		const { isSubmit } = isSelectContext.isSelectContext
 		let issubmit = false;
@@ -144,12 +144,12 @@ const test = handleActions({
 					testRecordId: action.testRecordId,
 					isSubmit: issubmit,
 					result: [],
+					isComplete: 0,
 				}
 			},
 		};
 	},
 	['test/set/problemisSubmit'](state, action) {
-		console.log(action)
 		const { isSelectContext } = state
 		return { 
 			...state, 
