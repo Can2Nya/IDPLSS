@@ -310,7 +310,7 @@ const Routes = ({ history, dispatch }) =>{
 				type: 'upload/init'
 			})
 			dispatch({
-				type: 'user/get/userVideo',
+				type: 'user/get/userText',
 				pagination: 1
 			})
 		}
