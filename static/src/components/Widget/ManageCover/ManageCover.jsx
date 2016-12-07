@@ -33,7 +33,7 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 					</div>
 				</Col>
 				<Col span={2}>
-					<div className={styles.icon}><Icon type="play-circle-o" /><br />0</div>
+					<div className={styles.icon}><Icon type="play-circle-o" /><br />{data.like}</div>
 				</Col>
 				</Row>
 		)
@@ -56,7 +56,7 @@ const ManageCover = ({ type, data, onClickEdit, onDelete }) => {
 					</div>
 				</Col>
 				<Col span={2}>
-					<div className={styles.icon}><Icon type="play-circle-o" /><br />0</div>
+					<div className={styles.icon}><Icon type="download" /><br />{data.download_count || data.like}</div>
 				</Col>
 				</Row>
 		)

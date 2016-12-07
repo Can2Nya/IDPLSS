@@ -253,7 +253,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						mode="inline"
 					  >
 						<Menu.SubMenu key="sub1" title={<span><Icon type="mail" /><span>稿件资料</span></span>}>
-							{ loginUserList.user_type >= 3? [
+							{ loginUserList.user_type >= 2? [
 								<Menu.Item key="1">课程视频管理</Menu.Item>,
 								<Menu.Item key="2">文本资料管理</Menu.Item>,
 								<Menu.Item key="3">试题测验管理</Menu.Item>,
