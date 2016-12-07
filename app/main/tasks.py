@@ -6,14 +6,14 @@ import jieba.analyse  # 使用结巴中文分词构造词云
 from .. import celery
 from app import redis_store
 from app.utils.log import logger
-from app.models import User, TextResourceBehavior, CourseBehavior, TestBehavior, TestList, TestRecord
+from app.models import User, TextResourceBehavior, CourseBehavior, TestBehavior, TestList, TestRecord, Post
 from app.recommend.course_recommend import user_similarity_recommend, course_similarity_recommend
 from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
 from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
 
 
 # local val
-REDIS_TIMEOUT = 80000  # 缓存的过期时间
+REDIS_TIMEOUT = 1000  # 缓存的过期时间
 TOP_K = 30  # 使用TF_IDF算法时返回的最大关键词个数
 
 
@@ -91,11 +91,15 @@ def get_text_resources(user, type_id):
 def get_key_words(u):
     user = u
     text = list()
-    posts = user.collection_posts
+    posts = Post.query.filter_by(author_id=u.id).all()
+    collection_posts = user.collection_posts
     courses = user.collection_courses
     text_resource = user.collection_text_resource
     test_records = user.test_record
-    for p in posts:
+    for u_post in posts:
+        text.append(u_post.title)
+        text.append(u_post.body)
+    for p in collection_posts:
         text.append(p.title)
         text.append(p.body)
     for c in courses:

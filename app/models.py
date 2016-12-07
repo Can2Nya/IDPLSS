@@ -144,7 +144,7 @@ class User(db.Model):
     user_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(32), unique=True, index=True)
-    user_type = db.Column(db.Integer, default=0)
+    user_type = db.Column(db.Integer, default=1)
     avatar = db.Column(db.String(64))
     is_ban = db.Column(db.Boolean, default=False)  # 用户是否被屏蔽
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
