@@ -1,42 +1,41 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Router, Route, IndexRoute, Link } from 'react-router';
+import { Router, Route, IndexRoute, Link, Menu } from 'react-router';
 import { Row, Col } from 'antd';
 
 import BarChart from '../../components/Chart/BarChart/BarChart';
-import PieChart from '../../components/Chart/PieChart/PieChart';
+import CloudChart from '../../components/Chart/CloudChart/CloudChart';
+import RadarChart from '../../components/Chart/RadarChart/RadarChart';
 import TimeLine from '../../components/TimeLine/TimeLine';
 import config from '../../config/config.js';
 import styles from './Pannel.less';
 
-const DynamicPannel = ({ children, data }) => {
-	// const renderBarChart = () =>{
-	// 	if(data.barData && data.barData.length > 0){
-	// 		return <BarChart data={data.barData}/>
-	// 	}
-	// }
-	// const renderPieChart = () =>{
-	// 	if(data.pieData && data.pieData.length > 0){
-	// 		return <PieChart data={[
- //        {catagory: 0, value: 56.33 },
- //        {catagory: 1, value: 24.03},
- //        {catagory: 2, value: 10.38},
- //        {catagory: 3,  value: 4.77},
- //        {catagory: 4, value: 0.91},
- //        {catagory: 5, value: 0.2}
- //      ]}/>
-	// 	}
-	// }
+const DynamicPannel = ({ children, data, activeKey }) => {
+	const renderBarChart = () =>{
+		if(data.barData && data.barData.length > 0){
+			return <BarChart data={data.barData}/>
+		}
+	}
+	const renderRadarChart = () =>{
+		if(data.radarData && data.radarData.length > 0){
+			return <RadarChart data={data.radarData}/>
+		}
+	}
+	const renderCloudChart = () =>{
+		if(data.cloudData && data.cloudData.length > 0){
+			return <CloudChart data={data.cloudData}/>
+		}
+	}
+	const renderChart = () =>{
+		if(activeKey == '0') return renderBarChart();
+		if(activeKey == '1') return renderRadarChart();
+		if(activeKey == '2') return renderCloudChart();
+	}
   	return (
 	<div className={styles.dynamicpannel}>
 	  <Row>
-		<Col span={17}>
-
-			{ children }
-			{/* renderBarChart() */}
-			
-		</Col>
-		<Col span={7}>
+		
+		<Col span={7} style={{ borderRight: '1px solid #e9e9e9'}}>
 			<div className={styles.userinfo}>
 				<div className={styles.row}>
 					<span className={styles.big}>
@@ -73,10 +72,13 @@ const DynamicPannel = ({ children, data }) => {
 					</span>
 				</div>
 			</div>
+			{ children }
+			
 		</Col>
-	  </Row>
-	  <Row>
-	  {/* renderPieChart() */}
+		<Col span={17}>
+			{ renderChart() }
+			
+		</Col>
 	  </Row>
 	</div>
   );

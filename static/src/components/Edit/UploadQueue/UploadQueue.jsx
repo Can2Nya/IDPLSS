@@ -439,7 +439,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 								choice_d: data.choice_d || '',
 								right_answer: data.right_answer,
 								answer_explain: data.answer_explain || '',
-								problem_order: index
+								problem_order: index+1
 							}
 						})
 					}else{
@@ -460,7 +460,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 								answer_explain: data.answer_explain || '',
 								author_id: data.author_id,
 								test_id: data.test_id,
-								problem_order: index
+								problem_order: index+1
 							}
 						})
 					}
@@ -481,7 +481,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 								name: data.video_name || '' ,
 								description: data.video_description || '' ,
 								source_url: data.source_url || '' ,
-								video_order: index
+								video_order: index+1
 							}
 						})
 					}
@@ -497,7 +497,7 @@ let UploadQueue = ({ upload, user, form, dispatch }) => {
 								source_url: data.source_url || '' ,
 								author_id: data.author_id,
 								course_id: data.course_id,
-								video_order: index
+								video_order: index+1
 							}
 						})
 					}

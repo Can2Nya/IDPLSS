@@ -102,7 +102,6 @@ const Manage = ({ upload, user, dispatch, location }) => {
 				onOk()
 			},
 			onCancel: (e)=>{
-				console.log(e)
 				e()
 			}
 		})
@@ -201,7 +200,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 		return userZoneList.map((data,index) =>{
 			if(!data.show) return
 			return (
-				<ManageCover key={index} data={data} onClickEdit={handleChangeEditState.bind(this)}  onDelete={handleDelete.bind(this)}/>
+				<ManageCover type={isSelectMenuItem} key={index} data={data} onClickEdit={handleChangeEditState.bind(this)}  onDelete={handleDelete.bind(this)}/>
 			)
 		})
 	}

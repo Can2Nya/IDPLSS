@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link } from 'react-router';
-import { Row, Col } from 'antd';
+import { Row, Col, message } from 'antd';
 import classNames from 'classnames';
 
 import styles from './Comment.less';
@@ -41,7 +41,9 @@ const Comment = ({ user, data, onDelete }) => {
 				<div className={styles.tool}>
 					<div className={styles.icon}>
 					{ renderDeleteButton() }
-					<a><span>&#xe60b; 点赞</span></a>
+					<a onClick={()=>{
+						message.success('收到一个赞！')
+					}}><span>&#xe60b; 点赞</span></a>
 					</div>
 				</div>
 			</div>

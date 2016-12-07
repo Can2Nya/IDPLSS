@@ -50,7 +50,7 @@ const SubjectivityTest = ({ time, result, status, data, index, form, onFormChang
 			</div>
 			</div>
 			<Form.Item>
-			<Input type='textarea' rows={5}
+			<Input type='textarea' rows={5} disabled={status}
 			{...getFieldProps(`test-${data.id}`,{
 				onChange: onFormChange,
 				rules: [

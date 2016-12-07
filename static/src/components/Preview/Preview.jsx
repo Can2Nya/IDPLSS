@@ -35,10 +35,10 @@ const Preview = ({ type, data, isCollect, onCollect, onCollectCancel, onLike }) 
 				return (
 					<Row gutter={8}>
 					<Col span={16}>
-						<a href={`${data.source_url}`}><Button className={styles.button}>预览</Button></a>
+						<a href={`${config.qiniu}/${data.source_url}`}><Button className={styles.button}>预览</Button></a>
 					</Col>
 					<Col span={8}>
-						<a href={`${data.source_url}`} download={`${data.source_url}`}><Button className={styles.button}>下载</Button></a>
+						<a href={`${config.qiniu}/${data.source_url}`} download={`${config.qiniu}/${data.source_url}`}><Button className={styles.button}>下载</Button></a>
 					</Col>
 					</Row>
 				)

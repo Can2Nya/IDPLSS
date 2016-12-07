@@ -59,7 +59,7 @@ const Index = ({ video, text, test, location }) => {
 		<Layout location={location}>
 		<div className={styles.contain}>
 			<div className={styles.marginCenter}>
-			<Title type='big'  title='推荐课程' />
+			<Title type='big'  title='热门课程' />
 			</div>
 			<div className={styles.margin}>
 			<Row gutter={16} type="flex" align="middle">
@@ -67,7 +67,7 @@ const Index = ({ video, text, test, location }) => {
 			</Row>
 			</div>
 			<div className={styles.marginCenter}>
-			<Title type='big'  title='推荐文档' />
+			<Title type='big'  title='热门资料' />
 			</div>
 			<div className={styles.margin}>
 			<Row gutter={16} type="flex" align="middle">
@@ -75,7 +75,7 @@ const Index = ({ video, text, test, location }) => {
 			</Row>
 			</div>
 			<div className={styles.marginCenter}>
-			<Title type='big'  title='真题测试' />
+			<Title type='big'  title='热门测试' />
 			</div>
 			<div className={styles.margin}>
 			<Row gutter={16} type="flex" align="middle">

@@ -88,7 +88,7 @@ function* postForumDetailCommentSource(action) {
 	try {
 		const { jsonResult } = yield call(req.postForumDetailComment, action);
 		if (jsonResult) {
-			message.success(jsonResult.status);
+			message.success('评论成功！');
 			
 			yield put({
 				type: 'forum/get/comment',

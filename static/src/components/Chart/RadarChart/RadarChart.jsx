@@ -16,8 +16,8 @@ const RadarChart = React.createClass({
 		let Stat = G2.Stat;
 		let chart = new G2.Chart({
 			id: `radar-${this.state.time}`,
-			width : 950,
-			height : 400,
+			width : 650,
+			height : 500,
 			plotCfg: {
 				margin: [60, 60, 80, 120]
 			}

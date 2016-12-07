@@ -99,6 +99,7 @@ let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
 			dispatch({
 				type: 'user/set/info',
 				user_id: cookie.get('user_id'),
+				mode: 'setInfo',
 				body: {
 					name: getFieldValue('name'), 
 					sex: getFieldValue('sex'), 

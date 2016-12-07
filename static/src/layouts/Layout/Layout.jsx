@@ -39,7 +39,6 @@ const Layout = React.createClass({
 				layoutList.pathname.map(layoutPath => {
 						if(location.pathname.search(layoutPath) != -1 && location.pathname.search(layoutPath) != 0) {
 							newLayoutid = layoutList.id;
-							console.log('change layout'+newLayoutid+layoutPath);
 						}
 					}
 				);
@@ -64,7 +63,7 @@ const Layout = React.createClass({
 		switch(this.state.layoutid){
 			case 1: return(
 				<div className={styles.contain}>
-				<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
+				<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
 				<div >
 					<Banner config={config} />
 					<MidNav />
@@ -77,7 +76,7 @@ const Layout = React.createClass({
 			case 2: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
+					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
 					<div >
 					<div className={styles.body}>
 					{ this.props.children }
@@ -90,7 +89,7 @@ const Layout = React.createClass({
 			case 3: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}`}}>
+					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
 					<div className={styles.body} >
 					{ this.props.children }
 					</div>

@@ -195,6 +195,7 @@ export async function UserStat(action) {
 	let url = `${apiUrl}/api/user/`
 	if(action.mode == 'frequency') url += 'time-frequency'
 	if(action.mode == 'interestedField') url += 'interested-field'
+	if(action.mode == 'cloud') url += 'words-cloud'
 	return xFetch(url,{method: 'GET',});
 }
 export async function UserLike(action) {

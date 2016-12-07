@@ -13,8 +13,8 @@ let PostForm = ({ user, forum, upload, dispatch, form }) => {
 	const { getFieldProps, validateFields, getFieldValue } = form;
 	const { loginUserList } = user
 	const { context } = forum.isSelectContext
-	const { modalState } = forum
-	const { tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
+	// const { modalState } = forum
+	const { modalState, tmpFile, uploadList, uploadListFiles, uploadListProgress, token, time, isSelectMenuItem, isSelectContextId, isSelectContext, isSelectContextList } = upload
 	// -------------action------------------
 
 	const handleToggleForumModal = () =>{//表单modal显示
@@ -29,7 +29,7 @@ let PostForm = ({ user, forum, upload, dispatch, form }) => {
 				type: 'upload/changeTime',
 			})
 			dispatch({
-				type: 'forum/ToggleForumModal',
+				type: 'upload/changeModalState',
 				modalState: !modalState
 			})
 			dispatch({

@@ -50,11 +50,14 @@ let User = ({ user, dispatch, textStyle, form }) => {
 
 	}
 	const handleLogin = ()=>{
-		const data = form.getFieldsValue();
-		cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
-		dispatch({
-			type: 'user/login',
-			body: { user_name_or_email: data.username, user_password: data.password }
+		validateFields(['confirmEmail'],(errors, values) =>{
+			if(errors) return;
+			const data = form.getFieldsValue();
+			cookie.set('authorization','Basic '+base64.encode(data.username+":"+data.password))
+			dispatch({
+				type: 'user/login',
+				body: { user_name_or_email: data.username, user_password: data.password }
+			})
 		})
 	}
 	const handleLogout = ()=>{

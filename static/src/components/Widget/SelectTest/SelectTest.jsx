@@ -55,7 +55,7 @@ const SelectTest = ({ time, result, status, data, index, form, onFormChange }) =
 			</div>
 			</div>
 			<Form.Item>
-				<Radio.Group
+				<Radio.Group disabled={status}
 				{...getFieldProps(`test-${data.id}`,{
 					onChange: onFormChange,
 					rules: [

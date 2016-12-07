@@ -19,7 +19,7 @@ function* login(action) {
 			})
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 		yield put({
 			type: 'user/login/failed',
 		});
@@ -68,18 +68,19 @@ function* getUser(action) {// arg内有action参数
 				if(action.mode == 'recomfirm'){
 					 message.success('发送成功！')
 				}
-				else{
-					put({
+				if(action.mode == 'setInfo'){
+					yield put({
 						type: 'user/get/info',
 						user_id: action.user_id,
 					})
+					message.success('修改成功！')
 				}
 				
 			}
 		}
 	} catch (err) {
 		console.log(err)
-		message.error('非法操作');
+		message.error('非法操作,请重新登陆');
 	}
 }
 
@@ -94,7 +95,7 @@ function* getUser(action) {// arg内有action参数
 // 			message.success(err);
 // 		}
 // 	} catch (err) {
-// 		message.error(err);
+// 		message.error('err: 网络错误');
 		
 // 	}
 // }
@@ -108,7 +109,7 @@ function* register(action) {
 			});
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 		yield put({
 			type: 'user/register/failed',
 			err,
@@ -125,7 +126,7 @@ function* registerConfirm(action) {
 			});
 		}
 	} catch (err) {
-		//message.error(err);
+		//message.error('err: 网络错误');
 		yield put({
 			type: 'user/register/confirm/failed',
 			err,
@@ -144,7 +145,7 @@ function* isFollowing(action) {
 			console.log(jsonResult)
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 		//yield put({
 		//  type: 'user/login/failed',
 		//  err,
@@ -163,7 +164,7 @@ function* isFollowedBy(action) {
 			console.log(jsonResult)
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 		//yield put({
 		//  type: 'user/login/failed',
 		//  err,
@@ -190,7 +191,7 @@ function* getUserZoneData(action) {
 			}
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 	}
 }
 
@@ -224,7 +225,7 @@ function* getUpLoadInfo(action) {
 
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 	}
 }
 
@@ -364,7 +365,7 @@ function* CreateData(action) {
 			}
 		}
 	} catch (err) {
-		message.error(err);
+		message.error('err: 网络错误');
 		yield put({
 			type: 'upload/changeSubmitState',
 			isSubmit: false,
@@ -493,7 +494,7 @@ function* getUserStat(action) {
 			yield put({
 				type: 'user/get/stat/success',
 				mode: action.mode,
-				payload: jsonResult.result
+				payload: jsonResult.result || jsonResult.key_words
 			})
 		}
 	} catch (err) {
