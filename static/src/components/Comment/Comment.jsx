@@ -7,13 +7,13 @@ import styles from './Comment.less';
 import config from '../../config/config.js'
 
 const Comment = ({ user, data, onDelete }) => {
-	// user={authorid,loginid,logintype}
+	// user={authorid,loginid,role}
 	const renderUserAvatar = ()=> {
 		if(data['author_avatar']) return <Link to={{pathname: `/user/${data.author_id}/`, hash: '#!/dynamic/0/' }} ><div className={styles.avatar} style={{ backgroundImage: `url(${config.qiniu}/${data.author_avatar})`}}></div></Link>
 		else return <div className={styles.avatar}></div>
 	}
 	const renderDeleteButton = () =>{
-		if ((user.loginid == user.authorid) || (user.logintype >= 3) || (user.loginid == data['author_id'])){
+		if ((user.loginid == user.authorid) || (user.role >= 3) || (user.loginid == data['author_id'])){
 			return <a onClick={onDelete.bind(this, data['comment_id'] || data['id'], data['author_id'])}><span>&#xe602; 删除</span></a>
 		}
 	}

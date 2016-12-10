@@ -114,7 +114,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 	}
 
 	const handlePostDelete = (commentid, authorid, e) =>{
-		if ((user.loginUserList.user_type == 2 && user.loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
+		if ((user.loginUserList.role_id == 2 && user.loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
 			dispatch({
 				type: `${stateName}/delete/comment`,
@@ -183,7 +183,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 					<Comment key={index} data={comment} user={{ 
 					authorid: isSelectContext.context.author_id, 
 					loginid: user.loginUserList.user_id, 
-					logintype: user.loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
+					role: user.loginUserList.role_id}}  onDelete={handlePostDelete.bind(this)}/>
 				);
 			})
 		}

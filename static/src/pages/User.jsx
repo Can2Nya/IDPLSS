@@ -56,7 +56,7 @@ const User = ({ location, dispatch, user }) => {
 		window.location.hash = `${userMenu[isSelectTab]}/${e[0] || e.key}/`;
 	}
 	const handlePostDelete = (commentid, authorid, e) =>{
-		// if ((loginUserList.user_type == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
+		// if ((loginUserList.role_id == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
 			let stateName;
 			switch(isSelectSubTab){
@@ -137,7 +137,7 @@ const User = ({ location, dispatch, user }) => {
 						user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
-						logintype: loginUserList.user_type
+						role: loginUserList.role_id
 						}}  
 						onDelete={handlePostDelete.bind(this)}/>
 						</Col>
@@ -153,7 +153,7 @@ const User = ({ location, dispatch, user }) => {
 						<Comment key={index} data={data} user={{ 
 						authorid: data.author_id, 
 						loginid: loginUserList.user_id, 
-						logintype: loginUserList.user_type}}  onDelete={handlePostDelete.bind(this)}/>
+						role: loginUserList.role_id}}  onDelete={handlePostDelete.bind(this)}/>
 					</Col>
 					);
 				})

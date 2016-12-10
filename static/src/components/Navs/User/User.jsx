@@ -193,7 +193,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 			</Modal>
 			</div>
 			);
-		if(!loginUserList.user_role_iduser_confirmed){// 
+		if(!loginUserList.user_confirmed){// 
 			return(
 				<Modal title='阿呀！出错了' visible={true} onOk={handleReComfrim.bind(this)}>
 					<p>您的账户似乎没经过邮箱激活</p>
@@ -217,6 +217,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/0/' }} ><div className={styles.item}>个人中心</div></Link>
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/0/' }} ><div className={styles.item}>设置</div></Link>
 					<Link to={{pathname: `/manage/`, hash: '#!/2/' }} ><div className={styles.item}>资源管理</div></Link>
+					{ loginUserList.role_id >= 3 ? <Link to={{pathname: `/backstage/` }} ><div className={styles.item}>后台管理</div></Link>: null}
 					<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 					</div>
 				);

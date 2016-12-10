@@ -100,7 +100,7 @@ def text_resource_detail(rid):
         db.session.commit()
         return self_response('delete text resource successfully')
     elif request.method == 'PUT':
-        if not user or (user.id == text_resource.author_id or have_school_permission(user)):
+        if not user or not (user.id == text_resource.author_id or have_school_permission(user)):
             return forbidden('does not have permissions')
         modify_info = request.json
         text_resource.resource_name = modify_info['resource_name']

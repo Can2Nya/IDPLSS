@@ -17,6 +17,7 @@ import PlayTest from '../pages/PlayTest';
 import NotFound from '../pages/NotFound';
 import Manage from '../pages/Manage';
 import Search from '../pages/Search';
+import Backstage from '../pages/Backstage';
 
 //import { initPageStore } from './initPageStore';
 
@@ -374,6 +375,7 @@ const Routes = ({ history, dispatch }) =>{
 		</Route>
 		<Route path="/search/" component={Search}>
 		</Route>
+		<Route path="/backstage/" component={Backstage} />
 		{/*<Route path="/actived" component={App} />*/}
 		{/*<Route path="/completed" component={App} />*/}
 		<Route path="*" component={NotFound}/>
