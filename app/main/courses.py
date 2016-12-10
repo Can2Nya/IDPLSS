@@ -45,7 +45,7 @@ def course_operation(cid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user is None or (user.id == course.author_id or have_school_permission(user)):
+        if user is None or not (user.id == course.author_id or have_school_permission(user)):
             return forbidden('does not have permissions')
         course.show = False
         all_user = User.query.all()
@@ -60,7 +60,7 @@ def course_operation(cid):
         db.session.commit()
         return self_response('delete course successfully')
     elif request.method == 'PUT':
-        if user is None or (user.id == course.author_id or have_school_permission(user)):
+        if user is None or not (user.id == course.author_id or have_school_permission(user)):
             return forbidden('does not have permissions')
         modify_info = request.json
         course.description = modify_info['description']

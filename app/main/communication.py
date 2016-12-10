@@ -68,7 +68,7 @@ def post_detail(pid):
             return not_found()
     elif request.method == 'DELETE':
         post = Post.query.get_or_404(pid)
-        if not user or not user.id == post.author_id or have_school_permission(user):
+        if not user or not (user.id == post.author_id or have_school_permission(user)):
             return forbidden('does not have permissions')
         post.show = False
         db.session.add(post)
