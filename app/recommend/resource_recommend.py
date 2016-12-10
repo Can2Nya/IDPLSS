@@ -31,13 +31,11 @@ def user_index_calc(user):
                 user_count_dict[uid] = 1
             else:
                 user_count_dict[uid] += 1
-    # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
         result_dict[uid] /= \
             math.sqrt(len(target_collections.count()*len(TextResourceBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    # print "result dict is %s" % w_sort
     return w_sort, target_collections
 
 

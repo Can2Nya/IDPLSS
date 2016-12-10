@@ -2,11 +2,10 @@
 from flask import request, g, url_for, current_app, jsonify
 
 from app.main import main
-from app.main.authentication import auth
 from app.utils.responses import self_response
 from app.utils.model_tools import have_school_permission
 from app.main.responses import bad_request, not_found, forbidden
-from app.main.decorators import permission_required, get_current_user, user_login_info
+from app.main.decorators import permission_required, login_required, user_login_info
 from app.models import db, User, TextResource, TextResourceComment, Permission, TextResourceBehavior
 
 
@@ -86,40 +85,38 @@ def text_resource_detail(rid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user.id == text_resource.author_id or have_school_permission(user):
-            text_resource.show = False
-            all_users = User.query.all()
-            for u in all_users:   # 删除用户收藏的课程
-                if u.is_collecting_text_resouurce(text_resource):
-                    u.collection_text_resource.remove(text_resource)
-            all_behaviors = TextResourceBehavior.query.filter_by(text_resource_id=text_resource.id).all()
-            if all_behaviors is not None:
-                for b in all_behaviors:
-                    db.session.delete(b)
-            db.session.add(text_resource)
-            db.session.commit()
-            return self_response('delete text resource successfully')
-        else:
-            return forbidden('does not have permission to delete this text resource')
+        if not user or not (user.id == text_resource.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        text_resource.show = False
+        all_users = User.query.all()
+        for u in all_users:   # 删除用户收藏的课程
+            if u.is_collecting_text_resouurce(text_resource):
+                u.collection_text_resource.remove(text_resource)
+        all_behaviors = TextResourceBehavior.query.filter_by(text_resource_id=text_resource.id).all()
+        if all_behaviors is not None:
+            for b in all_behaviors:
+                db.session.delete(b)
+        db.session.add(text_resource)
+        db.session.commit()
+        return self_response('delete text resource successfully')
     elif request.method == 'PUT':
-        if user.id == text_resource.author_id or have_school_permission(user):
-            modify_info = request.json
-            text_resource.resource_name = modify_info['resource_name']
-            text_resource.description = modify_info['description']
-            text_resource.resource_category = modify_info['category']
-            text_resource.resource_type = modify_info['type']
-            text_resource.source_url = modify_info['source_url']
-            db.session.add(text_resource)
-            db.session.commit()
-            return self_response('update text resource information successfully')
-        else:
-            return forbidden('does not have permission to update this text resource')
+        if not user or (user.id == text_resource.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        modify_info = request.json
+        text_resource.resource_name = modify_info['resource_name']
+        text_resource.description = modify_info['description']
+        text_resource.resource_category = modify_info['category']
+        text_resource.resource_type = modify_info['type']
+        text_resource.source_url = modify_info['source_url']
+        db.session.add(text_resource)
+        db.session.commit()
+        return self_response('update text resource information successfully')
     else:
         return self_response('invalid operation')
 
 
 @main.route('/api/text-resources/new-resource', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.UPLOAD_RESOURCE)
 def new_text_resource():
     text_resource = TextResource.from_json(request.json)
@@ -152,8 +149,7 @@ def text_resource_comments(rid):
 
 
 @main.route('/api/text-resources/<int:rid>/new-comment', methods=['POST'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def publish_resource_comment(rid):
     comment = TextResourceComment.from_json(request.json)
@@ -163,7 +159,7 @@ def publish_resource_comment(rid):
 
 
 @main.route('/api/text-resources/comment/<int:rid>', methods=['DELETE'])
-@auth.login_required
+@login_required
 @permission_required(Permission.DELETE_RESOURCE)
 def delete_resource_comment(rid):
     comment = TextResourceComment.query.get_or_404(rid)
@@ -174,8 +170,7 @@ def delete_resource_comment(rid):
 
 
 @main.route('/api/text-resources/<int:rid>/is-collecting')
-@get_current_user
-@auth.login_required
+@login_required
 def is_collecting_resource(rid):
     text_resource = TextResource.query.get_or_404(rid)
     user = g.current_user
@@ -186,8 +181,7 @@ def is_collecting_resource(rid):
 
 
 @main.route('/api/text-resources/<int:rid>/collect-resource', methods=['GET', 'DELETE'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def collect_resource(rid):
     text_resource = TextResource.query.get_or_404(rid)

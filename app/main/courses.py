@@ -2,11 +2,10 @@
 from flask import g, request, url_for, current_app, jsonify
 
 from app.main import main
-from app.main.authentication import auth
 from app.utils.responses import self_response
 from app.utils.model_tools import have_school_permission
 from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
-from app.main.decorators import get_current_user, permission_required, user_login_info
+from app.main.decorators import login_required, permission_required, user_login_info
 from app.models import Course, CourseComment, VideoList, db, Permission, CourseBehavior, User
 
 
@@ -41,38 +40,36 @@ def course_operation(cid):
     course = Course.query.get_or_404(cid)
     user = g.current_user
     if request.method == 'GET':
-        if course.show is not False:
+        if course.show:
             return jsonify(course.to_json())
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user.id == course.author_id or have_school_permission(user):
-            course.show = False
-            all_user = User.query.all()
-            for u in all_user:
-                if u.is_collecting_course(course):
-                    u.collection_courses.remove(course)
-            all_behaviors = CourseBehavior.query.filter_by(course_id=course.id).all()
-            if all_behaviors is not None:
-                for b in all_behaviors:
-                    db.session.delete(b)
-            db.session.add(course)
-            db.session.commit()
-            return self_response('delete course successfully')
-        else:
-            return forbidden('does not have permission delete course')
+        if user is None or (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        course.show = False
+        all_user = User.query.all()
+        for u in all_user:
+            if u.is_collecting_course(course):
+                u.collection_courses.remove(course)
+        all_behaviors = CourseBehavior.query.filter_by(course_id=course.id).all()
+        if all_behaviors is not None:
+            for b in all_behaviors:
+                db.session.delete(b)
+        db.session.add(course)
+        db.session.commit()
+        return self_response('delete course successfully')
     elif request.method == 'PUT':
-        if user.id == course.author_id or have_school_permission(user):
-            modify_info = request.json
-            course.description = modify_info['description']
-            course.course_name = modify_info['course_name']
-            course.images = modify_info['image']
-            course.course_category = modify_info['category']
-            db.session.add(course)
-            db.session.commit()
-            return self_response('change course information successfully')
-        else:
-            return forbidden('does not have permission update course')
+        if user is None or (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        modify_info = request.json
+        course.description = modify_info['description']
+        course.course_name = modify_info['course_name']
+        course.images = modify_info['image']
+        course.course_category = modify_info['category']
+        db.session.add(course)
+        db.session.commit()
+        return self_response('change course information successfully')
     else:
         return method_not_allowed('invalid operation')
 
@@ -133,40 +130,36 @@ def course_video_detail(cid, vid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user.id == course_video.author_id or have_school_permission(user):
-            course_video.show = False
-            db.session.add(course_video)
-            db.session.commit()
-            all_video = VideoList.query.filter_by(course_id=cid, show=True).order_by(VideoList.video_order).all()
-            order = [x for x in range(1, len(all_video)+1)]
-            for x, y in zip(all_video, order):
-                x.video_order = y
-                db.session.add(x)
-            db.session.commit()
-            return self_response('delete course video successfully')
-        else:
-            return forbidden('does not have permission to delete video')
+        if not user or not (user.id == course_video.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        course_video.show = False
+        db.session.add(course_video)
+        db.session.commit()
+        all_video = VideoList.query.filter_by(course_id=cid, show=True).order_by(VideoList.video_order).all()
+        order = [x for x in range(1, len(all_video)+1)]
+        for x, y in zip(all_video, order):
+            x.video_order = y
+            db.session.add(x)
+        db.session.commit()
+        return self_response('delete course video successfully')
     elif request.method == 'PUT':
-        if user.id == course_video.author_id or have_school_permission(user):
-            modify_info = request.json
-            course_video.video_description = modify_info['description']
-            course_video.video_name = modify_info['name']
-            course_video.source_url = modify_info['source_url']
-            course_video.video_order = modify_info['video_order']
-            db.session.add(course_video)
-            db.session.commit()
-            return self_response('update video information successfully')
-        else:
-            return forbidden('does not have permission to change information')
-
+        if not user or not (user.id == course_video.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        modify_info = request.json
+        course_video.video_description = modify_info['description']
+        course_video.video_name = modify_info['name']
+        course_video.source_url = modify_info['source_url']
+        course_video.video_order = modify_info['video_order']
+        db.session.add(course_video)
+        db.session.commit()
+        return self_response('update video information successfully')
     else:
         return self_response('invalid operation')
 
 
 @main.route('/api/courses/new-course', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.UPLOAD_VIDEO)
-@get_current_user
 def create_course():
     course_info = request.json
     new_course = Course.from_json(course_info)
@@ -176,9 +169,8 @@ def create_course():
 
 
 @main.route('/api/courses/<int:cid>/new-video', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.UPLOAD_VIDEO)
-@get_current_user
 def upload_video(cid):
     course_video_info = request.json
     new_course_video = VideoList.from_json(course_video_info)
@@ -210,7 +202,7 @@ def courses_comments(cid):
 
 
 @main.route('/api/courses/<int:cid>/new-comment', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def publish_video_comment(cid):
     course_comment = CourseComment.from_json(request.json)
@@ -220,7 +212,7 @@ def publish_video_comment(cid):
 
 
 @main.route('/api/courses/comment/<int:cid>', methods=['DELETE'])
-@auth.login_required
+@login_required
 @permission_required(Permission.DELETE_VIDEO)
 def delete_video_comment(cid):
     course_comment = CourseComment.query.get_or_404(cid)
@@ -231,8 +223,7 @@ def delete_video_comment(cid):
 
 
 @main.route('/api/courses/<int:cid>/is-collecting', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def is_collecting_video(cid):
     course = Course.query.get_or_404(cid)
     user = g.current_user
@@ -243,8 +234,7 @@ def is_collecting_video(cid):
 
 
 @main.route('/api/courses/<int:vid>/collect-course', methods=['GET', 'DELETE'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def collect_course_video(vid):
     course = Course.query.get_or_404(vid)

@@ -9,29 +9,22 @@ from app.models import Permission, User
 def permission_required(permissions):
     """
     装饰器,用来检查用户是否有权限访问某个API
+    从g对象获取current 依赖装饰器admin_required
     原理:通过flask request对象中封装的authorization来访问user_name,进而验证其权限
     :param permissions:
     :return:decorator function
     """
-    from app.main.responses import not_found, forbidden
+    from app.main.responses import forbidden
 
-    def decorator(f):
+    def decorator_function(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            user_name = request.authorization.username
-            user = User.query.filter_by(user_name=user_name).first()
-            if user is None:
-                user = User.query.filter_by(email=user_name).first()
-                if user is None:
-                    user = User.verify_auth_token(user_name)
-            # TODO(ddragon)支持邮箱登录
-            if user is None:
-                return not_found()
-            if not user.can(permissions) or user.confirmed is False:
-                return forbidden("don't have permission or dose not confirm")
+            current_user = g.current_user  # 从g对象获取已登录用户信息
+            if not current_user.can(permissions):
+                return forbidden("your account does not have access permissions")
             return f(*args, **kwargs)
         return decorated_function
-    return decorator
+    return decorator_function
 
 
 def admin_required(f):
@@ -62,33 +55,33 @@ def allow_cross_domain(f):
     return decorated_function
 
 
-def get_current_user(f):
+def login_required(f):
     """
-    用来获取当前用户的装饰器,支持三种方式验证,token验证,账号名密码登录验证,邮箱和密码登录验证
+    用户登录访问装饰器
+    支持三种方式验证,token验证,账号名密码登录验证,邮箱和密码登录验证
+    并且保存获取当前登录的用户
     :param f:
     :return:
     """
-    from app.main.responses import not_found, forbidden
+    from app.main.responses import not_found, forbidden, bad_request
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth = request.authorization
         if not auth:
-            return not_found()
-        current_user = User.verify_auth_token(auth.username)   # verify token user
-        if current_user is None:
-            current_user = User.query.filter_by(user_name=auth.username).first()
-            auth_ok = False
-            if current_user is not None:
-                auth_ok = current_user.verify_password(auth.password)
-            else:
-                current_user = User.query.filter_by(email=auth.username).first()
-                if current_user is not None:
-                    auth_ok = current_user.verify_password(auth.password)
+            return not_found()  # 拦截authorization信息错误
+        current_user = User.verify_auth_token(auth.username)
+        if not current_user:
+            user_by_name = User.query.filter_by(user_name=auth.username).first()
+            user_by_email = User.query.filter_by(email=auth.username).first()
+            current_user = user_by_name if user_by_name else user_by_email
+            if not current_user:
+                return not_found()  # 拦截用户信息错误
+            auth_ok = current_user.verify_password(auth.password)
             if not auth_ok:
-                return not_found()
-        if current_user.is_ban is True:
-            return forbidden('user has ban login system')  # 用户被禁止访问post方法,不能进行post操作
+                return bad_request('password incorrect')   # 拦截密码错误
+        if current_user.is_ban or not current_user.confirmed:
+            return forbidden('your account has been banned')  # 拦截账号禁用或未激活
         g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function
@@ -96,17 +89,17 @@ def get_current_user(f):
 
 def user_login_info(f):
     """
-    记录用户的行为日志,记录之前判断是否有登录,如有登录则当前登录的用户
+    记录用户信息,如果已经登录保存到g.current_user
     :param f:
     :return:如果已经登录返回当前登录用户,未登录返回None
     """
-    from app.main.responses import not_found, forbidden
+    from app.main.responses import  forbidden
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth = request.authorization
         if not auth:
-            g.current_user = None
+            current_user = None
         else:
             current_user = User.verify_auth_token(auth.username)   # verify token user
             if current_user is None:
@@ -119,12 +112,34 @@ def user_login_info(f):
                     if current_user is not None:
                         auth_ok = current_user.verify_password(auth.password)
                 if not auth_ok:
-                    return not_found()
-            if current_user is not None and current_user.is_ban is True:
-                return forbidden('user has ban login system')  # 用户被禁止访问post方法,不能进行post操作
-            g.current_user = current_user
+                    current_user = None
+            if current_user is not None and current_user.is_ban is True and current_user.confirmed:
+                return forbidden('user has been banned')  # 用户被禁止访问post方法,不能进行post操作
+        g.current_user = current_user
         return f(*args, **kwargs)
     return decorated_function
+
+
+def manage_permission_required(f):
+    """
+    token验证,账号名密码登录验证,邮箱和密码登录验证,判断用户是否有权限进行角色分配,校级管理员,管理员有权限,其它一律拦截
+    :param f:
+    :return:
+    """
+    from app.models import Role
+    from app.main.responses import  forbidden
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        current_user = g.current_user
+        admin = Role.query.filter_by(role_name='Admin').first()
+        school_admin = Role.query.filter_by(role_name='SchoolAdmin').first()
+        if not (current_user.role == admin or current_user.role == school_admin):
+            return forbidden('does not have permission to access ')  # 拦截权限不够
+        g.current_user = current_user
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 
 

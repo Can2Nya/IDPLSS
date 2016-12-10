@@ -2,12 +2,11 @@
 from flask import current_app, jsonify, g, request, url_for
 
 from app.main import main
-from app.main.authentication import auth
 from app.utils.responses import self_response
-from app.main.responses import not_found, forbidden
+from app.main.responses import not_found, forbidden, bad_request
 from app.utils.model_tools import have_school_permission
-from app.main.decorators import get_current_user, permission_required, user_login_info
-from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, Permission, TestBehavior
+from app.main.decorators import login_required, user_login_info
+from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, TestBehavior
 
 
 @main.route('/api/test-list', methods=['GET'])
@@ -42,39 +41,37 @@ def test_operation(tid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user.id == test.author_id or have_school_permission(user):
-            test.show = False
-            all_users = User.query.all()
-            for u in all_users:   # 测试已经删除,将关联的测试记录也删除
-                record = TestRecord.query.filter_by(answerer_id=u.id, test_list_id=test.id).first()
-                if record is not None:
-                    db.session.delete(record)
-                    all_answer_record = AnswerRecord.query.filter_by(answerer_id=u.id, test_record_id=record.id).all()
-                    if all_answer_record is not None:
-                        for r in all_answer_record:
-                            db.session.delete(r)
-            all_behaviors = TestBehavior.query.filter_by(test_id=test.id).all()
-            if all_behaviors is not None:
-                for b in all_behaviors:
-                    db.session.delete(b)
-            db.session.add(test)
-            db.session.commit()
-            return self_response('delete test successfully')
-        else:
-            return forbidden('does not have permission to delete this test')
+        if not user or not (user.id == test.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        test.show = False
+        all_users = User.query.all()
+        for u in all_users:   # 测试已经删除,将关联的测试记录也删除
+            record = TestRecord.query.filter_by(answerer_id=u.id, test_list_id=test.id).first()
+            if record is not None:
+                db.session.delete(record)
+                all_answer_record = AnswerRecord.query.filter_by(answerer_id=u.id, test_record_id=record.id).all()
+                if all_answer_record is not None:
+                    for r in all_answer_record:
+                        db.session.delete(r)
+        all_behaviors = TestBehavior.query.filter_by(test_id=test.id).all()
+        if all_behaviors is not None:
+            for b in all_behaviors:
+                db.session.delete(b)
+        db.session.add(test)
+        db.session.commit()
+        return self_response('delete test successfully')
     elif request.method == 'PUT':
-        if user.id == test.author_id or have_school_permission(user):
-            modidy_info = request.json
-            test.test_title = modidy_info['title']
-            test.test_description = modidy_info['description']
-            test.test_category = modidy_info['category']
-            test.key_words = modidy_info['key_words']
-            test.image = modidy_info['image']
-            db.session.add(test)
-            db.session.commit()
-            return self_response('test information update successfully')
-        else:
-            return self_response('does not have permission to update this test')
+        if not user or not (user.id == test.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        modify_info = request.json
+        test.test_title = modify_info['title']
+        test.test_description = modify_info['description']
+        test.test_category = modify_info['category']
+        test.key_words = modify_info['key_words']
+        test.image = modify_info['image']
+        db.session.add(test)
+        db.session.commit()
+        return self_response('test information update successfully')
     else:
         return self_response('invalid operation')
 
@@ -133,8 +130,7 @@ def test_problems(tid):
 
 
 @main.route('/api/test-list/<int:tid>/new-problem', methods=['POST'])
-@auth.login_required
-@get_current_user
+@login_required
 def new_problem(tid):
     problem = TestProblem.from_json(request.json)
     db.session.add(problem)
@@ -153,45 +149,41 @@ def problem_operation(tid, pid):
         else:
             return not_found()
     elif request.method == 'DELETE':
-        if user.id == problem.author_id or have_school_permission(user):
-            problem.show = False
-            db.session.add(problem)
-            db.session.commit()
-            all_problem = TestProblem.query.filter_by(test_list_id=tid, show=True).order_by(TestProblem.problem_order).all()
-            problem_count = [x for x in range(1, len(all_problem)+1)]
-            for x, y in zip(all_problem, problem_count):
-                x.problem_order = y
-                db.session.add(x)
-            db.session.commit()
-            return self_response('delete problem successfully')
-        else:
-            return forbidden('does not have permission to delete this problem')
+        if not user or not (user.id == problem.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        problem.show = False
+        db.session.add(problem)
+        db.session.commit()
+        all_problem = TestProblem.query.filter_by(test_list_id=tid, show=True).order_by(TestProblem.problem_order).all()
+        problem_count = [x for x in range(1, len(all_problem)+1)]
+        for x, y in zip(all_problem, problem_count):
+            x.problem_order = y
+            db.session.add(x)
+        db.session.commit()
+        return self_response('delete problem successfully')
     elif request.method == 'PUT':
-        if user.id == problem.author_id or have_school_permission(user):
-            modify_info = request.json
-            problem.right_answer = modify_info['right_answer']
-            problem.choice_a = modify_info['choice_a']
-            problem.choice_b = modify_info['choice_b']
-            problem.choice_c = modify_info['choice_c']
-            problem.choice_d = modify_info['choice_d']
-            problem.problem_description = modify_info['problem_description']
-            problem.description_image = modify_info['description_image']
-            problem.problem_type = modify_info['problem_type']
-            problem.problem_order = modify_info['problem_order']
-            problem.answer_explain = modify_info['answer_explain']
-            db.session.add(problem)
-            db.session.commit()
-            return self_response("update problem info successfully")
-        else:
-            return forbidden('does not have permission to edit this problem')
-
+        if not user or not (user.id == problem.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        modify_info = request.json
+        problem.right_answer = modify_info['right_answer']
+        problem.choice_a = modify_info['choice_a']
+        problem.choice_b = modify_info['choice_b']
+        problem.choice_c = modify_info['choice_c']
+        problem.choice_d = modify_info['choice_d']
+        problem.problem_description = modify_info['problem_description']
+        problem.description_image = modify_info['description_image']
+        problem.problem_type = modify_info['problem_type']
+        problem.problem_order = modify_info['problem_order']
+        problem.answer_explain = modify_info['answer_explain']
+        db.session.add(problem)
+        db.session.commit()
+        return self_response("update problem info successfully")
     else:
         return self_response('invalid operation')
 
 
 @main.route('/api/test-list/new-test-record', methods=['POST'])
-@auth.login_required
-@get_current_user
+@login_required
 def new_test_record():
     """
     记录用户已经参与的测试列表,对应前端类似于"开始测试"按钮
@@ -232,7 +224,7 @@ def new_test_record():
 
 
 @main.route('/api/test-list/test-answer/<int:pid>', methods=['POST'])
-@auth.login_required
+@login_required
 def judge_test_answer(pid):
     problem = TestProblem.query.get_or_404(pid)
     answer_info = request.json
@@ -248,10 +240,8 @@ def judge_test_answer(pid):
         return self_response('False')
 
 
-
 @main.route('/api/test-list/clean-record/<int:tid>', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def clean_record(tid):
     user = g.current_user
     old_record = TestRecord.query.filter_by(id=tid).first()
@@ -265,11 +255,9 @@ def clean_record(tid):
 
 
 @main.route('/api/test-list/over-test/<int:tid>', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def over_test(tid):
     user = g.current_user
-    print "user id is %s test id is %s " % (user.id, tid)
     test_record = TestRecord.query.filter_by(answerer_id=user.id, test_list_id=tid).first()
     if not test_record:
         return not_found()
