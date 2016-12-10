@@ -17,6 +17,7 @@ import UploadButton from '../components/UploadButton/UploadButton';
 
 import styles from './commont.less';
 import config from '../config/config.js'
+import { judgeUserRole } from '../tool/tool.js'
 
 const Manage = ({ upload, user, dispatch, location }) => {
 	const { loginUserList, userZoneList, total } = user
@@ -267,7 +268,7 @@ const Manage = ({ upload, user, dispatch, location }) => {
 						mode="inline"
 					  >
 						<Menu.SubMenu key="sub1" title={<span><Icon type="mail" /><span>稿件资料</span></span>}>
-							{ loginUserList.role_id >= 2? [
+							{ judgeUserRole.isAllowCommitCourseOrTest(loginUserList.role_id)? [
 								<Menu.Item key="1">课程视频管理</Menu.Item>,
 								<Menu.Item key="2">文本资料管理</Menu.Item>,
 								<Menu.Item key="3">试题测验管理</Menu.Item>,

@@ -113,10 +113,14 @@ function* deleteVideoDetailCommentSource(action) {
 	try {
 		const { jsonResult } = yield call(req.deleteVideoDetailComment, action);
 		if (jsonResult) {
-			message.success(jsonResult.status);
+			message.success('删除成功');
 			yield put({
 				type: 'video/get/comment',
 				id: action.id,
+				pagination: 1
+			})
+			yield put({
+				type: 'user/get/userVideoComment',
 				pagination: 1
 			})
 		}

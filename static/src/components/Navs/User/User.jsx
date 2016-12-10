@@ -11,6 +11,7 @@ import QueueAnim from 'rc-queue-anim';//动画效果
 
 import Button from '../../Button/Button';
 import config from '../../../config/config';
+import { judgeUserRole } from '../../../tool/tool';
 import styles from './User.less';
 
 let User = ({ user, dispatch, textStyle, form }) => {
@@ -217,7 +218,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/0/' }} ><div className={styles.item}>个人中心</div></Link>
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/0/' }} ><div className={styles.item}>设置</div></Link>
 					<Link to={{pathname: `/manage/`, hash: '#!/2/' }} ><div className={styles.item}>资源管理</div></Link>
-					{ loginUserList.role_id >= 3 ? <Link to={{pathname: `/backstage/` }} ><div className={styles.item}>后台管理</div></Link>: null}
+					{ judgeUserRole.isAllowControlBackStage(loginUserList.role_id) ? <Link to={{pathname: `/backstage/` }} ><div className={styles.item}>后台管理</div></Link>: null}
 					<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 					</div>
 				);

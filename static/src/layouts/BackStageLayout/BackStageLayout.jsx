@@ -36,10 +36,13 @@ const BackStageLayout = ()=>{
 			</div>
 			<div className={styles.context}>
 				<div className={styles.title}>
-					<div className={styles.item}>
+					<div className={styles.item} style={{ width: '80%'}}>
 						<Icon type="book" /> 管理分类标题
 					</div>
-					<div className={styles.item}>
+					<div className={styles.item} style={{ width: '10%'}}>
+						<Icon type="enter" /> 返回主站
+					</div>
+					<div className={styles.item} style={{ width: '10%'}}>
 					<User />
 					</div>
 				</div>

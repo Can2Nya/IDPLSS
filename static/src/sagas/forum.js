@@ -109,10 +109,14 @@ function* deleteForumDetailCommentSource(action) {
 	try {
 		const { jsonResult } = yield call(req.deleteForumDetailComment, action);
 		if (jsonResult) {
-			message.success(jsonResult.status);
+			message.success('删除成功');
 			yield put({
 				type: 'forum/get/comment',
 				id: action.id,
+				pagination: 1
+			})
+			yield put({
+				type: 'user/get/userPostComment',
 				pagination: 1
 			})
 		}
