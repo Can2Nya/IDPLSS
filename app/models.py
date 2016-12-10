@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 
 from app import db
-from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform
+from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform, comment_count
 
 
 class Permission:
@@ -447,7 +447,7 @@ class Post(db.Model):
             'author_user_name': id_change_user(self.author_id).user_name,
             'author_name': id_change_user(self.author_id).name,
             'author_avatar': id_change_user(self.author_id).avatar,
-            'comments_count': self.comments.count()
+            'comments_count': comment_count(self.id)
         }
         return json_post
 
