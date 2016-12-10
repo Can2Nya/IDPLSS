@@ -33,7 +33,7 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 		});
 	}
 	const handleCommentDelete = (commentid, authorid, e) =>{
-		if ((user.loginUserList.user_type == 2 && user.loginUserList.user_id == context.author_id) || (user.loginUserList.user_type >= 3) || (user.loginUserList.user_id == authorid)){
+		if ((user.loginUserList.role_id == 2 && user.loginUserList.user_id == context.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
 			Modal.confirm({
 				title: '确认删除么？',
@@ -50,7 +50,7 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 
 	}
 	const handlePostDelete = () =>{
-		if ((user.loginUserList.user_id == context.author_id) || (user.loginUserList.user_type >= 3)){
+		if ((user.loginUserList.user_id == context.author_id) || (user.loginUserList.role_id >= 3)){
 			// 第二道防线
 			Modal.confirm({
 				title: '确认删除么？',
@@ -65,7 +65,7 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 		}
 	}
 	const handlePostEdit = () =>{
-		if ((user.loginUserList.user_id == context.author_id) || (user.loginUserList.user_type >= 3)){
+		if ((user.loginUserList.user_id == context.author_id) || (user.loginUserList.role_id >= 3)){
 			// 第二道防线
 			// dispatch({
 			// 	type: 'upload/put/createPost',
@@ -100,7 +100,7 @@ const PostDetail = ({ forum, user, dispatch, location }) => {
 				<Comment key={index} data={comment} user={{ 
 					authorid: context.author_id, 
 					loginid: user.loginUserList.user_id, 
-					logintype: user.loginUserList.user_type}}  onDelete={handleCommentDelete.bind(this)}/>
+					role: user.loginUserList.role_id}}  onDelete={handleCommentDelete.bind(this)}/>
 			);
 		})
 	}
