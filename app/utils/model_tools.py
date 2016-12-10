@@ -59,4 +59,12 @@ def have_school_permission(user):
             return True
         return False
 
+def comment_count(pid):
+    from app.models import Post, PostComment
+    post = Post.query.get(pid)
+    if not post:
+        return 0
+    comments = PostComment.query.filter_by(post_id=pid, show=True).all()
+    return len(comments)
+
 
