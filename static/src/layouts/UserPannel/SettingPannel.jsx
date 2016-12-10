@@ -12,7 +12,7 @@ import config from '../../config/config.js';
 import styles from './Pannel.less';
 
 let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
-	const { psdtoken } = user
+	const { psdtoken, loginUserList } = user
 	const { files, token, progress } = upload
 	const { getFieldProps, validateFields, getFieldValue, setFieldsValue } = form;
 	// const uploadConfig = merged(config.upload,{
@@ -21,6 +21,12 @@ let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
 	// 	max_file_size: '1m',
 	// })
 	// ---------------form rule----------------
+
+	const fileValue = () =>{
+		if(files.length <= 0 || !files[0].request.xhr.response) return `${config.qiniu}/${loginUserList.user_avatar}`;
+		if(files.length > 0 || files[0].request.xhr.response) return `${JSON.parse(files[0].request.xhr.response).key}`
+		return null
+	}
 
 	const formItemLayout = {
 		labelCol: { span: 6 },
@@ -40,27 +46,27 @@ let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
 		],
 	});
 
-	const avatarProps = () =>{
-		if(files.length <= 0 || !files[0].request.xhr.response){
-			return(
-				getFieldProps('avatar', {
-					rules: [
-						{ required: true },
-					],
-				})
-			)
-		}
-		else{
-			return(
-				getFieldProps('avatar', {
-					initialValue: JSON.parse(files[0].request.xhr.response).key,
-					rules: [
-						{ required: true },
-					],
-				})
-			)
-		}
-	}
+	// const avatarProps = () =>{
+	// 	if(files.length <= 0 || !files[0].request.xhr.response){
+	// 		return(
+	// 			getFieldProps('avatar', {
+	// 				rules: [
+	// 					{ required: true },
+	// 				],
+	// 			})
+	// 		)
+	// 	}
+	// 	else{
+	// 		return(
+	// 			getFieldProps('avatar', {
+	// 				initialValue: JSON.parse(files[0].request.xhr.response).key,
+	// 				rules: [
+	// 					{ required: true },
+	// 				],
+	// 			})
+	// 		)
+	// 	}
+	// }
 
 	const sexProps = getFieldProps('sex', {
 		rules: [
@@ -79,6 +85,19 @@ let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
 			type: 'upload/drop',
 			files: files
 		})
+		files.map((f)=>{
+			f.uploadPromise.catch((e)=>{
+				Modal.error({
+					title: '网络错误',
+					context: '请重新点击上传或检查网络是否连接正确'
+				})
+				dispatch({
+					type: 'upload/drop',
+					files: []
+				})
+			})
+		})
+		
 	}
 	const handleUpload = (files) =>{
 		files.map((f) =>{
@@ -184,7 +203,12 @@ let SettingPannel = ({ user, upload, form, dispatch, data, title }) => {
 				{ renderAvatar() }
 				</Qiniu>
 				</a>
-				<Input type='text' {...avatarProps()} style={{display: 'none'}} />
+				<Input type='text' {...getFieldProps('avatar', {
+					initialValue: fileValue(),
+					rules: [
+						{ required: true },
+					],
+				})} style={{display: 'none'}} />
 			</Form.Item>
 		</Col>
 		<Col span={20}>

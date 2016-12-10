@@ -195,10 +195,10 @@ class User(db.Model):
 
     @staticmethod
     def add_user():
-        user1 = User(user_name='ddragon', role_id=2, pass_word='123456', email='1157675625@qq.com', confirmed=True,
-                     interested_field="1:2:3", user_type=4)
+        user1 = User(user_name='ddragon', role_id=1, pass_word='123456', email='1157675625@qq.com', confirmed=True,
+                     interested_field="1:2:3")
         user2 = User(user_name='test', role_id=2, pass_word='123456', email='jxnugo@163.com', confirmed=True,
-                     interested_field="1", user_type=0)
+                     interested_field="1")
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
@@ -220,7 +220,6 @@ class User(db.Model):
             'user_name': self.user_name,
             'name': self.name,
             'user_email': self.email,
-            'user_type': self.user_type,
             'user_avatar': self.avatar,
             'user_about_me': self.about_me,
             'sex': self.sex,
@@ -230,8 +229,9 @@ class User(db.Model):
             'subject': self.subject,
             'user_followers': self.followers.count(),
             'user_followings': self.followings.count(),
-            'user_role_id'
-            'user_confirmed': self.confirmed
+            'user_confirmed': self.confirmed,
+            'role_id': self.role_id,
+            'is_ban': self.is_ban
         }
         return json_user
 

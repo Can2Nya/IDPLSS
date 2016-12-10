@@ -2,12 +2,11 @@
 from flask import jsonify, request, current_app, url_for, g
 
 from app.main import main
-from app.main.authentication import auth
 from app.utils.responses import self_response
-from app.main.responses import not_found, forbidden
+from app.main.responses import not_found, forbidden, bad_request
 from app.models import db, Post, PostComment, Permission
 from app.utils.model_tools import have_school_permission
-from app.main.decorators import permission_required, get_current_user, user_login_info
+from app.main.decorators import permission_required, login_required, user_login_info
 
 
 @main.route('/api/posts', methods=['GET'])
@@ -69,32 +68,30 @@ def post_detail(pid):
             return not_found()
     elif request.method == 'DELETE':
         post = Post.query.get_or_404(pid)
-        if user.id == post.author_id or have_school_permission(user):
-            post.show = False
-            db.session.add(post)
-            db.session.commit()
-            return self_response('delete post successfully')
-        else:
-            return forbidden('does not have permission to delete this post')
+        if not user or not user.id == post.author_id or have_school_permission(user):
+            return forbidden('does not have permissions')
+        post.show = False
+        db.session.add(post)
+        db.session.commit()
+        return self_response('delete post successfully')
     elif request.method == 'PUT':
         post = Post.query.get_or_404(pid)
-        if user.id == post.author_id or have_school_permission(user):
-            modify_info = request.json
-            post.title = modify_info['title']
-            post.body = modify_info['body']
-            post.images = modify_info['images']
-            post.post_category = modify_info['category']
-            db.session.add(post)
-            db.session.commit()
-            return self_response('update post successfully')
-        else:
-            return forbidden('does not have permission to update this post')
+        if not user or not (user.id == post.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        modify_info = request.json
+        post.title = modify_info['title']
+        post.body = modify_info['body']
+        post.images = modify_info['images']
+        post.post_category = modify_info['category']
+        db.session.add(post)
+        db.session.commit()
+        return self_response('update post successfully')
     else:
         return self_response('invalid operation')
 
 
 @main.route('/api/posts/new-post', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.WRITE_ARTICLE)
 def new_post():
     post = Post.from_json(request.json)
@@ -126,7 +123,7 @@ def post_comments(pid):
 
 
 @main.route('/api/posts/<int:pid>/new-comment', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def new_comment(pid):
     post_comment = PostComment.from_json(request.json)
@@ -136,7 +133,7 @@ def new_comment(pid):
 
 
 @main.route('/api/posts/comment/<cid>', methods=['DELETE'])
-@auth.login_required
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def delete_comment(cid):
     comment = PostComment.query.get_or_404(cid)
@@ -147,8 +144,7 @@ def delete_comment(cid):
 
 
 @main.route('/api/posts/<int:pid>/collect-post', methods=['GET', 'DELETE'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def collections_post(pid):
     user = g.current_user
@@ -164,8 +160,7 @@ def collections_post(pid):
 
 
 @main.route('/api/posts/<int:pid>/is-collecting', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def is_collecting(pid):
     user = g.current_user

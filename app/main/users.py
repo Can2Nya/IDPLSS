@@ -5,17 +5,14 @@ from flask import jsonify, request, g, make_response, current_app, url_for
 from app.main import main
 from app.utils.mail import send_email
 from app.main.tasks import get_key_words
-from app.main.authentication import auth
 from app.utils.pagination import QueryPagination
 from app.utils.responses import self_response
-from app.main.decorators import permission_required, get_current_user
+from app.utils.model_tools import time_transform
+from app.main.decorators import permission_required, login_required
 from app.main.responses import bad_request, update_status, not_found
 from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
     TextResource, VideoList, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, \
     CourseBehavior, TextResourceBehavior, TestBehavior
-
-
-
 
 from app import redis_store
 import pickle
@@ -47,7 +44,7 @@ def register():
         return bad_request('email can not be repeated')
     u = User(user_name=user_name, email=user_email,
              pass_word=pass_word, subject=subject,
-             interested_field=interested_field, sex=sex)
+             interested_field=interested_field, sex=sex, role_id=4)
     db.session.add(u)
     db.session.commit()
     token = u.generate_confirm_token()
@@ -115,7 +112,7 @@ def reset_password(token):
 
 
 @main.route('/api/user/<int:id>/info', methods=['GET', 'PUT'])
-@auth.login_required
+@login_required
 def user_info(id):
     user = User.query.get_or_404(id)
     print user.user_name
@@ -134,15 +131,14 @@ def user_info(id):
 
 
 @main.route('/api/user/zone/<int:uid>', methods=['GET'])
-@auth.login_required
+@login_required
 def show_user(uid):
     user = User.query.get_or_404(uid)
     return jsonify(user.to_json())
 
 
 @main.route('/api/user/is-following', methods=['POST'])
-@get_current_user
-@auth.login_required
+@login_required
 def is_following():
     """
     判断用户是否已经关注另一个用户
@@ -160,8 +156,7 @@ def is_following():
 
 
 @main.route('/api/user/is-followed-by', methods=['POST'])
-@get_current_user
-@auth.login_required
+@login_required
 def is_followed_by():
     """
     判断一个用户是否为另一个用户的粉丝
@@ -179,8 +174,7 @@ def is_followed_by():
 
 
 @main.route('/api/user/follow', methods=['POST'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def follow():
     info = request.json
@@ -194,8 +188,7 @@ def follow():
 
 
 @main.route('/api/user/unfollow', methods=['POST'])
-@auth.login_required
-@get_current_user
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def unfollow():
     info = request.json
@@ -209,7 +202,7 @@ def unfollow():
 
 
 @main.route('/api/user/followers/<int:uid>', methods=['POST'])
-@auth.login_required
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def followers(uid):
     user = User.query.get_or_404(uid)
@@ -218,7 +211,7 @@ def followers(uid):
 
 
 @main.route('/api/user/following/<int:uid>', methods=['GET'])
-@auth.login_required
+@login_required
 @permission_required(Permission.COMMENT_FOLLOW_COLLECT)
 def following(uid):
     user = User.query.get_or_404(uid)
@@ -227,8 +220,8 @@ def following(uid):
 
 
 @main.route('/api/user/posts', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
+@login_required
 def user_posts():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -252,8 +245,7 @@ def user_posts():
 
 
 @main.route('/api/user/collection-posts', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_collection_posts():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -281,8 +273,7 @@ def user_collection_posts():
 
 
 @main.route('/api/user/posts-comments', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_posts_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -307,8 +298,7 @@ def user_posts_comments():
 
 
 @main.route('/api/user/courses', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_courses():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -332,8 +322,7 @@ def user_courses():
 
 
 @main.route('/api/user/course-comments', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_course_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -358,8 +347,7 @@ def user_course_comments():
 
 
 @main.route('/api/user/collection-courses', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_collection_courses():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -387,8 +375,7 @@ def user_collection_courses():
 
 
 @main.route('/api/user/text-resources', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_text_resources():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -413,8 +400,7 @@ def user_text_resources():
 
 
 @main.route('/api/user/text-resource-comments', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_text_resource_comments():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -439,8 +425,7 @@ def user_text_resource_comments():
 
 
 @main.route('/api/user/collection-text-resources')
-@auth.login_required
-@get_current_user
+@login_required
 def user_collection_text_resources():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -469,8 +454,7 @@ def user_collection_text_resources():
 
 
 @main.route('/api/user/test-list', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_test_list():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -494,8 +478,7 @@ def user_test_list():
 
 
 @main.route('/api/user/test-record', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def user_test_record():
     user = g.current_user
     page = request.args.get('page', 1, type=int)
@@ -520,8 +503,7 @@ def user_test_record():
 
 
 @main.route('/api/user/self-courses', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_courses():
     user = g.current_user
     courses = Course.query.filter_by(author_id=user.id, show=True).order_by(Course.timestamp.desc()).all()
@@ -532,8 +514,7 @@ def self_courses():
 
 
 @main.route('/api/user/self-text-resources', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_text_resources():
     user = g.current_user
     text_resources = TextResource.query.filter_by(author_id=user.id, show=True).\
@@ -545,8 +526,7 @@ def self_text_resources():
 
 
 @main.route('/api/user/self-posts', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_posts():
     user = g.current_user
     posts = Post.query.filter_by(author_id=user.id, show=True).order_by(Post.timestamp.desc()).all()
@@ -557,8 +537,7 @@ def self_posts():
 
 
 @main.route('/api/user/self-test', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_test():
     user = g.current_user
     test_list = TestList.query.filter_by(author_id=user.id, show=True).order_by(TestList.timestamp.desc()).all()
@@ -570,8 +549,7 @@ def self_test():
 
 
 @main.route('/api/user/self-course/<int:cid>/video', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_courses_video_list(cid):
     user = g.current_user
     course = Course.query.filter_by(id=cid, show=True).first()
@@ -584,8 +562,7 @@ def self_courses_video_list(cid):
 
 
 @main.route('/api/user/<int:tid>/self-test-problems', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def self_test_problems(tid):
     user = g.current_user
     problems = TestProblem.query.filter_by(author_id=user.id, test_list_id=tid, show=True).\
@@ -597,8 +574,7 @@ def self_test_problems(tid):
 
 
 @main.route('/api/user/interested-field', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def interested_field():
     # 计算机/互联网0 基础科学1 工程技术2 历史哲学3 经管法律4 语言文学5 艺术音乐6 兴趣生活7
     filed_list = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -636,8 +612,7 @@ def interested_field():
 
 
 @main.route('/api/user/time-frequency', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def time_frequency():
     """
     用户学生的集中时间
@@ -653,22 +628,19 @@ def time_frequency():
     resource_behaviors = TextResourceBehavior.query.filter_by(user_id=user.id).all()
     test_behaviors = TestBehavior.query.filter_by(user_id=user.id).all()
     for c_b in course_behaviors:
-        log_time = c_b.timestamp
-        t = log_time.strftime("%H")
+        t = time_transform(c_b.timestamp, get_hour=True)
         if t in index_dict:  # 转化格式
             t = t[1:]
         t = int(t)
         frequency_dict[t] += 1
     for r_b in resource_behaviors:
-        log_time = r_b.timestamp
-        t = log_time.strftime("%H")
+        t = time_transform(r_b.timestamp, get_hour=True)
         if t in index_dict:  # 转化格式
             t = t[1:]
         t = int(t)
         frequency_dict[t] += 1
     for t_b in test_behaviors:
-        log_time = t_b.timestamp
-        t = log_time.strftime("%H")
+        t = time_transform(t_b.timestamp, get_hour=True)
         if t in index_dict:  # 转化格式
             t = t[1:]
         t = int(t)
@@ -682,8 +654,7 @@ def time_frequency():
 
 
 @main.route('/api/user/words-cloud', methods=['GET'])
-@auth.login_required
-@get_current_user
+@login_required
 def words_cloud():
     user = g.current_user
     key_words = redis_store.get(str(user.id)+"_words_cloud")

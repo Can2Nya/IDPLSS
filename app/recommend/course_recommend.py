@@ -28,7 +28,6 @@ def user_similarity_calc(user):
                 if item_target == item_other:
                     repeat_sum += 1
         if repeat_sum != 0:
-            # print "user id is %s count is %s " % (u.id, repeat_sum)
             w[u.id] = repeat_sum
             w[u.id] /= math.sqrt(target_collections.count()*len(other_collections)*1.0)
     w_sort = sorted(w.iteritems(), key=lambda d: d[1], reverse=True)
@@ -56,22 +55,17 @@ def user_index_calc(user):
         for course in target_collections:
             if CourseBehavior.query.filter_by(user_id=u.id, course_id=course.id).first():
                 index_dict[course.id].append(u.id)
-                # continue
-        # print 'calc user %s over' % u.id
-    # print "index_dict is %s " % index_dict
     for cid, user_list in index_dict.items():
         for uid in user_list:
             if user_count_dict.get(uid) is None:
                 user_count_dict[uid] = 1
             else:
                 user_count_dict[uid] += 1
-    # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
         result_dict[uid] /= \
             math.sqrt(len(target_collections.count() * len(CourseBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    # print "result dict is %s" % w_sort
     return w_sort, target_collections
 
 
@@ -88,8 +82,6 @@ def user_similarity_recommend(user, k, n):
         similarity_result, target_courses = user_similarity_calc(user)
     else:
         similarity_result, target_courses = user_index_calc(user)
-    # print "user collect course is %s" % target_courses
-    # print "end result is %s" % similarity_result
     k_similarity_user = similarity_result[:k]
     all_courses = Course.query.filter_by(show=True).all()
     if not target_courses != all_courses:  # 当课程全部被收藏的时候,返回空
@@ -139,7 +131,6 @@ def course_index_pandas_calc(user_courses, _other_users):
         for b in u_behaviors:
             c = Course.query.filter_by(id=b.course_id, show=True).first()
             index_dict[u.id].append(c.id)
-        # print 'u %s over' % u.id
     for course in target_user_courses:
         for uid, u_courses_id in index_dict.items():  # 利用倒排表进行数据处理,遍历其它用户有正反馈的课程
             if course.id in u_courses_id:
@@ -174,7 +165,6 @@ def course_similarity_recommend(user, k, n):
     other_users = [u for u in all_users if u != target_user]  # 其它用户
     target_collections = user.collection_courses
     all_courses = Course.query.all()
-    print "from main collect is %s" % target_collections
     if not target_collections != all_courses:   # 当用户收藏了全部课程时, 直接返回空
         return []
     count_other_course = len(all_courses) - target_collections.count()

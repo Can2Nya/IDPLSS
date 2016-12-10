@@ -4,7 +4,7 @@ from dateutil import tz
 
 
 def set_model_attr(info, attr):
-    if info.get(attr) is not None:
+    if info.get(attr):
         return info.get(attr)
     else:
         pass
@@ -27,18 +27,19 @@ def user_info_transform(uid, attr):
 def id_change_user(uid):
     from app.models import User
     user = User.query.get_or_404(uid)
-    if user is not None:
+    if user:
         return user
-    else:
-        return None
+    return None
 
 
-def time_transform(utc_time):
+def time_transform(utc_time, get_hour=False):  # UTC time change to CST time
     from_zone = tz.gettz('UTC')
     to_zone = tz.gettz('CST')
     utc = utc_time
     utc = utc.replace(tzinfo=from_zone)
     local = utc.astimezone(to_zone)
+    if get_hour:
+        return datetime.strftime(local, "%H")
     return datetime.strftime(local, "%Y-%m-%d %H:%M:%S")
 
 
@@ -56,7 +57,6 @@ def have_school_permission(user):
         school_admin = Role.query.filter_by(role_name='SchoolAdmin')
         if (user.role == admin) or (user.role == school_admin):
             return True
-        else:
-            return False
+        return False
 
 

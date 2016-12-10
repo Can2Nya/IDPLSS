@@ -20,20 +20,20 @@ module.exports = function(webpackConfig) {
   // });
 // test.
   webpackConfig.plugins.push(
-    // new HtmlWebpackPlugin({
-    //   hash: true,
-    //   template: "./src/entries/index.html",
-    //   filename: "index1.html",
-    //   files: {
-    //     "css": [ "index.css" ],
-    //     "js": [ "index.js", "index.js"]
-    //   }
-    // }),
-    // new webpack.optimize.UglifyJsPlugin({
-    //     compress: {
-    //         warnings: false
-    //     }
-    // }),
+    new HtmlWebpackPlugin({
+      hash: true,
+      template: "./src/entries/index.html",
+      filename: "index1.html",
+      files: {
+        "css": [ "index.css" ],
+        "js": [ "index.js", "index.js"]
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+        compress: {
+            warnings: false
+        }
+    }),
     // new webpack.optimize.CommonsChunkPlugin('vendor',  'vendor.js'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin()

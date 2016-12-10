@@ -5,7 +5,7 @@ from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 
 from app.main import main
 from app.utils.log import logger
-from app.main.decorators import get_current_user
+from app.main.decorators import login_required
 from app.models import db, User, Permission, Serializer
 from app.main.responses import forbidden, unauthorized, bad_request
 
@@ -57,8 +57,7 @@ def is_confirmed():
 
 
 @main.route('/api/user/token', methods=['GET'])
-@get_current_user
-@auth.login_required
+@login_required
 def get_token():
     """
     用来获取用户临时的token,使用token来进行账号信息验证

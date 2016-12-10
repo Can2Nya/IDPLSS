@@ -38,14 +38,14 @@ const DynamicPannel = ({ children, data, activeKey }) => {
 		<Col span={7} style={{ borderRight: '1px solid #e9e9e9'}}>
 			<div className={styles.userinfo}>
 				<div className={styles.row}>
-					<span className={styles.big}>
+					{/*<span className={styles.big}>
 					关注
 					<span>{ data.user.user_followings }</span>
 					</span>
 					<span className={styles.big}>
 					粉丝
 					<span>{ data.user.user_followers }</span>
-					</span>
+					</span>*/}
 				</div>
 				<div className={styles.row}>
 					<span className={styles.small}>

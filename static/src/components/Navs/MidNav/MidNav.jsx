@@ -12,27 +12,26 @@ const MidNav = () => {
 			<div>
 				<div className={styles.nav}>
 					<div className={styles.navcontain}>
-						<Row className={styles.row}
-								 align='middle'
-						>
+						<Row 
+						className={styles.row}
+						align='middle'>
 							<Col span={4}
 							>
-							<Button className={styles.active}><Link to={{ pathname:`/category/video/`}}>全部课程</Link></Button>
+							<Link to={{ pathname:`/category/video/`}}><Button className={styles.active}>全部课程</Button></Link>
 							</Col>
 							<Col span={3}>
-							<Button><Link to="/">首页</Link></Button>
+							<Link to="/"><Button>首页</Button></Link>
 							</Col>
 							<Col span={3}>
-							<Button><Link to={{ pathname:`/category/text/`}}>文库中心</Link></Button>
+							<Link to={{ pathname:`/category/text/`}}><Button>文库中心</Button></Link>
 							</Col>
 							<Col span={3}>
-							<Button><Link to={{ pathname:`/category/test/`}}>在线测试</Link></Button>
+							<Link to={{ pathname:`/category/test/`}}><Button>在线测试</Button></Link>
 							</Col>
 							<Col span={3}>
-							<Button><Link to={{ pathname:`/category/forum/`}}>学习交流</Link></Button>
+							<Link to={{ pathname:`/category/forum/`}}><Button>学习交流</Button></Link>
 							</Col>
-							<Col span={6}
-							>
+							<Col span={6}>
 							<Search />
 							</Col>
 						</Row>

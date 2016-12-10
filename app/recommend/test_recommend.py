@@ -19,7 +19,6 @@ def test_user_index_calc(user):
     user_behaviors = TestBehavior.query.filter_by(user_id=target_user.id).all()
     for b in user_behaviors:
         target_collections.append(TestList.query.filter_by(id=b.test_id, show=True).first())
-    # print "user collect course is %s" % target_collections
     index_dict = dict()  # 创建倒排表
     user_count_dict = dict()  # 保存相同的次数
     result_dict = dict()  # 相似度字典
@@ -35,12 +34,10 @@ def test_user_index_calc(user):
                 user_count_dict[uid] = 1
             else:
                 user_count_dict[uid] += 1
-    # print "user count dict is %s" % user_count_dict
     for uid, count in user_count_dict.items():
         result_dict[uid] = count
         result_dict[uid] /= math.sqrt(len(target_collections*len(TestBehavior.query.filter_by(user_id=uid).all())))
     w_sort = sorted(result_dict.iteritems(), key=lambda d: d[1], reverse=True)
-    # print "result dict is %s" % w_sort
     return w_sort, target_collections
 
 
@@ -102,7 +99,6 @@ def test_index_pandas_calc(user_courses, _other_users):
         for b in u_behaviors:
             c = TestList.query.filter_by(id=b.test_id, show=True).first()
             index_dict[u.id].append(c.id)
-        # print 'u %s over' % u.id
     for test in target_user_tests:
         for uid, u_test_id in index_dict.items():  # 利用倒排表进行数据处理,遍历其它用户有正反馈的课程
             if test.id in u_test_id:
