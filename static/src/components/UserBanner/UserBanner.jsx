@@ -7,7 +7,7 @@ import styles from './UserBanner.less';
 
 const UserBanner = ({ data }) => {
 	const identity = () =>{
-		const identityText = ['访客','学生','教师','校级管理员','管理员']
+		const identityText = ['','管理员','校级管理员','教师','学生','访客']
 		return identityText[data.user.role_id]
 	}
 	// const renderUserAvator = {

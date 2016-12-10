@@ -8,6 +8,7 @@ import InputForm from '../../components/InputForm/InputForm';
 import Comment from '../../components/Comment/Comment';
 
 import config from '../../config/config.js'
+import { judgeUserRole } from '../../tool/tool.js'
 import styles from './PostDetailPannel.less';
 
 const PostDetailPannel = ({ children, user, data, onPostEdit, onPostDel }) => {
@@ -31,7 +32,7 @@ const PostDetailPannel = ({ children, user, data, onPostEdit, onPostDel }) => {
 		}
 	}
 	const renderEidtButton = ()=>{
-		if ((user.user_id == data.author_id) || (user.user_type >= 3)){
+		if (judgeUserRole.isAllowDeleteComment(user.role_id, user.user_id, data.author_id)){
 			return <div className={styles.icon}>
 			<a onClick={onPostDel}><span>&#xe602;删除</span></a>
 			<a onClick={onPostEdit}><span><Icon type="edit" />修改</span></a>

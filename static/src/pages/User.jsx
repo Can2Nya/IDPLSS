@@ -55,17 +55,25 @@ const User = ({ location, dispatch, user }) => {
 		})
 		window.location.hash = `${userMenu[isSelectTab]}/${e[0] || e.key}/`;
 	}
-	const handlePostDelete = (commentid, authorid, e) =>{
+	const handlePostDelete = (commentid, authorid, postid, e) =>{
 		// if ((loginUserList.role_id == 2 && loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
 			// 第二道防线
 			let stateName;
-			switch(isSelectSubTab){
-				case '0': stateName = 'Video';
-				case '1': stateName = 'Text';
+			if(isSelectTab == '3'){
+				switch(isSelectSubTab){
+					case '0': stateName = 'video';
+					case '1': stateName = 'text';
+				}
 			}
+			if(isSelectTab == '1'){
+				switch(isSelectSubTab){
+					case '1': stateName = 'forum';
+				}
+			}
+			
 			dispatch({
 				type: `${stateName}/delete/comment`,
-				id: id,
+				id: postid,
 				comment_id: commentid,
 			})
 		// }

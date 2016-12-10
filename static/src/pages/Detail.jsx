@@ -114,14 +114,13 @@ const Detail = ({ context, user, dispatch, location }) => {
 	}
 
 	const handlePostDelete = (commentid, authorid, e) =>{
-		if ((user.loginUserList.role_id == 2 && user.loginUserList.user_id == isSelectContext.context.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
-			// 第二道防线
+		// if ((user.loginUserList.role_id == 2 && user.loginUserList.user_id == comment.author_id) || (user.loginUserList.role_id >= 3) || (user.loginUserList.user_id == authorid)){
 			dispatch({
 				type: `${stateName}/delete/comment`,
 				id: id,
 				comment_id: commentid,
 			})
-		}
+		// }
 	}
 	const handleChangePagination = (page) =>{
 		if(location.hash.search(series) !== -1) window.location.hash = `#!/series/${page}`
@@ -181,7 +180,7 @@ const Detail = ({ context, user, dispatch, location }) => {
 				if(!comment.show) return
 				return(
 					<Comment key={index} data={comment} user={{ 
-					authorid: isSelectContext.context.author_id, 
+					authorid: comment.author_id, 
 					loginid: user.loginUserList.user_id, 
 					role: user.loginUserList.role_id}}  onDelete={handlePostDelete.bind(this)}/>
 				);

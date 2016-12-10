@@ -5,6 +5,7 @@ import classNames from 'classnames';
 
 import styles from './Comment.less';
 import config from '../../config/config.js'
+import { judgeUserRole } from '../../tool/tool.js'
 
 const Comment = ({ user, data, onDelete }) => {
 	// user={authorid,loginid,role}
@@ -13,8 +14,8 @@ const Comment = ({ user, data, onDelete }) => {
 		else return <div className={styles.avatar}></div>
 	}
 	const renderDeleteButton = () =>{
-		if ((user.loginid == user.authorid) || (user.role >= 3) || (user.loginid == data['author_id'])){
-			return <a onClick={onDelete.bind(this, data['comment_id'] || data['id'], data['author_id'])}><span>&#xe602; 删除</span></a>
+		if (judgeUserRole.isAllowDeleteComment(user.role, user.loginid, user.authorid)){
+			return <a onClick={onDelete.bind(this, data['comment_id'] || data['id'], data['author_id'], data.post_id || null)}><span>&#xe602; 删除</span></a>
 		}
 	}
 	return (
