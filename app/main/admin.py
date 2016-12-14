@@ -52,13 +52,13 @@ def set_user_role():
     if not u:
         return bad_request('user info incorrect')
     admin = g.current_user
-    if admin.role_id == 1 and (role_id == 2 or role_id == 3):  # 管理员有设置校级管理员和教师的权限
+    if admin.role_id == 1 and (role_id == 2 or role_id == 3 or role_id ==4):  # 管理员有设置校级管理员和教师、学生的权限
         u.role_id = role_id
         db.session.add(u)
         db.session.commit()
         logger.info("manager {0} set user {1} role_id {2} ".format(admin.user_name, u.user_name, role_id))
         return self_response('change user role successfully')  # 校级管理员有设置教师的权限
-    elif admin.role_id == 2 and role_id == 3:
+    elif admin.role_id == 2 and (role_id == 3 or role_id ==4):
         u.role_id = role_id
         db.session.add(u)
         db.session.commit()
