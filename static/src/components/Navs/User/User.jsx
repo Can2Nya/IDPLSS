@@ -218,7 +218,7 @@ let User = ({ user, dispatch, textStyle, form }) => {
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/dynamic/0/' }} ><div className={styles.item}>个人中心</div></Link>
 					<Link to={{pathname: `/user/${ loginUserList.user_id }/`, hash: '#!/setting/0/' }} ><div className={styles.item}>设置</div></Link>
 					<Link to={{pathname: `/manage/`, hash: '#!/2/' }} ><div className={styles.item}>资源管理</div></Link>
-					{ judgeUserRole.isAllowControlBackStage(loginUserList.role_id) ? <Link to={{pathname: `/backstage/` }} ><div className={styles.item}>后台管理</div></Link>: null}
+					{ judgeUserRole.isAllowControlBackStage(loginUserList.role_id) ? <Link to={{pathname: `/backstage/`, hash: '#!/1/' }} ><div className={styles.item}>后台管理</div></Link>: null}
 					<a><div className={styles.item} style={{'border':0}} onClick={handleLogout.bind(this)}>退出</div></a>
 					</div>
 				);

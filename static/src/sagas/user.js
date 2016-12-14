@@ -79,7 +79,6 @@ function* getUser(action) {// arg内有action参数
 			}
 		}
 	} catch (err) {
-		console.log(err)
 		message.error('非法操作,请重新登陆');
 	}
 }
@@ -517,10 +516,58 @@ function* getSearch(action) {
 	try{
 		const { jsonResult } = yield call(req.Search, action);
 		if(jsonResult) {
+			if(action.context == 'user'){
+				yield put({
+					type: 'backstage/get/List/success',
+					payload: jsonResult.status,
+					count: jsonResult.count || 0
+				})
+			}else{
+				yield put({
+					type: 'user/get/search/success',
+					payload: jsonResult.search_result,
+					count: jsonResult.count
+				})
+			}
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+		if(action.context == 'user'){
 			yield put({
-				type: 'user/get/search/success',
-				payload: jsonResult.search_result,
+				type: 'backstage/get/List/failed',
+			})
+		}
+	}
+}
+
+function* getAllContext(action) {
+	try{
+		const { jsonResult } = yield call(req.GetAllContext, action);
+		if(action.context == 'user'){
+			yield put({
+				type: 'backstage/get/List/success',
+				payload: jsonResult.status || jsonResult.users,
 				count: jsonResult.count
+			})
+		}
+	} catch (err) {
+		message.error(`网络错误:${err}`);
+	}
+}
+
+function* postAdminAction(action) {
+	try{
+		const { jsonResult } = yield call(req.AdminAction, action);
+		if(action.context == 'user'){
+			message.success('设置成功')
+			yield put({
+				type: 'backstage/get/List',
+				context: 'user',
+				pagination: 1
+			})
+			yield put({
+				type: 'backstage/toggleModal',
+				modalState: false
 			})
 		}
 	} catch (err) {
@@ -619,7 +666,13 @@ function* watchUserLike() {
 	yield* takeLatest('user/get/like', getUserLike)
 }
 function* watchSearch() {
-	yield* takeLatest('user/get/search', getSearch)
+	yield* takeLatest(['user/get/search','backstage/search/List'], getSearch)
+}
+function* watchGetAllContext() {
+	yield* takeLatest('backstage/get/List', getAllContext)
+}
+function* watchPostAdminAction() {
+	yield* takeLatest('backstage/control/List', postAdminAction)
 }
 
 /*function* watchUserGetJson() {
@@ -643,6 +696,8 @@ export default function* () {
 	yield fork(watchUserStat)
 	yield fork(watchUserLike)
 	yield fork(watchSearch)
+	yield fork(watchGetAllContext)
+	yield fork(watchPostAdminAction)
 	// Load user.//
 	// yield put({
 	// 	type: 'user/login',//默认会触发的事件

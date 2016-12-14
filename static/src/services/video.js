@@ -25,10 +25,10 @@ export async function getVideoDetail(action) {
 export async function getVideoDetailList(action) {
 	let url = `${apiUrl}/api/`;
 	if(action.type == 'video/get/series'){
-		if(action.count == 'part') url += `courses/${action.id}/video-list`;
+		if(action.count == 'part') url += `courses/${action.id}/video-list?page=${action.pagination}`;
 		if(action.count == 'all') url += `user/self-course/${action.id}/video`
 	} 
-	if(action.type == 'video/get/comment') url += `courses/${action.id}/comments`;
+	if(action.type == 'video/get/comment') url += `courses/${action.id}/comments?page=${action.pagination}`;
 	
 	return xFetch(url,{method: 'GET',});
 }

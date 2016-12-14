@@ -115,13 +115,26 @@ const video = handleActions({
 		};
 	},
 	['video/get/success/series'](state, action) {
+		if(!!action.mode){
+			return { 
+				...state,
+				isSelectContext: { 
+					...state.isSelectContext, 
+					list: [...state.isSelectContext.list, action.payload.video_list || action.payload.course_video], 
+					loading: false,
+					total: action.payload.count,
+					next: action.payload.next
+				},
+			}
+		}
 		return { 
 			...state,
 			isSelectContext: { 
 				...state.isSelectContext, 
 				list: action.payload.video_list || action.payload.course_video, 
 				loading: false,
-				total: action.payload.count
+				total: action.payload.count,
+				next: action.payload.next
 			},
 		}
 	},
@@ -163,6 +176,7 @@ const video = handleActions({
 		const { isSelectContext } = state
 		return { 
 			...state, 
+			isSelectPagination: 1,
 			isSelectContext: { 
 				...isSelectContext,
 				id: action.courseId,
@@ -232,6 +246,7 @@ const video = handleActions({
 	isSelectCategory: 0,//选定的分类，没选定就是分类的7
 	isSelectPagination: 1,//选定的分页，默认从1开始
 	isSelectContext: {
+		next: null,
 		total: 0,
 		id: 0,
 		context: {},

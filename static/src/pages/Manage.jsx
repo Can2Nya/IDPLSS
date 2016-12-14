@@ -19,7 +19,7 @@ import styles from './commont.less';
 import config from '../config/config.js'
 import { judgeUserRole } from '../tool/tool.js'
 
-const Manage = ({ upload, user, dispatch, location }) => {
+const RenderManage = ({ upload, user, dispatch, location }) => {
 	const { loginUserList, userZoneList, total } = user
 	const { time, files, token, modalState, loading, progress, isSelectMenuItem, isSelectContextId, isEdit } = upload
 
@@ -302,9 +302,30 @@ const Manage = ({ upload, user, dispatch, location }) => {
 	);
 };
 
-Manage.PropTypes = {
+RenderManage.PropTypes = {
 
 };
+
+const Manage = React.createClass({
+	// shouldComponentUpdate(nextProps, nextState){
+	// 	return nextProps != this.state
+	// },
+	// forceUpdate(){
+	// 	const { loginUserList } = this.props.user
+	// 	if(loginUserList.length <= 0 ){
+	// 		browserHistory.push(`/index`)
+	// 	}
+	// },
+	// componentDidMount()	{
+	// 	const { loginUserList } = this.props.user
+	// 	if(loginUserList.length <= 0 ){
+	// 		browserHistory.push(`/index`)
+	// 	}
+	// },
+	render(){
+		return <RenderManage upload={this.props.upload} user={this.props.user} dispatch={this.props.dispatch} location={this.props.location}/>
+	}
+})
 
 function mapStateToProp({ upload, user }){
 	// const { loginUserList } = user

@@ -69,6 +69,7 @@ function* getVideoDetailListSource(action) {
 			if(action.type == 'video/get/series') {
 				yield put({
 					type: `video/get/success/series`,
+					mode: action.mode || null,
 					payload: jsonResult,
 				});
 			}

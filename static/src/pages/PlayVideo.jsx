@@ -2,6 +2,7 @@ import React, { Compont,PropTypes } from 'react';
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Row, Col } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars'
 import classNames from 'classnames';
 // import pathToRegexp from 'path-to-regexp';
 import videojs from 'video.js/dist/video.min.js';
@@ -17,7 +18,8 @@ import styles from './commont.less';
 import 'video.js/dist/video-js.min.css';
 
 const PlayVideo = ({ video, dispatch, location }) =>{
-	const { isSelectContext } = video
+	const { isSelectContext, isSelectPagination } = video
+	const { next, id } = isSelectContext
 	const { context } = isSelectContext.isSelectContext
 
 	// ----------------render----------------------------
@@ -26,6 +28,34 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 	// 		browserHistory.push(`/detail/video/${isSelectContext.id}/#!/series/1/`)
 	// 	}
 	// }
+	const VideoList = React.createClass({
+		handleScrollStop(){
+			if(this.refs.videoListScrollbar.getScrollHeight() == this.refs.videoListScrollbar.getScrollTop() + this.refs.videoListScrollbar.getClientHeight() && !!next){
+				dispatch({
+					type: 'video/changePagination',
+					isSelectPagination: isSelectPagination+1
+				})
+				dispatch({
+					type: 'video/get/series',
+					id: id,
+					count: 'part',// 写到这里，记得all
+					mode: 'scrollList', 
+					pagination: isSelectPagination+1,
+				})
+			}
+		},
+		render(){
+			return <Scrollbars 
+			ref="videoListScrollbar"
+			autoHeight={true} 
+			autoHide={true} 
+			onScrollStop={this.handleScrollStop}>
+			<div className={styles.displayVideoList}>
+			{ this.props.videoList }
+			</div>
+			</Scrollbars>
+		}
+	})
 	const renderVideoList = ()=>{
 		return isSelectContext.list.map((data,index)=>{
 			if(!data.show) return;
@@ -45,6 +75,26 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		// })
 		browserHistory.push(`/play/video/${isSelectContext.id}/${id}/`)
 	}
+
+	// const handleScrollUpdate = ()=>{
+	// 	// console.log(values)
+	// 	// const { scrollTop, scrollHeight, clientHeight } = values;
+	// 	// console.log(scrollHeight == scrollTop+clientHeight)
+
+	// 	if(this.getScrollHeight() == this.getScrollTop() + this.getClientHeight()){
+	// 		dispatch({
+	// 			type: 'video/changePagination',
+	// 			isSelectPagination: isSelectPagination+1
+	// 		})
+	// 		dispatch({
+	// 			type: 'video/get/series',
+	// 			id: id,
+	// 			count: 'part',// 写到这里，记得all
+	// 			mode: 'scrollList', 
+	// 			pagination: isSelectPagination+1,
+	// 		})
+	// 	}
+	// }
 	return(
 		<Layout location={location}>
 		
@@ -86,9 +136,12 @@ const PlayVideo = ({ video, dispatch, location }) =>{
 		</div>
 		</Col>
 		<Col span={12}>
+		{/*<Scrollbars autoHeight={true} autoHide={true} onScrollStop={handleScrollUpdate.bind(this)}>
 		<div className={styles.displayVideoList}>
 		{ renderVideoList() }
 		</div>
+		</Scrollbars>*/}
+		<VideoList videoList={renderVideoList()} />
 		</Col>
 		</Row>
 		</div>
