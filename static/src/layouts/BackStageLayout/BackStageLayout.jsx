@@ -44,7 +44,7 @@ const BackStageLayout = ({ menu, context })=>{
 						<Icon type="book" /> 管理分类标题
 					</div>
 					<div className={styles.item} style={{ width: '10%', borderRight: '1px solid #eee'}}>
-						<Icon type="enter" /> 返回主站
+						<Link to='/index'><span style={{color: '#eee'}}><Icon type="enter" /> 返回主站</span></Link>
 					</div>
 					<div className={styles.item} style={{ width: '5%'}}>
 					<User />
