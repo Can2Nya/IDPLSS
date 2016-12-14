@@ -207,13 +207,30 @@ export async function UserLike(action) {
 	return xFetch(url,{method: 'GET',});
 }
 
+export async function GetAllContext(action) {
+	let url = `${apiUrl}/api/`
+	if(action.context == 'user') url += `control/show-users?page=${action.pagination}`
+	return xFetch(url,{method: 'GET',});
+}
+
 export async function Search(action) {
 	let url = `${apiUrl}/api/`
+	if(action.context == 'user') {
+		url += `control/query/${action.keyword}`
+		return xFetch(url,{method: 'GET'})
+	}
 	if(action.context == 'video') url += `courses/search?page=${action.pagination || 1}`
 	if(action.context == `text`) url += `text-resources/search?page=${action.pagination || 1}`
 	if(action.context == `test`) url += `test-list/search?page=${action.pagination || 1}`
 	if(action.context == `post`) url += `posts/search?page=${action.pagination || 1}`
 
-	return xFetch(url,{method: 'POST',  body: JSON.stringify(action.body)});
+	return xFetch(url,{method: 'POST', body: JSON.stringify(action.body)});
 }
+
+export async function AdminAction(action) {
+	let url = `${apiUrl}/api/`
+	if(action.context == 'user') url += `control/manage`
+	return xFetch(url,{method: 'POST', body: JSON.stringify(action.body)});
+}
+
 

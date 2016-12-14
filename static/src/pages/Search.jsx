@@ -104,7 +104,7 @@ const Search = ({ user, dispatch, location }) => {
 				{ renderTextList() }
 				</Row>
 				</div>
-				<Pagination 
+			<Pagination 
 			onChange={handleChangePagination.bind(this)} 
 			total={total}
 			pageSize={12} 

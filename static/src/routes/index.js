@@ -187,7 +187,8 @@ const Routes = ({ history, dispatch }) =>{
 			dispatch({
 				type: 'video/get/series',
 				id: match[1],
-				count: 'all',// 写到这里，记得all
+				count: 'part',// 写到这里，记得all
+				pagination: 1,
 			})
 		}
 		// login listen----------------------
@@ -326,6 +327,19 @@ const Routes = ({ history, dispatch }) =>{
 			dispatch({
 				type: 'upload/changeMenuItem',
 				item: `${match[1]}`
+			})
+		}
+		// backstage init-----------------------
+		if(pathname.search('backstage')!== -1){
+			const match = pathToRegexp('#!/:catagroy/').exec(hash)
+			dispatch({
+				type: 'backstage/init',
+				isSelectMenuItem: `${match[1]}`
+			})
+			dispatch({
+				type: 'backstage/get/List',
+				context: 'user',
+				pagination: 1
 			})
 		}
 		// ---search init-------------------------

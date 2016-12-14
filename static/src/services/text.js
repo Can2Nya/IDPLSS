@@ -26,7 +26,7 @@ export async function getTextDetail(action) {
 export async function getTextDetailList(action) {
 	let url = `${apiUrl}/api/text-resources/${action.id}`;
 	// if(action.type == 'video/get/series') url += '/video-list';
-	if(action.type == 'text/get/comment') url += '/comments';
+	if(action.type == 'text/get/comment') url += `/comments?page=${action.pagination}`;
 	
 	return xFetch(url,{method: 'GET',});
 }

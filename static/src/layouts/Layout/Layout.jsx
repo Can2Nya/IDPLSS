@@ -63,7 +63,7 @@ const Layout = React.createClass({
 		switch(this.state.layoutid){
 			case 1: return(
 				<div className={styles.contain}>
-				<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
+				<Scrollbars onScrollStart={this.scrollarea} style={{height: `${this.state.height}px`}}>
 				<div >
 					<Banner config={config} />
 					<MidNav />
@@ -76,7 +76,7 @@ const Layout = React.createClass({
 			case 2: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
+					<Scrollbars onScrollStart={this.scrollarea} style={{height: `${this.state.height}px`}}>
 					<div >
 					<div className={styles.body}>
 					{ this.props.children }
@@ -89,7 +89,7 @@ const Layout = React.createClass({
 			case 3: return(
 				<div className={styles.contain}>
 					<TopNav config={config}/>
-					<Scrollbars onScrollStart={this.scrollarea.bind(this)} style={{height: `${this.state.height}px`}}>
+					<Scrollbars onScrollStart={this.scrollarea} style={{height: `${this.state.height}px`}}>
 					<div className={styles.body} >
 					{ this.props.children }
 					</div>

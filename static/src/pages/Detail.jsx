@@ -123,8 +123,8 @@ const Detail = ({ context, user, dispatch, location }) => {
 		// }
 	}
 	const handleChangePagination = (page) =>{
-		if(location.hash.search(series) !== -1) window.location.hash = `#!/series/${page}`
-		if(location.hash.search(comment) !== -1) window.location.hash = `#!/comment/${page}`
+		if(location.hash.search('series') !== -1) window.location.hash = `#!/series/${page}/`
+		if(location.hash.search('comment') !== -1) window.location.hash = `#!/comment/${page}/`
 		
 	}
 	// -------------fuc-------------------------

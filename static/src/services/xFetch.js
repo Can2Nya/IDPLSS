@@ -1,11 +1,21 @@
 import fetch from 'isomorphic-fetch';
 import cookie from 'js-cookie';
+import { message } from 'antd';
 
 const errorMessages = (res) => `${res.status} ${res.statusText}`;
 
 function check401(res) {
 	if (res.status === 401) {
 	//location.href = '/401';
+	return Promise.reject(errorMessages(res));
+	}
+	return res;
+}
+
+function check400(res) {
+	if (res.status === 400) {
+	//location.href = '/401';
+	
 	return Promise.reject(errorMessages(res));
 	}
 	return res;

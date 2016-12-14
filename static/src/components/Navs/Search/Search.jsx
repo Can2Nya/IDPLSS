@@ -16,7 +16,11 @@ let Search = ({ form }) => {
 		//'ant-search-input-focus': this.state.focus,
 	});
 	const handleSearchAction = () =>{
-		browserHistory.push(`/search/#!/video/${getFieldValue('search')}/1/`)
+		validateFields(['search'],(errors, values)=>{
+			if(errors) return;
+			browserHistory.push(`/search/#!/video/${getFieldValue('search')}/1/`)
+		})
+		
 	}
 	return (
 		<Form>
@@ -24,7 +28,7 @@ let Search = ({ form }) => {
 		<Input.Group>
 			<Input placeholder="输入文字搜索"
 			{...getFieldProps('search',{
-				initialValue: '输入文字搜索',
+				rules: [{ required: true, message: '不能为空' }],
 			})}
 			onPressEnter={handleSearchAction.bind(this)}
 			/>
