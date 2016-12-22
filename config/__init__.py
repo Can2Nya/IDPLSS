@@ -1,5 +1,11 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    config
+    ~~~~~~~~~~~~
 
+    app config
+
+"""
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 

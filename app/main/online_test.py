@@ -1,12 +1,19 @@
-# coding:utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.online_test
+    ~~~~~~~~~~~~
+
+    处理用户测试API请求
+
+"""
+
 from flask import current_app, jsonify, g, request, url_for
 
-from app.main import main
-from app.utils.responses import self_response
-from app.main.responses import not_found, forbidden, bad_request
-from app.utils.model_tools import have_school_permission
-from app.main.decorators import login_required, user_login_info
-from app.models import TestList, TestProblem, AnswerRecord, TestRecord, User, db, TestBehavior
+from . import main
+from ..utils import self_response, have_school_permission
+from .responses import not_found, forbidden
+from .decorators import login_required, user_login_info
+from ..models import TestList, TestRecord, TestProblem, TestBehavior, AnswerRecord, User, db
 
 
 @main.route('/api/test-list', methods=['GET'])

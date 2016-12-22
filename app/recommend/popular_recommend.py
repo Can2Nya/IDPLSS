@@ -1,5 +1,13 @@
-# coding: utf-8
-from app.models import Course, TextResource, TestList
+# -*- coding: utf-8 -*-
+"""
+    recommend.popular_recommend
+    ~~~~~~~~~~~~
+
+    热门资料推荐
+
+"""
+
+from ..models import Course, TextResource, TestList
 
 
 def popular_course():

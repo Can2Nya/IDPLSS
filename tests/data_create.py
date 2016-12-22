@@ -1,4 +1,12 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    tests.data_create
+    ~~~~~~~~~~~~
+
+    测试界面~伪造数据
+
+"""
+
 from app.models import *
 from flask_script import Command
 
@@ -10,20 +18,20 @@ class CreateDate(Command):
         print 'start forge'
         Role.create_roles()
         User.add_user()
-        print 'user forge complete'
+        print 'user data forge complete'
         User.generate_fake()
         Post.generate_fake()
         Course.generate_fake()
         TextResource.generate_fake()
         TestList.generate_fake()
-        print 'basic class forge complete'
+        print 'basic class data forge complete'
         PostComment.generate_fake()
         CourseComment.generate_fake()
         VideoList.generate_fake()
         TextResourceComment.generate_fake()
         TestRecord.generate_fake()
         TestProblem.generate_fake()
-        print 'comment forge complete'
+        print 'comment data forge  complete'
         CourseBehavior.generate_fake()
         TextResourceBehavior.generate_fake()
         TestBehavior.generate_fake()

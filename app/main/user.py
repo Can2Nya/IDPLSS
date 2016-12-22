@@ -1,23 +1,26 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.user
+    ~~~~~~~~~~~~
+
+    处理用户个人中心API请求
+
+"""
+
 from __future__ import division
-from flask import jsonify, request, g, make_response, current_app, url_for
 
-from app.main import main
-from app.utils.mail import send_email
-from app.main.tasks import get_key_words
-from app.utils.pagination import QueryPagination
-from app.utils.responses import self_response
-from app.utils.model_tools import time_transform
-from app.main.decorators import permission_required, login_required
-from app.main.responses import bad_request, update_status, not_found
-from app.models import db, User, Follow, Role, Permission, Post, PostComment, Course, CourseComment,\
-    TextResource, VideoList, TextResourceComment, Serializer, TestList, TestProblem, TestRecord, AnswerRecord, \
-    CourseBehavior, TextResourceBehavior, TestBehavior
-
-from app import redis_store
 import pickle
+from flask import jsonify, request, g, current_app, url_for
 
-from app.utils.log import logger
+from . import main
+from .. import redis_store
+from .tasks import get_key_words
+from .decorators import permission_required, login_required
+from .responses import bad_request, update_status, not_found
+from ..utils import send_email, QueryPagination, self_response, time_transform
+from ..models import db, User, Permission, Post, PostComment, Course, CourseComment, TextResource, VideoList, \
+    TextResourceComment, Serializer, TestList, TestProblem, TestRecord, CourseBehavior, TestBehavior, \
+    TextResourceBehavior
 
 
 @main.route('/api/user/register', methods=['POST'])
@@ -31,26 +34,24 @@ def register():
     user_name = reg_info['user_name']
     user_email = reg_info['user_email']
     pass_word = reg_info['user_password']
-    interested_field = reg_info['interested_field']
+    user_field = reg_info['interested_field']
     sex = reg_info['sex']
     subject = reg_info['subject']
     if not user_name or not user_email or not pass_word:
         return bad_request('user_name or user_email or password cat not be empty')
-    user = User.query.filter_by(user_name=user_name).first()
-    if user is not None:
-        return bad_request('user_name can not be repeated')
-    user = User.query.filter_by(email=user_email).first()
-    if user is not None:
-        return bad_request('email can not be repeated')
+    user_by_name = User.query.filter_by(user_name=user_name).first()
+    user_by_email = User.query.filter_by(email=user_email).first()
+    user = user_by_name if user_by_name else user_by_email
+    if user:
+        return bad_request('user has been existed')
     u = User(user_name=user_name, email=user_email,
              pass_word=pass_word, subject=subject,
-             interested_field=interested_field, sex=sex, role_id=4)
+             interested_field=user_field, sex=sex, role_id=4)
     db.session.add(u)
     db.session.commit()
     token = u.generate_confirm_token()
     send_email(u.email, '激活你的账号', 'confirm_info/confirm', User=u, token=token)
     return self_response('register successful')
-    # TODO(Ddragon):完善用户注册成功时候的返回信息
 
 
 @main.route('/api/user/resend-confirm-email', methods=['POST'])
@@ -62,12 +63,11 @@ def resend_email():
     info = request.json
     user_email = info['user_email']
     user = User.query.filter_by(email=user_email).first()
-    if user is None:
+    if not user:
         return not_found()
-    else:
-        token = user.generate_confirm_token()
-        send_email(user.email, '激活你的账号', 'confirm_info/confirm', User=user, token=token)
-        return self_response('resend confirm email successfully')
+    token = user.generate_confirm_token()
+    send_email(user.email, '激活你的账号', 'confirm_info/confirm', User=user, token=token)
+    return self_response('resend confirm email successfully')
 
 
 @main.route('/api/user/find-password', methods=['POST'])
@@ -79,24 +79,24 @@ def find_password():
     info = request.json
     user_email = info['user_email']
     user = User.query.filter_by(email=user_email).first()
-    if user is None:
+    if not user:
         return not_found()
-    else:
-        token = user.generate_confirm_token()
-        send_email(user.email, '找回你的密码', 'find_password/password', User=user, token=token)
-        return self_response('send email successfully')
+    token = user.generate_confirm_token()
+    send_email(user.email, '找回你的密码', 'find_password/password', User=user, token=token)
+    return self_response('send email successfully')
 
 
 @main.route('/api/user/reset-password/<token>', methods=['POST'])
 def reset_password(token):
     """
     重新设置账户密码
+    :param token生成的token
     :return:
     """
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
         data = s.loads(token)
-    except:
+    except ValueError:
         return bad_request('token invalid')
     user_id = data['confirm']
     user = User.query.get_or_404(user_id)
@@ -111,10 +111,10 @@ def reset_password(token):
         return self_response('reset password successfully')
 
 
-@main.route('/api/user/<int:id>/info', methods=['GET', 'PUT'])
+@main.route('/api/user/<int:uid>/info', methods=['GET', 'PUT'])
 @login_required
-def user_info(id):
-    user = User.query.get_or_404(id)
+def user_info(uid):
+    user = User.query.get_or_404(uid)
     print user.user_name
     if request.method == 'GET':
         if user is None:

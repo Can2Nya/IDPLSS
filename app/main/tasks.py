@@ -1,15 +1,21 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.tasks
+    ~~~~~~~~~~~~
+
+    定义celery分布式任务队列任务
+
+"""
+
 import pickle
 import jieba.analyse  # 使用结巴中文分词构造词云
 
-
 from .. import celery
-from app import redis_store
-from app.utils.log import logger
-from app.models import User, TextResourceBehavior, CourseBehavior, TestBehavior, TestList, TestRecord, Post
-from app.recommend.course_recommend import user_similarity_recommend, course_similarity_recommend
-from app.recommend.resource_recommend import text_resources_user_recommend,  text_resources_recommend
-from app.recommend.test_recommend import test_similarity_recommend, test_user_similarity_recommend
+from .. import redis_store
+from ..utils import logger
+from ..models import TestList, Post
+from ..recommend import user_similarity_recommend, course_similarity_recommend, text_resources_recommend, \
+    test_similarity_recommend, text_resources_user_recommend, test_user_similarity_recommend
 
 
 # local val

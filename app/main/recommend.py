@@ -1,13 +1,21 @@
-# coding:utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.recommend
+    ~~~~~~~~~~~~
+
+    处理兴趣推荐板块API请求
+
+"""
+
 from flask import jsonify, g
 
-from app import redis_store
-from app.main import main
-from app.main.decorators import user_login_info
-from app.main.tasks import get_course, get_tests, get_text_resources
-from app.recommend.popular_recommend import popular_course, popular_text_resource, popular_test
-from app.recommend.code_start import code_start_course, code_start_text_resource, code_start_test
-from app.models import Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
+from . import main
+from .. import redis_store
+from .decorators import user_login_info
+from .tasks import get_course, get_tests, get_text_resources
+from ..recommend import popular_course, popular_text_resource, popular_test, code_start_course, code_start_test, \
+    code_start_text_resource
+from ..models import Course, TextResource, TestList, CourseBehavior, TextResourceBehavior, TestBehavior
 
 
 # local val

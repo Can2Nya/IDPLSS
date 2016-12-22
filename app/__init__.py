@@ -1,12 +1,19 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    app.init
+    ~~~~~~~~~~~~
+
+    app工厂方法
+
+"""
+
 from flask import Flask
 from celery import Celery
-from flask_moment import Moment
 from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_moment import Moment
 from flask_redis import FlaskRedis
-
+from flask_sqlalchemy import SQLAlchemy
 
 from config import configs, ENV
 

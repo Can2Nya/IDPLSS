@@ -1,8 +1,16 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    recommend.course_recommend
+    ~~~~~~~~~~~~
+
+    课程推荐、基于UserCf, 和ItemCf算法推荐
+
+"""
+
 import math
 import pandas as pd
 
-from app.models import Course, CourseBehavior, User
+from ..models import Course, CourseBehavior, User
 
 
 def user_similarity_calc(user):

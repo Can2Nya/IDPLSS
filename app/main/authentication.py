@@ -1,13 +1,21 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.authentication
+    ~~~~~~~~~~~~
+
+    处理API用户认证、管理七牛云token
+
+"""
+
 from flask_httpauth import HTTPBasicAuth
 from flask import jsonify, request, g, current_app, abort
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 
-from app.main import main
-from app.utils.log import logger
-from app.main.decorators import login_required
-from app.models import db, User, Permission, Serializer
-from app.main.responses import forbidden, unauthorized, bad_request
+from . import main
+from .decorators import login_required
+from ..models import db, User, Serializer
+from .responses import forbidden, unauthorized, bad_request
+
 
 auth = HTTPBasicAuth()
 
@@ -37,8 +45,7 @@ def auth_error():
     捕获未授权验证的错误
     :return: unauthorized 401
     """
-    return unauthorized('Invalid credentidls')
-    # TODO(Ddragon):修改unauthorized的错误描述
+    return unauthorized('unauthorized error')
 
 
 @main.route('/api/user/is-confirm', methods=['POST'])

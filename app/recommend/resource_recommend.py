@@ -1,8 +1,16 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    recommend.resource_recommend
+    ~~~~~~~~~~~~
+
+    文本资料推荐, 文本资料推荐, 基于UserCf、ItemCf算法推荐
+
+"""
+
 import math
 import pandas as pd
 
-from app.models import TextResource, TextResourceBehavior, User
+from ..models import TextResource, TextResourceBehavior, User
 
 
 def user_index_calc(user):

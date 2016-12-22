@@ -1,9 +1,17 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.decorators
+    ~~~~~~~~~~~~
+
+    定义用户权限管理,用户登录(登录异常)处理的装饰器
+
+"""
+
 from functools import wraps
 
 from flask import request, g, make_response
 
-from app.models import Permission, User
+from ..models import Permission, User
 
 
 def permission_required(permissions):
