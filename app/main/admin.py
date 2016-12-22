@@ -1,15 +1,14 @@
-# coding:utf-8
-
-from flask import jsonify, current_app, request, url_for, g
+# -*- coding:utf-8 -*-
 import time
 
-from app import db
-from app.main import main
-from app.models import User
-from app.main.responses import bad_request, forbidden
-from app.main.decorators import manage_permission_required, login_required
-from app.utils.responses import self_response
-from app.utils.log import logger
+from flask import jsonify, current_app, request, url_for, g
+
+from .. import db
+from . import main
+from ..models import User
+from ..utils import logger, self_response
+from .responses import bad_request, forbidden
+from .decorators import manage_permission_required, login_required
 
 
 @main.route('/api/control/show-users')

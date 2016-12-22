@@ -1,7 +1,14 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.responses
+    ~~~~~~~~~~~~
+
+    封装常用response方法
+
+"""
 from flask import jsonify, request
 
-from app.main import main
+from . import main
 
 
 def update_status(message):
@@ -11,7 +18,7 @@ def update_status(message):
 
 
 def not_found():
-    response = jsonify({'error': 'not found'})
+    response = jsonify({'error': 'query information not found in system'})
     response.status_code = 404
     return response
 

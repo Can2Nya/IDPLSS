@@ -1,7 +1,16 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    recommend.test_recommend
+    ~~~~~~~~~~~~
+
+    测试推荐、基于UserCf,ItemCf算法推荐
+
+"""
+
 import math
 import pandas as pd
-from app.models import TestList, TestBehavior, User
+
+from ..models import TestList, TestBehavior, User
 
 
 def test_user_index_calc(user):

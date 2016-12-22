@@ -1,6 +1,6 @@
-# coding :utf-8
-from datetime import datetime
+# -*- coding: utf-8 -*-
 from dateutil import tz
+from datetime import datetime
 
 
 def set_model_attr(info, attr):

@@ -1,5 +1,13 @@
-# coding: utf-8
-from app.models import Course, TextResource, TestList
+# -*- coding: utf-8 -*-
+"""
+    recommend.code_start
+    ~~~~~~~~~~~~
+
+    用户冷启动兴趣推荐
+
+"""
+
+from ..models import Course, TextResource, TestList
 
 
 def code_start_course(user):

@@ -1,4 +1,11 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    manage
+    ~~~~~~~~~~~~
+
+    启动app
+
+"""
 from flask_script import Manager, Shell
 
 from app import db
@@ -8,7 +15,6 @@ from tests import CreateDate
 from app.models import User, Role, Follow, Post, PostComment, Course, CourseComment, VideoList,  TextResource, \
     TextResourceComment, TestList, TestProblem, AnswerRecord, TestRecord, CourseBehavior, TestBehavior,\
     TextResourceBehavior
-
 
 app = create_app()
 manager = Manager(app)

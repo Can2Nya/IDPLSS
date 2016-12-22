@@ -1,12 +1,19 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.courses
+    ~~~~~~~~~~~~
+
+    处理课程板块API请求
+
+"""
+
 from flask import g, request, url_for, current_app, jsonify
 
-from app.main import main
-from app.utils.responses import self_response
-from app.utils.model_tools import have_school_permission
-from app.main.responses import forbidden, not_found, bad_request, method_not_allowed
-from app.main.decorators import login_required, permission_required, user_login_info
-from app.models import Course, CourseComment, VideoList, db, Permission, CourseBehavior, User
+from . import main
+from ..utils import self_response, have_school_permission
+from .responses import forbidden, not_found, bad_request, method_not_allowed
+from .decorators import login_required, permission_required, user_login_info
+from ..models import CourseBehavior, Course, CourseComment, db, Permission, User, VideoList
 
 
 @main.route('/api/courses', methods=['GET'])

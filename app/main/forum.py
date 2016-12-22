@@ -1,12 +1,19 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.forum
+    ~~~~~~~~~~~~
+
+    处理帖子相关API请求
+
+"""
+
 from flask import jsonify, request, current_app, url_for, g
 
-from app.main import main
-from app.utils.responses import self_response
-from app.main.responses import not_found, forbidden, bad_request
-from app.models import db, Post, PostComment, Permission
-from app.utils.model_tools import have_school_permission
-from app.main.decorators import permission_required, login_required, user_login_info
+from . import main
+from .responses import not_found, forbidden
+from ..utils import self_response, have_school_permission
+from ..models import db, Post, PostComment, Permission
+from .decorators import permission_required, login_required, user_login_info
 
 
 @main.route('/api/posts', methods=['GET'])

@@ -1,4 +1,12 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    app.models
+    ~~~~~~~~~~~~
+
+    定义模型
+
+"""
+
 import random
 from datetime import datetime
 
@@ -6,8 +14,8 @@ from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 
-from app import db
-from app.utils.model_tools import set_model_attr, user_info_transform, id_change_user, time_transform, comment_count
+from . import db
+from .utils import set_model_attr, user_info_transform, id_change_user, time_transform, comment_count
 
 
 class Permission:

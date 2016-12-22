@@ -1,12 +1,20 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    main.text_resource
+    ~~~~~~~~~~~~
+
+    处理文库中心API请求
+
+"""
+
 from flask import request, g, url_for, current_app, jsonify
 
-from app.main import main
-from app.utils.responses import self_response
-from app.utils.model_tools import have_school_permission
-from app.main.responses import bad_request, not_found, forbidden
-from app.main.decorators import permission_required, login_required, user_login_info
-from app.models import db, User, TextResource, TextResourceComment, Permission, TextResourceBehavior
+
+from . import main
+from ..utils import self_response, have_school_permission
+from .responses import bad_request, not_found, forbidden
+from .decorators import permission_required, login_required, user_login_info
+from ..models import db, User, TextResource, TextResourceBehavior, TextResourceComment, Permission
 
 
 @main.route('/api/text-resources', methods=['GET'])

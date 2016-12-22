@@ -1,6 +1,17 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+    utils
+    ~~~~~~~~~~~~
 
-from mail import send_email, send_async_email
-from model_tools import user_info_transform, set_model_attr, calc_count
-from responses import self_response
+    工具类包
+
+"""
+
+from .log import logger
+from .responses import self_response
+from .pagination import QueryPagination
+from .mail import send_email, send_async_email
+from .model_tools import user_info_transform, set_model_attr, calc_count, have_school_permission, id_change_user, \
+    time_transform, comment_count
+
 
