@@ -12,7 +12,7 @@ from flask import request, g, url_for, current_app, jsonify
 
 from . import main
 from ..utils import self_response, have_school_permission
-from .responses import bad_request, not_found, forbidden
+from .responses import bad_request, not_found, forbidden, method_not_allowed
 from .decorators import permission_required, login_required, user_login_info
 from ..models import db, User, TextResource, TextResourceBehavior, TextResourceComment, Permission
 
@@ -120,7 +120,7 @@ def text_resource_detail(rid):
         db.session.commit()
         return self_response('update text resource information successfully')
     else:
-        return self_response('invalid operation')
+        return method_not_allowed('invalid request')
 
 
 @main.route('/api/text-resources/new-resource', methods=['POST'])
@@ -221,7 +221,7 @@ def collect_resource(rid):
         else:
             return bad_request('user does not collect text resource ago')
     else:
-        return self_response('invalid operation')
+        return method_not_allowed('invalid request')
 
 
 @main.route('/api/text-resources/search', methods=['POST'])

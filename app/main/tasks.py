@@ -13,7 +13,8 @@ import jieba.analyse  # 使用结巴中文分词构造词云
 from .. import celery
 from .. import redis_store
 from ..utils import logger
-from ..models import TestList, Post
+from ..models import TestList, Post, User, TestProblem, TestBehavior, TestRecord, AnswerRecord, db, \
+    CourseNode, CourseNodeBehavior, CourseResource
 from ..recommend import user_similarity_recommend, course_similarity_recommend, text_resources_recommend, \
     test_similarity_recommend, text_resources_user_recommend, test_user_similarity_recommend
 
@@ -133,3 +134,55 @@ def get_key_words(u):
     logger.info("calc key words complete")
 
 
+@celery.task
+def delete_test(test_id):
+    test = TestList.query.get(test_id).first()
+    all_users = User.query.all()
+    for u in all_users:   # 测试已经删除,将关联的测试记录也删除
+        record = TestRecord.query.filter_by(answerer_id=u.id, test_list_id=test.id).first()
+        if record:
+            record.show = False
+            db.session.add(record)
+            all_answer_record = AnswerRecord.query.filter_by(answerer_id=u.id, test_record_id=record.id).all()
+            if all_answer_record:
+                for r in all_answer_record:
+                    r.show = False
+                    db.session.add(r)
+    all_behaviors = TestBehavior.query.filter_by(test_id=test.id).all()
+    if all_behaviors:
+        for b in all_behaviors:
+            b.show = False
+            db.session.add(b)
+    problems = TestProblem.query.filter_by(test_list_id=test.id).all()
+    if problems:
+        for p in problems:
+            p.show = False
+            db.session.add(p)
+    db.session.commit()
+    logger.info("delete test related resource successfully")
+
+
+@celery.task
+def delete_related_chapter(cid):
+    nodes = CourseNode.query.filter_by(chapter_id=cid, show=True).all()
+    if nodes:
+        for n in nodes:
+            n.show = False
+            db.session.add(n)
+    behaviors = CourseNodeBehavior.query.filter_by(chapter_id=cid, show=True).all()
+    if behaviors:
+        for b in behaviors:
+            b.show = True
+            db.session.add(b)
+    resources = CourseResource.query.filterb_by(chapter_id=cid, show=True).all()
+    if resources:
+        for r in resources:
+            r.show = False
+    tests = TestList.query.filter_by(is_course_test=True, course_chapter_id=cid, show=True).all()
+    if tests:
+        for t in tests:
+            t.show = False
+            db.session.add(t)
+            delete_test(t.id)  # 删除相关的测试依赖
+    db.session.commit()
+    logger.info("delete chapter related resource successfully")

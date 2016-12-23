@@ -10,8 +10,9 @@
 from flask import current_app, jsonify, g, request, url_for
 
 from . import main
+from .tasks import delete_test
 from ..utils import self_response, have_school_permission
-from .responses import not_found, forbidden
+from .responses import not_found, forbidden, method_not_allowed
 from .decorators import login_required, user_login_info
 from ..models import TestList, TestRecord, TestProblem, TestBehavior, AnswerRecord, User, db
 
@@ -19,7 +20,7 @@ from ..models import TestList, TestRecord, TestProblem, TestBehavior, AnswerReco
 @main.route('/api/test-list', methods=['GET'])
 def test_list():
     page = request.args.get('page', 1, type=int)
-    pagination = TestList.query.filter_by(show=True).order_by(TestList.timestamp.desc()).paginate(
+    pagination = TestList.query.filter_by(show=True, is_course_test=False).order_by(TestList.timestamp.desc()).paginate(
         page, per_page=current_app.config["IDPLSS_POSTS_PER_PAGE"],
         error_out=False
     )
@@ -51,21 +52,9 @@ def test_operation(tid):
         if not user or not (user.id == test.author_id or have_school_permission(user)):
             return forbidden('does not have permissions')
         test.show = False
-        all_users = User.query.all()
-        for u in all_users:   # 测试已经删除,将关联的测试记录也删除
-            record = TestRecord.query.filter_by(answerer_id=u.id, test_list_id=test.id).first()
-            if record is not None:
-                db.session.delete(record)
-                all_answer_record = AnswerRecord.query.filter_by(answerer_id=u.id, test_record_id=record.id).all()
-                if all_answer_record is not None:
-                    for r in all_answer_record:
-                        db.session.delete(r)
-        all_behaviors = TestBehavior.query.filter_by(test_id=test.id).all()
-        if all_behaviors is not None:
-            for b in all_behaviors:
-                db.session.delete(b)
         db.session.add(test)
         db.session.commit()
+        delete_test(test.id)
         return self_response('delete test successfully')
     elif request.method == 'PUT':
         if not user or not (user.id == test.author_id or have_school_permission(user)):
@@ -80,13 +69,13 @@ def test_operation(tid):
         db.session.commit()
         return self_response('test information update successfully')
     else:
-        return self_response('invalid operation')
+        return method_not_allowed('invalid request')
 
 
 @main.route('/api/test-list/category/<int:cid>', methods=['GET'])
 def test_list_category(cid):
     page = request.args.get('page', 1, type=int)
-    pagination = TestList.query.filter_by(show=True, test_category=cid).order_by(TestList.timestamp.desc()).paginate(
+    pagination = TestList.query.filter_by(show=True, test_category=cid, is_course_test=False).order_by(TestList.timestamp.desc()).paginate(
         page, per_page=current_app.config['IDPLSS_POSTS_PER_PAGE'],
         error_out=False
     )
@@ -186,7 +175,7 @@ def problem_operation(tid, pid):
         db.session.commit()
         return self_response("update problem info successfully")
     else:
-        return self_response('invalid operation')
+        return method_not_allowed('invalid request')
 
 
 @main.route('/api/test-list/new-test-record', methods=['POST'])
