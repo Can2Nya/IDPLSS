@@ -10,7 +10,7 @@
 from flask import jsonify, request, current_app, url_for, g
 
 from . import main
-from .responses import not_found, forbidden
+from .responses import not_found, forbidden, method_not_allowed
 from ..utils import self_response, have_school_permission
 from ..models import db, Post, PostComment, Permission
 from .decorators import permission_required, login_required, user_login_info
@@ -94,7 +94,7 @@ def post_detail(pid):
         db.session.commit()
         return self_response('update post successfully')
     else:
-        return self_response('invalid operation')
+        return method_not_allowed('invalid request')
 
 
 @main.route('/api/posts/new-post', methods=['POST'])

@@ -527,6 +527,7 @@ class Course(db.Model):
     show = db.Column(db.Boolean, default=True)
     course_all_video = db.relationship('VideoList', backref='course', lazy='dynamic')
     course_comments = db.relationship('CourseComment', backref='course', lazy='dynamic')
+    chapters = db.relationship('CourseChapter', backref='course', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -570,7 +571,7 @@ class Course(db.Model):
         images = json_course.get('images')
         author_id = json_course.get('author_id')
         return Course(course_name=course_name, description=description, course_category=category,
-                       images=images, author_id=author_id)
+                      images=images, author_id=author_id)
 
 
 class VideoList(db.Model):
@@ -600,7 +601,7 @@ class VideoList(db.Model):
             u = User.query.offset(random.randint(0, user_count-1)).first()
             p = VideoList(video_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)),
                           timestamp=forgery_py.date.date(True),
-                      video_order=random.randint(1, 10), video_name=forgery_py.lorem_ipsum.title(),
+                          video_order=random.randint(1, 10), video_name=forgery_py.lorem_ipsum.title(),
                           show=True, author_id=u.id, course_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
@@ -655,8 +656,9 @@ class CourseComment(db.Model):
         random.seed()
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
-            p = CourseComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  5)), timestamp=forgery_py.date.date(True),
-                      show=True, author_id=u.id, course_id=random.randint(1, 100))
+            p = CourseComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  5)),
+                              timestamp=forgery_py.date.date(True), show=True, author_id=u.id,
+                              course_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -680,6 +682,124 @@ class CourseComment(db.Model):
         author_id = json_course_comment.get('author_id')
         course_id = json_course_comment.get('course_id')
         return CourseComment(body=body, author_id=author_id, course_id=course_id)
+
+
+class CourseChapter(db.Model):
+    """课程章节表"""
+    __tablename__ = 'course_chapters'
+    id = db.Column(db.Integer, primary_key=True)
+    chapter_title = db.Column(db.String(128))
+    show = db.Column(db.Boolean, default=True)
+    chapter_order = db.Column(db.Integer)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    nodes = db.ForeignKey('CourseNode', backref='chapter', lazy='dynamic')
+    resources = db.ForeignKey('CourseResource', backref='chapter', lazy='dynamic')
+
+    def __repr__(self):
+        return '<course chapter title is %r>' % self.chapter_title
+
+    def to_json(self):
+        json_info = {
+            'id': self.id,
+            'title': self.chapter_title,
+            'order': self.chapter_order
+        }
+        return json_info
+
+    @staticmethod
+    def from_json(info):
+        chapter_title = info.get('chapter_title')
+        chapter_order = info.get('order')
+        course_id = info.get('course_id')
+        return CourseChapter(chapter_title=chapter_title, chapter_order=chapter_order, course_id=course_id)
+
+
+class CourseNode(db.Model):
+    """课程小节表
+    id:自增主键
+    node_title:小节名称
+    show:是否删除
+    node_order:小节顺序
+    node_description: 小节描述
+    images: 图片
+    node:knowledge: 小节的知识点
+    """
+    __tablename__ = 'course_nodes'
+    id = db.Column(db.Integer, primary_key=True)
+    node_title = db.Column(db.String(128))
+    show = db.Column(db.Boolean, default=True)
+    node_order = db.Column(db.Integer)
+    node_description = db.Column(db.Text)
+    images = db.Column(db.String(512))
+    node_knowledge = db.Column(db.String(128))
+    chapter_id = db.Column(db.Integer, db.ForeignKey('course_chapters.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return '< course node title is %r>' % self.node_title
+
+    def to_json(self):
+        json_info = {
+            'id': self.id,
+            'title': self.node_title,
+            'order': self.node_order,
+            'description': self.node_description,
+            'images': self.images,
+            'knowledge': self.node_knowledge
+
+        }
+        return json_info
+
+    @staticmethod
+    def from_json(info):
+        node_title = info.get('title')
+        node_order = info.get('order')
+        node_description = info.get('description')
+        images = info.get('images')
+        node_knowledge = info.get('knowledge')
+        chapter_id = info.get('chapter_id')
+        course_id = info.get('course_id')
+        return CourseNode(node_title=node_title, node_order=node_order, node_description=node_description, images=images,
+                          node_knowledge=node_knowledge, chapter_id=chapter_id, course_id=course_id)
+
+
+class CourseResource(db.Model):
+    """
+    课程资源表
+    """
+    __tablename__ = 'course_resources'
+    id = db.Column(db.Integer, primary_key=True)
+    resource_name = db.Column(db.String(128))
+    resource_description = db.Column(db.Text)
+    show = db.Column(db.Boolean, default=True)
+    source_url = db.Column(db.String(256))
+    chapter_id = db.Column(db.Integer, db.ForeignKey('course_chapters.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return '<course resource name is %r>' % self.resource_name
+
+    def to_json(self):
+        json_info = {
+            'id': self.id,
+            'name': self.resource_name,
+            'description': self.resource_description,
+            'download_url': self.source_url
+        }
+        return json_info
+
+    @staticmethod
+    def from_json(info):
+        resource_name = info.get('resource_name')
+        resource_description = info.get('description')
+        source_url = info.get('source_url')
+        chapter_id = info.get('chapter_id')
+        course_id = info.get('course_id')
+        return CourseResource(resource_name=resource_name, resource_description=resource_description,
+                              source_url=source_url, course_id=course_id, chapter_id=chapter_id)
 
 
 class TextResource(db.Model):
@@ -767,8 +887,9 @@ class TextResourceComment(db.Model):
         random.seed()
         for i in range(count):
             u = User.query.offset(random.randint(0, user_count-1)).first()
-            p = TextResourceComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  2)), timestamp=forgery_py.date.date(True),
-                      show=True, author_id=random.randint(1, 100), text_resource_id=random.randint(1, 100))
+            p = TextResourceComment(body=forgery_py.lorem_ipsum.sentences(random.randint(1,  2)),
+                                    timestamp=forgery_py.date.date(True), show=True,
+                                    author_id=random.randint(1, 100), text_resource_id=random.randint(1, 100))
             db.session.add(p)
             db.session.commit()
 
@@ -811,9 +932,12 @@ class TestList(db.Model):
     image = db.Column(db.String(256))  # 存放该测试的封面图
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     problems = db.relationship('TestProblem', backref='testList', lazy='dynamic')
+    is_course_test = db.Column(db.Boolean, default=False)   # 为课程测试留
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    course_chapter_id = db.Column(db.Integer, db.ForeignKey('course_chapters.id'))
 
     def __repr__(self):
-        return '< test_list titile is %r>' % self.test_title
+        return '< test_list title is %r>' % self.test_title
 
     @staticmethod
     def generate_fake(count=100):
@@ -826,8 +950,8 @@ class TestList(db.Model):
             p = TestList(test_description=forgery_py.lorem_ipsum.sentences(random.randint(1,  9)),
                          timestamp=forgery_py.date.date(True), test_title=forgery_py.lorem_ipsum.title(), key_words="computer science",
                          like=random.randint(1, 100), test_category=random.randint(0, 6), show=True,
-                         author_id=u.id, image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png", \
-                test_sum=random.randint(0, 200))
+                         author_id=u.id, image="http://o8evkf73q.bkt.clouddn.com/image/JXNU.png",
+                         test_sum=random.randint(0, 200))
             db.session.add(p)
             db.session.commit()
 
@@ -861,6 +985,21 @@ class TestList(db.Model):
         author_id = json_info.get('author_id')
         return TestList(test_title=test_title, test_description=test_description, test_category=test_category,
                         key_words=key_words, image=image, author_id=author_id)
+
+    @staticmethod
+    def course_test_from_json(json_info):
+        test_title = json_info.get('test_title')
+        test_description = json_info.get('test_description')
+        test_category = json_info.get('test_category')
+        key_words = json_info.get('key_words')
+        image = json_info.get('image')
+        author_id = json_info.get('author_id')
+        is_course_test = json_info.get('is_course_test')
+        course_id = json_info.get('course_id')
+        course_chapter_id = json_info.get('course_chapter_id')
+        return TestList(test_title=test_title, test_description=test_description, test_category=test_category,
+                        key_words=key_words, image=image, author_id=author_id, is_course_test=is_course_test,
+                        course_id=course_id, couorse_chapter_id=course_chapter_id)
 
 
 class TestProblem(db.Model):
@@ -1105,6 +1244,23 @@ class CourseBehavior(db.Model):
             db.session.commit()
 
 
+class CourseNodeBehavior(db.Model):
+    """
+    课程节点行为表
+    """
+    __tablename__ = 'course_node_behavior'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    chapter_id = db.Column(db.Integer, db.ForeignKey('course_chapters.id'))
+    node_id = db.Column(db.Integer, db.ForeignKey('course_nodes.id'))
+
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return '< course node behavior id is %r >' % self.id
+
+
 class TestBehavior(db.Model):
     __tablename__ = 'test_behavior'
     id = db.Column(db.Integer, primary_key=True)
@@ -1121,7 +1277,7 @@ class TestBehavior(db.Model):
     def generate_fake(count=200):
         random.seed()
         for i in range(count):
-            p = TestBehavior(user_id=random.randint(1, 102), test_id=random.randint(1,100),
+            p = TestBehavior(user_id=random.randint(1, 102), test_id=random.randint(1, 100),
                                      is_test=random.randint(0, 1), is_like=random.randint(0, 1))
             db.session.add(p)
             db.session.commit()

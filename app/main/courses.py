@@ -10,10 +10,12 @@
 from flask import g, request, url_for, current_app, jsonify
 
 from . import main
-from ..utils import self_response, have_school_permission
+from .tasks import delete_related_chapter, delete_test
+from ..utils import self_response, have_school_permission, logger
 from .responses import forbidden, not_found, bad_request, method_not_allowed
 from .decorators import login_required, permission_required, user_login_info
-from ..models import CourseBehavior, Course, CourseComment, db, Permission, User, VideoList
+from ..models import CourseBehavior, Course, CourseComment, db, Permission, User, VideoList, \
+    CourseChapter, CourseNode, CourseResource, TestList, AnswerRecord, TestRecord, TestBehavior
 
 
 @main.route('/api/courses', methods=['GET'])
@@ -320,6 +322,225 @@ def like_course(cid):
             db.session.add(course_behavior)
         db.session.commit()
         return self_response("login user like successfully")
+
+
+@main.route('/api/courses/<int:cid>/chapters', methods=['GET', 'POST', 'PUT','DELETE'])
+@user_login_info
+def course_chapters(cid):
+    user = g.current_user
+    course = Course.query.filter_by(id=cid, show=True).first()
+    if not course:
+        return not_found()
+    if request.method == 'GET':
+        chapters = CourseChapter.query.filter_by(course_id=cid, show=True).order_by(CourseChapter.chapter_order.asc()).all()
+        return jsonify({
+            'count': len(chapters),
+            'chapters': [chapter.to_json() for chapter in chapters]
+        })
+    elif request.method == 'POST':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        chapter_info = request.json
+        chapter_info['course_id'] = cid
+        new_chapter = CourseChapter.from_json(chapter_info)
+        db.session.add(new_chapter)
+        db.session.commit()
+        return self_response('create chapter successfully')
+    elif request.method == 'PUT':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        chg_info = request.json
+        chapter = CourseChapter.query.filter_by(id=chg_info['chapter_id'], show=True).first()
+        if not chapter:
+            return not_found()
+        chapter.chapter_title = chg_info['title']
+        db.session.add(chapter)
+        db.session.commit()
+        return self_response('update chapter information successfully')
+    elif request.method == 'DELETE':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        chapter_info = request.json
+        chapter = CourseChapter.query.filter_by(id=chapter_info['chapter_id'], show=True).first()
+        if not chapter:
+            return not_found()
+        chapter.show = False
+        db.session.add(chapter)
+        db.session.commit()
+        chapters = CourseChapter.query.filter_by(course_id=cid, show=True).order_by(CourseChapter.chapter_order.asc()).all()
+        order_list = [x for x in range(1, len(chapters)+1)]
+        for chapter, order in zip(chapters, order_list):
+            chapter.chapter_order = order
+            db.session.add(chapter)
+        db.session.commit()
+        delete_related_chapter.delay(chapter_info['chapter_id'])  # 异步删除与chapter相关的资料
+        return self_response('delete chapter successfully')
+    else:
+        return method_not_allowed('invalid request')
+
+
+@main.route('/api/courses/<int:cid>/chapter/<int:chapter_id>/node', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@user_login_info
+def chapter_node(cid, chapter_id):
+    user = g.current_user
+    course = Course.query.get(cid)
+    if not course:
+        return not_found()
+    if request.method == 'GET':
+        nodes = CourseNode.query.filter_by(chapter_id=chapter_id, show=True).all()
+        return jsonify({'count': len(nodes),
+                        'nodes': [node.to_json() for node in nodes]})
+    elif request.method == 'POST':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        info['course_id'] = cid
+        info['chapter_id'] = chapter_id
+        new_node = CourseNode.from_json(info)
+        db.session.add(new_node)
+        db.session.commit()
+        return self_response('create chapter node successfully')
+    elif request.method == 'PUT':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        node = CourseNode.query.filter_by(id=info['node_id'], show=True).first()
+        if not node:
+            return not_found()
+        node.node_title = info['title']
+        node.node_description = info['description']
+        node.images = info['images']
+        db.session.add(node)
+        db.session.commit()
+        return self_response('update node information successfully')
+    elif request.method == 'DELETE':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        node = CourseNode.query.filter_by(id=info['node_id'], show=True).first()
+        if not node:
+            return not_found()
+        node.show = False
+        db.session.add(node)
+        db.session.commit()
+        nodes = CourseNode.query.filter_by(course_id=cid, chapter_id=chapter_id, show=True).all()
+        new_order = [x for x in range(1, len(nodes)+1)]
+        for node, order in zip(nodes, new_order):
+            node.node_order = order
+            db.session.add(node)
+        db.session.commit()
+        return self_response('delete node successfully')
+    else:
+        return method_not_allowed('invalid request')
+
+
+@main.route('/api/courses/<int:cid>/chapter/<int:chapter_id>/resource', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@user_login_info
+def chapter_resource(cid, chapter_id):
+    user = g.current_user
+    course = Course.query.get(cid)
+    if not course:
+        return not_found()
+    if request.method == 'GET':
+        resources = CourseResource.query.filter_by(chapter_id=chapter_id, show=True).all()
+        return jsonify({'count': len(resources),
+                        'course_resources': [resource.to_json() for resource in resources]})
+    elif request.method == 'POST':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        info['chapter_id'] = chapter_id
+        info['course_id'] = cid
+        new_resource = CourseResource.from_json(info)
+        db.session.add(new_resource)
+        db.session.commit()
+        return self_response('create chapter resource successfully')
+    elif request.method == 'PUT':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+
+        resource = CourseResource.query.filter_by(id=info['resource_id'], show=True).first()
+        if not resource:
+            return not_found()
+        logger.info("json info is {0} resource is {1}".format(info, resource))
+        resource.resource_name = info['name']
+        resource.resource_description = info['description']
+        db.session.add(resource)
+        db.session.commit()
+        return self_response('update chapter resource successfully')
+    elif request.method == 'DELETE':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        resource = CourseResource.query.filter_by(id=info['resource_id'], show=True).first()
+        if not resource:
+            return not_found()
+        resource.show = False
+        db.session.add(resource)
+        db.session.commit()
+        return self_response('delete chapter resource successfully')
+    else:
+        return method_not_allowed('invalid request')
+
+
+@main.route('/api/courses/<int:cid>/chapter/<int:chapter_id>/test', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@user_login_info
+def chapter_test(cid, chapter_id):
+    user = g.current_user
+    course = Course.query.get(cid)
+    if not course:
+        return not_found()
+    if request.method == 'GET':
+        course_tests = TestList.query.filter_by(is_course_test=True, course_id=cid, chapter_id=chapter_id).all()
+        if not course_tests:
+            return not_found()
+        return jsonify({
+            'count': len(course_tests),
+            'course_tests': [test.course_test_to_json() for test in course_tests]
+        })
+    elif request.method == 'POST':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        course_test_info = request.json
+        course_test_info['is_course_test'] = True
+        course_test_info['course_id'] = cid
+        course_test_info['chapter_id'] = chapter_id
+        new_test = TestList.course_test_from_json(course_test_info)
+        db.session.add(new_test)
+        db.session.commit()
+        return self_response('create course test successfully')
+    elif request.method == 'DELETE':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permissions')
+        info = request.json
+        test = TestList.query.filter_by(id=info['course_test_id']).first()
+        if not test:
+            return not_found()
+        test.show = False
+        db.session.add(test)
+        db.session.commit()
+        delete_test.delay(test.id)  # 异步删除与测试相关的资料
+        return self_response('delete course test successfully')
+    elif request.method == 'PUT':
+        if not user or not (user.id == course.author_id or have_school_permission(user)):
+            return forbidden('does not have permission')
+        info = request.json
+        test = TestList.query.filter_by(id=info['course_test_id']).first()
+        if not test:
+            return not_found()
+        modify_info = request.json
+        test.test_title = modify_info['title']
+        test.test_description = modify_info['description']
+        test.key_words = modify_info['key_words']
+        test.image = modify_info['image']
+        db.session.add(test)
+        db.session.commit()
+        return self_response('update course test information successfully')
+    else:
+        return method_not_allowed('invalid request')
+
+
 
 
 
