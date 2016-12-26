@@ -62,7 +62,7 @@ def code_start_test(user):
     interested_filed = user.interested_field.split(":")
     test_list = []
     for field in interested_filed:
-        test = TestList.query.filter_by(test_category=int(field), show=True).\
+        test = TestList.query.filter_by(test_category=int(field),is_course_test=False, show=True).\
             order_by(TestList.timestamp.desc()).first()
         if test is not None and test.show is True:
             test_list.append(test)

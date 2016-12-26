@@ -999,7 +999,7 @@ class TestList(db.Model):
         course_chapter_id = json_info.get('course_chapter_id')
         return TestList(test_title=test_title, test_description=test_description, test_category=test_category,
                         key_words=key_words, image=image, author_id=author_id, is_course_test=is_course_test,
-                        course_id=course_id, couorse_chapter_id=course_chapter_id)
+                        course_id=course_id, course_chapter_id=course_chapter_id)
 
 
 class TestProblem(db.Model):
