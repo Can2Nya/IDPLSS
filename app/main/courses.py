@@ -135,6 +135,8 @@ def course_video_detail(cid, vid):
     if request.method == 'GET':
         course_video = VideoList.query.get_or_404(vid)
         if course_video.show is not False:
+            if user:
+                logger.info("user {0} study course {1} watch video {2}".format(user.user_name, cid, vid))
             return jsonify(course_video.to_json())
         else:
             return not_found()
@@ -228,7 +230,7 @@ def delete_video_comment(cid):
     course_comment.show = False
     db.session.add(course_comment)
     db.session.commit()
-    return self_response('delete coures comment successfully')
+    return self_response('delete course comment successfully')
 
 
 @main.route('/api/courses/<int:cid>/is-collecting', methods=['GET'])
@@ -388,6 +390,8 @@ def chapter_node(cid, chapter_id):
         return not_found()
     if request.method == 'GET':
         nodes = CourseNode.query.filter_by(chapter_id=chapter_id, show=True).all()
+        if user:
+            logger.info("user {0} learn course {1} watch chapter {2}".format(user.user_name, cid, chapter_id))
         return jsonify({'count': len(nodes),
                         'nodes': [node.to_json() for node in nodes]})
     elif request.method == 'POST':
@@ -470,7 +474,7 @@ def chapter_resource(cid, chapter_id):
         db.session.commit()
         return self_response('update chapter resource successfully')
     elif request.method == 'DELETE':
-        if not user or not (user.id == course.author_id or have_school_permission(user)):
+        if not user or not (user.id == course.author_pid or have_school_permission(user)):
             return forbidden('does not have permission')
         info = request.json
         resource = CourseResource.query.filter_by(id=info['resource_id'], show=True).first()
@@ -492,12 +496,10 @@ def chapter_test(cid, chapter_id):
     if not course:
         return not_found()
     if request.method == 'GET':
-        course_tests = TestList.query.filter_by(is_course_test=True, course_id=cid, chapter_id=chapter_id).all()
-        if not course_tests:
-            return not_found()
+        course_tests = TestList.query.filter_by(is_course_test=True, course_id=cid, course_chapter_id=chapter_id).all()
         return jsonify({
             'count': len(course_tests),
-            'course_tests': [test.course_test_to_json() for test in course_tests]
+            'course_tests': [test.to_json() for test in course_tests]
         })
     elif request.method == 'POST':
         if not user or not (user.id == course.author_id or have_school_permission(user)):
@@ -505,7 +507,9 @@ def chapter_test(cid, chapter_id):
         course_test_info = request.json
         course_test_info['is_course_test'] = True
         course_test_info['course_id'] = cid
-        course_test_info['chapter_id'] = chapter_id
+        course_test_info['course_chapter_id'] = chapter_id
+        course_test_info['author_id'] = user.id
+        course_test_info['test_category'] = course.course_category
         new_test = TestList.course_test_from_json(course_test_info)
         db.session.add(new_test)
         db.session.commit()

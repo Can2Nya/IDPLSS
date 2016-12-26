@@ -65,7 +65,7 @@ def popular_test():
     """
     l = []
     recommend_test = []
-    all_test = TestList.query.filter_by(show=True).all()
+    all_test = TestList.query.filter_by(show=True, is_course_test=False).all()
     [l.append(test.test_sum) for test in all_test if test is not None]  # 将课程学习数量添加到list中
     if len(l) < 3:
         for t in all_test:
