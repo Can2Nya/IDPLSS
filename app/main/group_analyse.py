@@ -27,8 +27,8 @@ REDIS_TIMEOUT = 50000
 def course_analyse():
     user = g.current_user
     courses = Course.query.filter_by(author_id=user.id).all()
-    subject_list = [x for x in range(1, 13)]
-    res = {
+    subject_list = [str(x) for x in range(1, 13)]
+    result = {
         "count": len(courses),
         "course": []
     }
@@ -37,17 +37,18 @@ def course_analyse():
         users = []
         word_list = []
         subject_dict = dict.fromkeys(subject_list, 0)
+        logger.info("subject dict is {0}".format(subject_dict))
         sex_count = 0
         subject_res_list = []
         behaviors = CourseBehavior.query.filter_by(course_id=course.id).all()
         for b in behaviors:
-            user = User.query.filter(id=b.user_id).first()
+            user = User.query.filter_by(id=b.user_id).first()
             if user:
                 users.append(user)
         for u in users:
             if u.sex == 0:
                 sex_count += 1
-            subject_dict[u.subject] += 1  # 计算专业分布
+            subject_dict[u.subject] += 1
             word_list.append(user_key_words(u))
         # 计算学习过该课程的用户关键词
         words = ' '.join(word_list)
@@ -78,9 +79,12 @@ def course_analyse():
         res_course['sex'] = {'male': sex_count, 'female': len(users)-sex_count}
         res_course['subject'] = subject_res_list
         res_course['interested_field'] = key_words
-        res_course['test_avg_accuracy'] = get_test_accuracy(course_id)
-        res['course'].append(res_course)
-    return jsonify(res)
+        res_course['test_avg_accuracy'] = get_test_accuracy(course.id)
+        res_course['course_id'] = course.id
+        res_course['course_name'] = course.course_name
+        # logger.info("res course type is {0}".format(type(res)))
+        result['course'].append(res_course)
+    return jsonify(result)
 
 
 def get_test_accuracy(course_id):
