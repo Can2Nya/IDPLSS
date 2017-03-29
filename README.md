@@ -7,9 +7,9 @@
    * 项目web主页: [主页](http://study.jxnugo.com)
 
 
-##技术栈
+## 技术栈
 
-####1、后端采用技术
+#### 1、后端采用技术
 * Python Flask
 * Mysql
 * Redis(缓存)
@@ -27,7 +27,7 @@
 * webpack（打包工具）
 
 
-####3、服务器部署
+#### 3、服务器部署
 * 环境：阿里云ECS ubuntu 14.04 LTS
 * gunicorn
 * nginx
@@ -35,7 +35,14 @@
 
 > 因服务器配置较低，部署的项目多，访问可能会速度慢
 
-##联系
+#### 4、技术要点
+* 使用Restful API设计，解决浏览器跨域问题，减轻了前后端的代码依赖，降低耦合。
+* 使用Redis和Celery构建任务队列，对前端请求的热点数据进行备份，提高并发性。
+* 使用Nginx+supervisor+gunicorn+virtualenv进行服务器部署。
+* 使用pandas,numpy实现了简单基于领域的推荐算法，分析用户行为。
+* 灵活使用第三方库和服务（邮件服务，富文本存储）来实现所需的部分功能以及应用加速。
+
+## 联系
 如果项目有疑问，请联系ddragonever@gmail.com
 
 
