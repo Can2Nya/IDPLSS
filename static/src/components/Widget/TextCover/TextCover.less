@@ -1,0 +1,88 @@
+@import (reference) '../../../config/config.less';
+
+
+.big{
+	.word{
+		background-image: url("@{QINIU-URL}/images/widget/word.png");
+		.block;
+	}
+	.ppt{
+		background-image: url("@{QINIU-URL}/images/widget/ppt.png");
+		.block;
+	}
+	.pdf{
+		background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.other{
+		background: @purple;
+		//background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.excel{
+		background: @yellow;
+		//background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.block{
+		// width: 200px;
+		height: 219px;
+		width: 100%;
+		padding: 15px;
+		background-repeat: no-repeat;
+		margin: 0 20px 20px 0;
+	}
+	.title{
+		font-size: 20px;
+		color: @white;
+	}
+	.subtitle{
+		font-size: 14px;
+		color: @gray;
+		text-overflow:ellipsis;
+		white-space:nowrap;
+		overflow:hidden;
+		position: absolute;
+		bottom: 40px;
+	}
+	.position{
+		margin-top: 60%;
+	}
+}
+
+.small{
+	.word{
+		background-image: url("@{QINIU-URL}/images/widget/s/word.png");
+		.block;
+	}
+	.ppt{
+		background-image: url("@{QINIU-URL}/images/widget/s/ppt.png");
+		.block;
+	}
+	.pdf{
+		background-image: url("@{QINIU-URL}/images/widget/s/pdf.png");
+		.block;
+	}
+	.other{
+		background: @purple;
+		//background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.excel{
+		background: @yellow;
+		//background-image: url("@{QINIU-URL}/images/widget/pdf.png");
+		.block;
+	}
+	.block{
+		width: 100%;
+		padding-left: 25px;
+		background-repeat: no-repeat;
+	}
+	.title{
+		font-size: 18px;
+		color: @gray;
+		text-overflow:ellipsis;
+		white-space:nowrap;
+		overflow:hidden;
+	}
+}

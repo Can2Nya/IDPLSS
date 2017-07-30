@@ -1,0 +1,69 @@
+@import (reference) '../../config/config.less';
+
+:global {
+	#root{
+		height: 100% !important;
+	}
+
+}
+.backstagebg{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	li[class*='ant-menu-item-selected']{
+		background-color: lighten(@gray, 10%) !important;
+		&:hover{
+			background-color: lighten(@yellow, 10%);
+		}
+	}
+	// float: left;
+	// &:after{
+	// 	clear: both;
+	// 	content: '';
+	// 	display: table;
+	// }
+}
+.titlecomment{
+	color: darken(@gray, 10%);
+	font-size: 18px;
+	height: 60px;
+	border-bottom: 1px solid @gray;
+}
+.side{
+	width: 280px;
+	height: 100%;
+	// display: flex;
+	flex-grow: 0;//有剩余空间不放大
+	flex-shrink: 0;//空间变小不缩小
+	// flex-direction: column;
+	// justify-content: center;
+	border-right: 1px solid @gray;
+	& .title{
+		.titlecomment;
+		padding: 15px;
+		text-align: center;
+	}
+}
+.context{
+	height: 100%;
+	width: 100%;
+	// display: flex;
+	flex-grow: 1;
+	flex-shrink: 1;
+	// flex-direction: column;
+	justify-content: space-between;
+
+	.title{
+		padding: 7px 50px;
+		display: flex;
+		align-items: center;
+		.titlecomment;
+	}
+	.item{
+		flex: auto;
+	}
+	.page{
+		padding: 70px;
+		height: 100%;
+	}
+}

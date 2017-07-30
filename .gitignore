@@ -92,3 +92,5 @@ ENV/
 .DS_Store
 .idea/
 config/config.py
+.swp
+*.log

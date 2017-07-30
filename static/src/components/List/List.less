@@ -1,0 +1,18 @@
+@import (reference) '../../config/config.less';
+
+.pannel{
+	width: 98%;
+	padding: 5px;
+	transition: all .5s ease-in;
+	.text{
+		color: @purple;
+		font-size: 14px;
+		padding: 0 25px;
+		background-image: url('@{QINIU-URL}/images/dot.png');
+		background-repeat: no-repeat;
+		
+	}
+	&:hover{
+		background-color: lighten(@gray, 10%)
+	}
+}

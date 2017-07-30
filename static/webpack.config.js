@@ -1,6 +1,7 @@
 // Learn more on how to config.
 // - https://github.com/ant-tool/atool-build#配置扩展
 
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('atool-build/lib/webpack');
 const fs = require('fs');
 const path = require('path');
@@ -17,7 +18,31 @@ module.exports = function(webpackConfig) {
   //   test: /\.jsx?$/,
   //   loader: 'es3ify-loader',
   // });
-
+// test.
+  webpackConfig.plugins.push(
+    // new HtmlWebpackPlugin({
+    //   hash: true,
+    //   template: "./src/entries/index.html",
+    //   filename: "index1.html",
+    //   files: {
+    //     "css": [ "index.css" ],
+    //     "js": [ "index.js", "comment.js"]
+    //   }
+    // }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //     compress: {
+    //         warnings: false
+    //     }
+    // }),
+    // new webpack.optimize.CommonsChunkPlugin('vendor',  'vendor.js'),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin()
+  );
+  webpackConfig.plugins.push(
+    new webpack.DefinePlugin({
+      __DEV__: JSON.stringify('production')
+    })
+  );
   // Parse all less files as css module.
   webpackConfig.module.loaders.forEach(function(loader, index) {
     if (typeof loader.test === 'function' && loader.test.toString().indexOf('\\.less$') > -1) {

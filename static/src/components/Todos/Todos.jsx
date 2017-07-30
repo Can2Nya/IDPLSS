@@ -49,6 +49,7 @@ function filter(todos, pathname) {
     }
     return true;
   });
+  console.log(newList)
   return { ...todos, list: newList };
 }
 

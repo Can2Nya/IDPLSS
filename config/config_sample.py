@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +17,7 @@ class Config(object):
     IDPLSS_ADMIN = IDPLSS['IDPLSS_ADMIN']
     SQLALCHEMY_DATABASE_URI = IDPLSS['SQLALCHEMY_DATABASE_URI']
     IDPLSS_POSTS_PER_PAGE = IDPLSS['IDPLSS_POSTS_PER_PAGE']
+    IDPLSS_COMMON_COUNT = IDPLSS['IDPLSS_COMMON_COUNT']
     MAIL_SERVER = MAIL['MAIL_SERVER']
     MAIL_PORT = MAIL['MAIL_PORT']
     MAIL_USE_TLS = MAIL['MAIL_USE_TLS']
